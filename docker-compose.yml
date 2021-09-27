@@ -3,5 +3,7 @@ version: "3.2"
 services:
   app:
     build: ./
+    env_file:
+      - "${PROJECT_DIR}/.env"
     ports:
       - "3050:3000"
