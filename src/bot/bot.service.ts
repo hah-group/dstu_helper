@@ -10,6 +10,7 @@ const api = require('node-vk-bot-api/lib/api');
 export const SCHEDULE_ACTIVATION = /расписание( пар)?.*/ig;
 export const WHAT_ACTIVATION = /(что|чо|шо) (?!на завтра)(на|завтра|у нас завтра|по парам).*/ig;
 export const WHOM_ACTIVATION = /(.*какие .*?(пары).*|пары.*?какие)/ig;
+export const AT_ACTIVATION = /пары на.*/ig;
 
 @Injectable()
 export class BotService {
@@ -30,7 +31,8 @@ export class BotService {
 
     if (ctx.message.text.match(SCHEDULE_ACTIVATION) ||
         ctx.message.text.match(WHAT_ACTIVATION) ||
-        ctx.message.text.match(WHOM_ACTIVATION)) await this.onActivate(ctx);
+        ctx.message.text.match(WHOM_ACTIVATION) ||
+        ctx.message.text.match(AT_ACTIVATION)) await this.onActivate(ctx);
   }
 
   async onActivate(ctx) {
