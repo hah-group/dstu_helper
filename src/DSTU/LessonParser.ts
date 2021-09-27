@@ -75,7 +75,7 @@ export default class LessonParser {
     }
 
     private static isCurrent(dateStart: Date, dateEnd: Date): boolean {
-        const currentDate = new Date().getTime();
+        const currentDate = new Date().getTime() + 10800000;
         if (currentDate <= dateEnd.getTime() && currentDate >= dateStart.getTime()) return true;
         else if ((currentDate + 900000) <= dateEnd.getTime() && (currentDate + 900000) >= dateStart.getTime()) return true;
         return false;
