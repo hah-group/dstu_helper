@@ -27,7 +27,8 @@ export class BotService {
   }
 
   private async onMessage(ctx) {
-    if (ctx.message.peer_id < 2000000000 || ctx.message.text > 33) return;
+    if (ctx.message.peer_id < 2000000000) return;
+    if (ctx.message.text > 33) return;
 
     if (ctx.message.text.match(SCHEDULE_ACTIVATION) ||
         ctx.message.text.match(WHAT_ACTIVATION) ||
