@@ -9,6 +9,9 @@ export class Rasp implements IRasp {
     type: RaspTypeMnemonic | undefined;
     tutor: String | undefined;
     probability: number | undefined;
+    current: boolean;
+    lessonEnd: Date;
+    lessonStart: Date;
 
     constructor() {
 

@@ -8,4 +8,7 @@ export interface IRasp {
     classRoom: IClassRoom | undefined;
     tutor: String | undefined;
     probability: number;
+    lessonStart: Date;
+    lessonEnd: Date;
+    current: boolean;
 }

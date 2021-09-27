@@ -10,6 +10,8 @@ export const WHAT_ACTIVATION = /(что|чо|шо|че|чё) (?!на завтр�
 export const WHOM_ACTIVATION = /(.*какие .*?(пары).*|пары.*?какие)/ig;
 export const AT_ACTIVATION = /пары (на|в|во).*/ig;
 
+export const WHERE_AUDIENCE = /(куда|где|какая).{1,20}(идти|пара|аудитория)/ig;
+
 @Injectable()
 export class BotService {
   public bot;
@@ -31,11 +33,19 @@ export class BotService {
         ctx.message.text.match(WHAT_ACTIVATION) ||
         ctx.message.text.match(WHOM_ACTIVATION) ||
         ctx.message.text.match(AT_ACTIVATION)) await this.onActivate(ctx);
+    else if (ctx.message.text.match(WHERE_AUDIENCE)) await this.onWhere(ctx);
   }
 
   async onActivate(ctx) {
     const atDate = DateParser.Parse(ctx.message.text);
     const rasp = await DSTU.getRasp(atDate.date);
     ctx.reply(TextCompiler.Compile(rasp, atDate.mnemonic));
+  }
+
+  async onWhere(ctx) {
+    const rasp = await DSTU.getRasp(new Date());
+    const current = rasp.find(lesson => lesson.current);
+    if (current) ctx.reply(TextCompiler.ShortInfo(current));
+    else ctx.reply('Сейчас нет пар');
   }
 }

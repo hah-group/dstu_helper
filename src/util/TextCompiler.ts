@@ -8,8 +8,7 @@ export class TextCompiler {
             `Пары на ${mnemonic}\n\n`;
 
         rasp.forEach(lesson => {
-            result += `
-📌 ${lesson.pairNumber} пара
+            result += `📌 ${lesson.pairNumber} пара ${lesson.current ? '(Сейчас)' : ''}
 📕 ${lesson.type}: ${lesson.subject}
 🏢 Аудитория: ${lesson.classRoom.corpus}-${lesson.classRoom.classRoom}
 🔪 Вероятность отчисления: ${lesson.probability}%\n\n`;
@@ -18,5 +17,10 @@ export class TextCompiler {
         result += 'Итого, вероятность твоего отчисления: 100%';
 
         return result;
+    }
+
+    public static ShortInfo(rasp: IRasp): string {
+        return `📕 ${rasp.type}: ${rasp.subject}
+🏢 Аудитория: ${rasp.classRoom.corpus}-${rasp.classRoom.classRoom}`;
     }
 }
