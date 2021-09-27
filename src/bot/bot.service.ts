@@ -6,7 +6,7 @@ import {TextCompiler} from "../util/TextCompiler";
 const VkBot = require('node-vk-bot-api');
 
 export const SCHEDULE_ACTIVATION = /расписание( пар)?.*/ig;
-export const WHAT_ACTIVATION = /(что|чо|шо|че|чё) (?!на завтра)(на|завтра|у нас завтра|по парам).*/ig;
+export const WHAT_ACTIVATION = /(что|чо|шо|че|чё) (?!на завтра)(на |у нас завтра|по парам).*/ig;
 export const WHOM_ACTIVATION = /(.*какие .*?(пары).*|пары.*?какие)/ig;
 export const AT_ACTIVATION = /пары (на|в|во).*/ig;
 
