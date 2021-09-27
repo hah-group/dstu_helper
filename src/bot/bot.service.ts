@@ -8,7 +8,7 @@ const Markup = require('node-vk-bot-api/lib/markup');
 const api = require('node-vk-bot-api/lib/api');
 
 export const SCHEDULE_ACTIVATION = /расписание( пар)?.*/ig;
-export const WHAT_ACTIVATION = /(что|чо|шо) (?!на завтра)(на|завтра|у нас завтра|по парам).*/ig;
+export const WHAT_ACTIVATION = /(что|чо|шо|че|чё) (?!на завтра)(на|завтра|у нас завтра|по парам).*/ig;
 export const WHOM_ACTIVATION = /(.*какие .*?(пары).*|пары.*?какие)/ig;
 export const AT_ACTIVATION = /пары (на|в|во).*/ig;
 
@@ -27,7 +27,7 @@ export class BotService {
   }
 
   private async onMessage(ctx) {
-    if (ctx.message.peer_id < 2000000000) return;
+    if (ctx.message.peer_id < 2000000000 || ctx.message.text > 33) return;
 
     if (ctx.message.text.match(SCHEDULE_ACTIVATION) ||
         ctx.message.text.match(WHAT_ACTIVATION) ||
