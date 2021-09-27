@@ -6,4 +6,6 @@ export interface IRasp {
     pairNumber: number | undefined;
     subject: String | undefined;
     classRoom: IClassRoom | undefined;
+    tutor: String | undefined;
+    probability: number;
 }

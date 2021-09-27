@@ -20,7 +20,6 @@ export class DateParser {
     private static dateFromMnemonic(mnemonic: string): Date {
         const date = new Date();
         if (mnemonic === '') return date;
-        console.log(date)
 
         const weekDay = this.weekParser(mnemonic);
         if (weekDay > -1) {
@@ -33,7 +32,6 @@ export class DateParser {
         if (relativeAdd > 0)
             date.setDate(date.getDate() + relativeAdd);
 
-        console.log(weekDay, relativeAdd);
         return date;
     }
 

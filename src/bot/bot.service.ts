@@ -4,8 +4,6 @@ import DSTU from "../DSTU/DSTU";
 import {TextCompiler} from "../util/TextCompiler";
 
 const VkBot = require('node-vk-bot-api');
-const Markup = require('node-vk-bot-api/lib/markup');
-const api = require('node-vk-bot-api/lib/api');
 
 export const SCHEDULE_ACTIVATION = /расписание( пар)?.*/ig;
 export const WHAT_ACTIVATION = /(что|чо|шо|че|чё) (?!на завтра)(на|завтра|у нас завтра|по парам).*/ig;

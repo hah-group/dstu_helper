@@ -4,6 +4,7 @@ import {SchedulePair} from "./SchedulePair";
 import {Rasp} from "./Rasp";
 import {IRasp} from "./IRasp";
 import {RaspTypeMnemonic} from "./RaspTypeMnemonic";
+import {Variator} from "./Variator";
 
 export default class LessonParser {
     static Parse(lessonObject: LessonObject) {
@@ -11,6 +12,8 @@ export default class LessonParser {
         this._subjectParse(lessonObject.дисциплина, rasp);
         this._classroomParse(lessonObject.аудитория, rasp);
         this._parsePair(lessonObject.начало, rasp);
+        rasp.tutor = lessonObject.преподаватель;
+        rasp.probability = Variator.Calc(rasp);
 
         return rasp;
     }

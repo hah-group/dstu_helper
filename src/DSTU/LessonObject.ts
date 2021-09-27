@@ -4,4 +4,5 @@ export interface LessonObject {
     "дисциплина": string;
     "группа": string;
     "аудитория": string;
+    "преподаватель": string;
 }

@@ -7,6 +7,8 @@ export class Rasp implements IRasp {
     pairNumber: number | undefined;
     subject: String | undefined;
     type: RaspTypeMnemonic | undefined;
+    tutor: String | undefined;
+    probability: number | undefined;
 
     constructor() {
 
