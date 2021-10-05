@@ -11,16 +11,15 @@ export class TextCompiler {
             result += `📌 ${lesson.pairNumber} пара ${lesson.current ? '(Сейчас)' : ''}
 📕 ${lesson.type}: ${lesson.subject}
 🏢 Аудитория: ${lesson.classRoom.corpus}-${lesson.classRoom.classRoom}
-🔪 Вероятность отчисления: ${lesson.probability}%\n\n`;
+🔪 Вероятность отчисления: ${lesson.probability}%
+${lesson.classRoom.distance ? '❗️ Пара дистанционная' : ''}\n`;
         });
-
-        result += 'Итого, вероятность твоего отчисления: 100%';
 
         return result;
     }
 
     public static ShortInfo(rasp: IRasp): string {
         return `📕 ${rasp.type}: ${rasp.subject}
-🏢 Аудитория: ${rasp.classRoom.corpus}-${rasp.classRoom.classRoom}`;
+🏢 Аудитория: ${rasp.classRoom.corpus}-${rasp.classRoom.classRoom}${rasp.classRoom.distance ? '\n❗️ Пара дистанционная' : ''}`;
     }
 }

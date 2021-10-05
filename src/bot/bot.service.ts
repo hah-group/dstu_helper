@@ -12,6 +12,8 @@ export const AT_ACTIVATION = /пары (на|в|во).*/ig;
 
 export const WHERE_AUDIENCE = /(куда|где|какая).{1,20}(идти|пара|аудитория)/ig;
 
+export const NEXT_ACTIVATION = /^(какая |где |что )?(некст|следующая|след)( пара)?$/ig;
+
 @Injectable()
 export class BotService {
   public bot;
@@ -33,6 +35,7 @@ export class BotService {
         ctx.message.text.match(WHAT_ACTIVATION) ||
         ctx.message.text.match(WHOM_ACTIVATION) ||
         ctx.message.text.match(AT_ACTIVATION)) await this.onActivate(ctx);
+    else if (ctx.message.text.match(NEXT_ACTIVATION)) await this.onNext(ctx);
     else if (ctx.message.text.match(WHERE_AUDIENCE)) await this.onWhere(ctx);
   }
 
@@ -47,5 +50,14 @@ export class BotService {
     const current = rasp.find(lesson => lesson.current);
     if (current) ctx.reply(TextCompiler.ShortInfo(current));
     else ctx.reply('Сейчас нет пар');
+  }
+
+  async onNext(ctx) {
+    const rasp = await DSTU.getRasp(new Date());
+    const currentIndex = rasp.findIndex(lesson => lesson.current);
+    if (rasp[currentIndex + 1]) ctx.reply(TextCompiler.ShortInfo(rasp[currentIndex + 1]));
+    else {
+      ctx.reply(rasp[currentIndex] ? 'Это последняя пара' : 'Сегодня пар нет');
+    }
   }
 }
