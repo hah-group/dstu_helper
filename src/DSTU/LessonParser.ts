@@ -17,6 +17,7 @@ export default class LessonParser {
         rasp.lessonStart = new Date(lessonObject.датаНачала);
         rasp.lessonEnd = new Date(lessonObject.датаОкончания);
         rasp.current = this.isCurrent(rasp.lessonStart, rasp.lessonEnd);
+        rasp.isStarted = this.isStarted(rasp.lessonStart, rasp.lessonEnd);
 
         return rasp;
     }
@@ -79,5 +80,11 @@ export default class LessonParser {
         if (currentDate <= dateEnd.getTime() && currentDate >= dateStart.getTime()) return true;
         else if ((currentDate + 900000) <= dateEnd.getTime() && (currentDate + 900000) >= dateStart.getTime()) return true;
         return false;
+    }
+
+    private static isStarted(dateStart: Date, dateEnd: Date): boolean {
+        const currentDate = new Date().getTime() + 10800000;
+        return currentDate <= dateEnd.getTime() && currentDate >= dateStart.getTime();
+
     }
 }

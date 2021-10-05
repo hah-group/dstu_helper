@@ -54,10 +54,17 @@ export class BotService {
 
   async onNext(ctx) {
     const rasp = await DSTU.getRasp(new Date());
+    console.log(rasp);
+
     const currentIndex = rasp.findIndex(lesson => lesson.current);
     if (rasp[currentIndex + 1]) ctx.reply(TextCompiler.ShortInfo(rasp[currentIndex + 1]));
     else {
-      ctx.reply(rasp[currentIndex] ? 'Это последняя пара' : 'Сегодня пар нет');
+      if (rasp[currentIndex] && rasp[currentIndex].isStarted)
+        ctx.reply('Это последняя пара');
+      else if (rasp[currentIndex])
+        ctx.reply(TextCompiler.ShortInfo(rasp[currentIndex]));
+      else
+        ctx.reply('Сегодня нет пар');
     }
   }
 }

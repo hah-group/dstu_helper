@@ -12,6 +12,7 @@ export class Rasp implements IRasp {
     current: boolean;
     lessonEnd: Date;
     lessonStart: Date;
+    isStarted: boolean;
 
     constructor() {
 

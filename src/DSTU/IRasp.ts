@@ -11,4 +11,5 @@ export interface IRasp {
     lessonStart: Date;
     lessonEnd: Date;
     current: boolean;
+    isStarted: boolean;
 }
