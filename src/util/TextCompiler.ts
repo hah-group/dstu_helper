@@ -25,7 +25,7 @@ ${lesson.classRoom.distance ? '❗️ Пара дистанционная' : ''}
     }
 
     private static timeCompiler(date: Date): string {
-        let h = date.getUTCHours() + 3 < 10 ? `0${date.getUTCHours() + 3}` : date.getUTCHours() + 3;
+        let h = date.getUTCHours() < 10 ? `0${date.getUTCHours()}` : date.getUTCHours();
         let m = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
         return `${h}:${m}`;
     }
