@@ -12,8 +12,9 @@ export default class DSTU {
         let rasp = await Axios.get('https://edu.donstu.ru/api/Rasp?idGroup=40222&sdate=' + dateString);
 
         let lessons: Map<number, IRasp> = new Map<number, IRasp>();
+        console.log(rasp.data)
 
-        for (let lesson of rasp.data.data.rasp) {
+        for (let lesson of rasp.data["data"]["rasp"]) {
             if (weekDay !== lesson["деньНедели"]) continue;
 
             let lessonObject: LessonObject = lesson;
