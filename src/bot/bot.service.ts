@@ -84,7 +84,6 @@ export class BotService {
 
   async onNext(ctx) {
     const rasp = await DSTU.getRasp(new Date());
-    console.log(rasp);
 
     const currentIndex = rasp.findIndex(lesson => lesson.current);
     if (rasp[currentIndex + 1]) ctx.reply(TextCompiler.ShortInfo(rasp[currentIndex + 1]));
