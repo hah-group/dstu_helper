@@ -47,7 +47,7 @@ export class BotService {
   }
 
   async onActivateControl(ctx) {
-    if (ctx.message.from_id == 152879324) {
+    if (ctx.message.from_id != 408482064) {
       switch (ctx.message.text) {
         case '!старт':
           this.active = true;
