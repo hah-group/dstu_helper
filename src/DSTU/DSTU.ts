@@ -14,7 +14,7 @@ export default class DSTU {
         let lessons: Map<number, IRasp> = new Map<number, IRasp>();
         console.log(rasp.data)
 
-        for (let lesson of rasp.data["data"]["rasp"]) {
+        for (let lesson of rasp.data.data.rasp) {
             if (weekDay !== lesson["деньНедели"]) continue;
 
             let lessonObject: LessonObject = lesson;
