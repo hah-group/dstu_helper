@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {DateParser} from "../util/DateParser";
 import DSTU from "../DSTU/DSTU";
 import {TextCompiler} from "../util/TextCompiler";
+import {VkIoService} from "../vk-io/vk-io.service";
 
 const VkBot = require('node-vk-bot-api');
 
@@ -14,11 +15,14 @@ export const WHERE_AUDIENCE = /(куда|где|какая).{1,20}(идти|па
 
 export const NEXT_ACTIVATION = /^(какая |где |что )?(некст|следующая|след)( пара)?$/ig;
 
+export const START_STOP_ACTIVATION = /!(старт|стоп)/gi;
+
 @Injectable()
 export class BotService {
   public bot;
+  private active = false;
 
-  constructor() {
+  constructor(private vkApi: VkIoService) {
     this.bot = new VkBot({
       token: process.env.BOT_TOKEN,
       confirmation: process.env.CONFIRMATION,
@@ -29,6 +33,9 @@ export class BotService {
   }
 
   private async onMessage(ctx) {
+    if (ctx.message.text.match(START_STOP_ACTIVATION)) return this.onActivateControl(ctx);
+    if (ctx.message.from_id == 408482064 && this.active) return this.onActivateBan(ctx);
+
     if (ctx.message.peer_id < 2000000000 || ctx.message.text.length > 33) return;
 
     if (ctx.message.text.match(SCHEDULE_ACTIVATION) ||
@@ -37,6 +44,29 @@ export class BotService {
         ctx.message.text.match(AT_ACTIVATION)) await this.onActivate(ctx);
     else if (ctx.message.text.match(NEXT_ACTIVATION)) await this.onNext(ctx);
     else if (ctx.message.text.match(WHERE_AUDIENCE)) await this.onWhere(ctx);
+  }
+
+  async onActivateControl(ctx) {
+    if (ctx.message.from_id == 152879324) {
+      switch (ctx.message.text) {
+        case '!старт':
+          this.active = true;
+          break;
+        case '!стоп':
+          this.active = false;
+          break;
+      }
+      ctx.reply(`Пасхалка ${this.active ? 'включена' : 'отключена'}`);
+    }
+  }
+
+  async onActivateBan(ctx) {
+    await this.vkApi.api.messages.delete({
+      peer_id: 2000000241,
+      conversation_message_ids: ctx.message.conversation_message_id,
+      delete_for_all: true
+    });
+    ctx.reply("Влад соси хуй");
   }
 
   async onActivate(ctx) {
