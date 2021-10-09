@@ -62,7 +62,7 @@ export class BotService {
 
   async onActivateBan(ctx) {
     await this.vkApi.api.messages.delete({
-      peer_id: ctx.message.peer_id,,
+      peer_id: ctx.message.peer_id,
       conversation_message_ids: ctx.message.conversation_message_id,
       delete_for_all: true
     });
