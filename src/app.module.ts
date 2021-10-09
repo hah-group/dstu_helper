@@ -9,7 +9,7 @@ import {VkIoModule} from "./vk-io/vk-io.module";
   imports: [
       ConfigModule.forRoot(),
       VkIoModule.registerAsync({
-        token: process.env.ACCESS_TOKEN,
+        token: process.env.BOT_TOKEN,
       }),
   ],
   controllers: [BotController],
