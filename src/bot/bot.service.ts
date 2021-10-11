@@ -61,7 +61,7 @@ export class BotService {
       this.active = true;
       ctx.reply(`Пасхалка ${this.active ? 'включена' : 'отключена'}`);
     } else
-      if (ctx.message.reply_message.from_id === 152879334)
+      if (ctx.message.reply_message.from_id === 152879324)
         ctx.reply('Ты не забанишь моего создателя');
       else
         ctx.reply('Ты не админ');
