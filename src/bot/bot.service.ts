@@ -17,7 +17,7 @@ export const NEXT_ACTIVATION = /^(какая |где |что )?(некст|сл�
 
 export const START_STOP_ACTIVATION = /!(старт|стоп)/gi;
 
-export const BAN_ACTIVATION = /\[club206609620.*?] бан/gi;
+export const BAN_ACTIVATION = /\[club207473634.*?] бан/gi;
 
 export const ADMIN_CONTROL = /!админ (всем|никому)/gi;
 
