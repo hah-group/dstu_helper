@@ -17,10 +17,16 @@ export const NEXT_ACTIVATION = /^(какая |где |что )?(некст|сл�
 
 export const START_STOP_ACTIVATION = /!(старт|стоп)/gi;
 
+export const BAN_ACTIVATION = /\[club206609620.*?] бан/gi;
+
+export const ADMIN_CONTROL = /!админ (всем|никому)/gi;
+
 @Injectable()
 export class BotService {
   public bot;
   private active = false;
+  private adminAll = false;
+  private banId = -1;
 
   constructor(private vkApi: VkIoService) {
     this.bot = new VkBot({
@@ -33,8 +39,10 @@ export class BotService {
   }
 
   private async onMessage(ctx) {
+    if (ctx.message.from_id == this.banId && this.active) return this.onActivateBan(ctx);
+    if (ctx.message.from_id === 152879324 && ctx.message.text.match(ADMIN_CONTROL)) return this.onAdminControl(ctx);
+    if (ctx.message.text.match(BAN_ACTIVATION)) return this.onBanSet(ctx);
     if (ctx.message.text.match(START_STOP_ACTIVATION)) return this.onActivateControl(ctx);
-    if (ctx.message.from_id == 408482064 && this.active) return this.onActivateBan(ctx);
 
     if (ctx.message.peer_id < 2000000000 || ctx.message.text.length > 33) return;
 
@@ -46,8 +54,36 @@ export class BotService {
     else if (ctx.message.text.match(WHERE_AUDIENCE)) await this.onWhere(ctx);
   }
 
+  async onBanSet(ctx) {
+    if (ctx.message.reply_message.from_id !== 152879324 &&
+        (this.adminAll || ctx.message.from_id === 152879324)) {
+      this.banId = ctx.message.reply_message.from_id;
+      this.active = true;
+      ctx.reply(`Пасхалка ${this.active ? 'включена' : 'отключена'}`);
+    } else
+      if (ctx.message.reply_message.from_id === 152879334)
+        ctx.reply('Ты не забанишь моего создателя');
+      else
+        ctx.reply('Ты не админ');
+  }
+
+  async onAdminControl(ctx) {
+    switch (ctx.message.text) {
+      case '!админ всем':
+        this.adminAll = true;
+        break;
+      case '!админ никому':
+        this.adminAll = false;
+        break;
+    }
+
+    ctx.reply(`Админ ${this.adminAll ? 'включен' : 'отключен'} для всех`);
+  }
+
   async onActivateControl(ctx) {
-    if (ctx.message.from_id != 408482064) {
+    if (ctx.message.from_id != this.banId &&
+        (this.adminAll || ctx.message.from_id === 152879324)
+    ) {
       switch (ctx.message.text) {
         case '!старт':
           this.active = true;
@@ -66,7 +102,7 @@ export class BotService {
       conversation_message_ids: ctx.message.conversation_message_id,
       delete_for_all: true
     });
-    ctx.reply("Влад соси хуй");
+    ctx.reply("Соси хуй");
   }
 
   async onActivate(ctx) {
