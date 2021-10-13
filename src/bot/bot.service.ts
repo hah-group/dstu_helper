@@ -69,33 +69,41 @@ export class BotService {
   }
 
   private async onWhere(ctx) {
-    const schedule = await this.scheduleService.studyGroup(ctx.message.from_id, moment().startOf('d'));
-    if (schedule.updating) return this.sendMessage(ctx, TextProcessor.SCHEDULE_UPDATING);
-    const current = schedule.Schedule.find((lesson, index) =>
-      TimeRelativeProcessor.isNow(lesson, schedule.Schedule[index - 1]),
-    );
-    if (current) return this.sendMessage(ctx, TextProcessor.ShortInfo(current));
-    else return this.sendMessage(ctx, TextProcessor.NOW_LESSON_NONE);
+    try {
+      const schedule = await this.scheduleService.studyGroup(ctx.message.from_id, moment().startOf('d'));
+      if (schedule.updating) return this.sendMessage(ctx, TextProcessor.SCHEDULE_UPDATING);
+      const current = schedule.Schedule.find((lesson, index) =>
+        TimeRelativeProcessor.isNow(lesson, schedule.Schedule[index - 1]),
+      );
+      if (current) return this.sendMessage(ctx, TextProcessor.ShortInfo(current));
+      else return this.sendMessage(ctx, TextProcessor.NOW_LESSON_NONE);
+    } catch {
+      return this.sendMessage(ctx, TextProcessor.NOT_FOUND_GROUP);
+    }
   }
 
   private async onNext(ctx) {
-    const schedule = await this.scheduleService.studyGroup(ctx.message.from_id, moment().startOf('d'));
-    if (schedule.updating) return this.sendMessage(ctx, TextProcessor.SCHEDULE_UPDATING);
+    try {
+      const schedule = await this.scheduleService.studyGroup(ctx.message.from_id, moment().startOf('d'));
+      if (schedule.updating) return this.sendMessage(ctx, TextProcessor.SCHEDULE_UPDATING);
 
-    const nextIndex = schedule.Schedule.findIndex((lesson, index) =>
-      TimeRelativeProcessor.isNext(lesson, schedule.Schedule[index - 1]),
-    );
+      const nextIndex = schedule.Schedule.findIndex((lesson, index) =>
+        TimeRelativeProcessor.isNext(lesson, schedule.Schedule[index - 1]),
+      );
 
-    if (nextIndex > -1) return this.sendMessage(ctx, TextProcessor.ShortInfo(schedule.Schedule[nextIndex]));
-    else {
-      if (schedule.Schedule.length > 0)
-        return this.sendMessage(
-          ctx,
-          TimeRelativeProcessor.isEnded(schedule.Schedule[schedule.Schedule.length - 1])
-            ? TextProcessor.LESSONS_ENDED
-            : TextProcessor.LAST_LESSON,
-        );
-      else return this.sendMessage(ctx, TextProcessor.TODAY_LESSON_NONE);
+      if (nextIndex > -1) return this.sendMessage(ctx, TextProcessor.ShortInfo(schedule.Schedule[nextIndex]));
+      else {
+        if (schedule.Schedule.length > 0)
+          return this.sendMessage(
+            ctx,
+            TimeRelativeProcessor.isEnded(schedule.Schedule[schedule.Schedule.length - 1])
+              ? TextProcessor.LESSONS_ENDED
+              : TextProcessor.LAST_LESSON,
+          );
+        else return this.sendMessage(ctx, TextProcessor.TODAY_LESSON_NONE);
+      }
+    } catch {
+      return this.sendMessage(ctx, TextProcessor.NOT_FOUND_GROUP);
     }
   }
 
