@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model StudyGroup {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  groupId    Int          @unique
+  updating   Boolean
+  Schedule   Schedule[]
+  UsersGroup UsersGroup[]
+}
+
+model Schedule {
+  id           Int        @id @default(autoincrement())
+  groupId      Int
+  start        DateTime   @db.Timestamp
+  end          DateTime   @db.Timestamp
+  lessonType   LessonType
+  lessonNumber Int
+  subjectName  String
+  tutorName    String
+  subgroup     Int?
+  corpus       String
+  classRoom    String
+  distance     Boolean
+  updateAt     DateTime   @default(now())
+  Group        StudyGroup @relation(fields: [groupId], references: [id])
+}
+
+model UsersGroup {
+  id      Int        @id @default(autoincrement())
+  groupId Int
+  userId  Int        @unique
+  Group   StudyGroup @relation(fields: [groupId], references: [id])
+}
+
+enum LessonType {
+  LECTURE
+  PRACTICAL
+  LABORATORY
+}

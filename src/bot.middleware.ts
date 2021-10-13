@@ -7,7 +7,7 @@ export class BotMiddleware implements NestMiddleware {
 
   use(req: any, res: any, next: () => void) {
     try {
-      this.botService.bot.webhookCallback(req, res, () => {});
+      this.botService.bot.webhookCallback(req, res, next);
     } catch (e) {
       console.log(e);
     }
