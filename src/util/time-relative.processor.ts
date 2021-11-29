@@ -6,25 +6,32 @@ export class TimeRelativeProcessor {
     lesson: Omit<Schedule, 'id' | 'groupId' | 'updateAt'>,
     prevLesson?: Omit<Schedule, 'id' | 'groupId' | 'updateAt'>,
   ): boolean {
-    if (!moment().isSame(lesson.start, 'd')) return false;
-    if (!prevLesson && moment().isSameOrBefore(lesson.start)) return true;
-    if (moment().isBetween(lesson.start, lesson.end, undefined, '[]')) return true;
+    const currentTime = this.getCurrentTime();
+    if (!currentTime.isSame(lesson.start, 'd')) return false;
+    if (!prevLesson && currentTime.isSameOrBefore(lesson.start)) return true;
+    if (currentTime.isBetween(lesson.start, lesson.end, undefined, '[]')) return true;
     if (!prevLesson) return false;
-    return moment().isSameOrAfter(prevLesson.end) && moment().isSameOrBefore(lesson.start);
+    return currentTime.isSameOrAfter(prevLesson.end) && currentTime.isSameOrBefore(lesson.start);
   }
 
   public static isNext(
     lesson: Omit<Schedule, 'id' | 'groupId' | 'updateAt'>,
     prevLesson?: Omit<Schedule, 'id' | 'groupId' | 'updateAt'>,
   ): boolean {
-    if (!moment().isSame(lesson.start, 'd')) return false;
-    if (!prevLesson && moment().isBefore(lesson.start)) return true;
+    const currentTime = this.getCurrentTime();
+    if (!currentTime.isSame(lesson.start, 'd')) return false;
+    if (!prevLesson && currentTime.isBefore(lesson.start)) return true;
     if (!prevLesson) return false;
-    if (moment().isAfter(prevLesson.end) && moment().isBefore(lesson.start)) return true;
-    return moment().isBetween(prevLesson.start, prevLesson.end, undefined, '[]');
+    if (currentTime.isAfter(prevLesson.end) && currentTime.isBefore(lesson.start)) return true;
+    return currentTime.isBetween(prevLesson.start, prevLesson.end, undefined, '[]');
   }
 
   public static isEnded(lesson: Omit<Schedule, 'id' | 'groupId' | 'updateAt'>): boolean {
-    return moment().isAfter(lesson.end);
+    const currentTime = this.getCurrentTime();
+    return currentTime.isAfter(lesson.end);
+  }
+
+  private static getCurrentTime(): moment.Moment {
+    return moment().add(3, 'h');
   }
 }
