@@ -3,18 +3,11 @@ version: "3.4"
 services:
   app:
     build: ./
-    env_file:
-      - "${PROJECT_DIR}/.env"
     ports:
       - "3050:3000"
   database:
       image: "postgres"
-      env_file:
-        - "${PROJECT_DIR}/.env"
       volumes:
         - "${PROJECT_DIR}/db:/var/lib/postgresql/data/"
   redis:
     image: redis
-    env_file:
-      - "${PROJECT_DIR}/.env"
-
