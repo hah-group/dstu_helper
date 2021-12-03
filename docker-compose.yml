@@ -10,7 +10,7 @@ services:
       - REDIS_HOST
       - REDIS_PORT
       - CHUNK_SIZE
-    build: ./
+    image: "${APP_DOCKER_IMAGE}"
     ports:
       - "3050:3000"
   database:
