@@ -8,6 +8,8 @@ services:
   database:
       image: "postgres"
       volumes:
-        - "dst_helper_volume/db:/var/lib/postgresql/data/"
+        - "dstu_helper_volume/db:/var/lib/postgresql/data/"
   redis:
     image: redis
+    volumes:
+      - "dstu_helper_volume/db:/data"
