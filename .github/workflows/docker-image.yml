@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag https://registry.mtdl.ru/dstu_helper_app:latest
+      run: docker build . --file Dockerfile --tag registry.mtdl.ru/dstu_helper_app:latest
     - name: Push Docker image
-      run: docker push https://registry.mtdl.ru/dstu_helper_app:latest
+      run: docker push registry.mtdl.ru/dstu_helper_app:latest
 
