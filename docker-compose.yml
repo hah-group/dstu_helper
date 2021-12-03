@@ -12,4 +12,4 @@ services:
   redis:
     image: redis
     volumes:
-      - "dstu_helper_volume/db:/data"
+      - "dstu_helper_volume/redis:/data"
