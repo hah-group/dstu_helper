@@ -2,14 +2,29 @@ version: "3.4"
 
 services:
   app:
+    environment:
+      - BOT_TOKEN
+      - CONFIRMATION
+      - ACCESS_TOKEN
+      - DATABASE_URL
+      - REDIS_HOST
+      - REDIS_PORT
+      - CHUNK_SIZE
     build: ./
     ports:
       - "3050:3000"
   database:
+      environment:
+        - POSTGRES_USER
+        - POSTGRES_PASSWORD
+        - POSTGRES_DB
       image: "postgres"
       volumes:
         - "/db:/var/lib/postgresql/data/"
   redis:
     image: redis
+    environment:
+        - REDIS_HOST
+        - REDIS_PORT
     volumes:
       - "/redis:/data"
