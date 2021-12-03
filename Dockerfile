@@ -21,5 +21,5 @@ COPY --from=builder /app/yarn.lock ./
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
-LABEL version="0.0.1"
+LABEL version="0.0.1-alpha"
 CMD [ "npm", "run", "start:prod" ]
