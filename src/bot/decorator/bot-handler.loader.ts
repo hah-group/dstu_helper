@@ -1,4 +1,4 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import { BotMetadataAccessor } from './bot-metadata.accessor';
@@ -27,18 +27,33 @@ export class BotHandlerLoader implements OnApplicationBootstrap /*, OnApplicatio
         const { instance } = wrapper;
 
         const prototype = Object.getPrototypeOf(instance);
-        this.metadataScanner.scanFromPrototype(instance, prototype, (methodKey: string) =>
-          this.subscribeToEventIfListener(instance, methodKey),
-        );
+        this.metadataScanner.scanFromPrototype(instance, prototype, (methodKey: string) => {
+          this.subscribeToMessageEventIfListener(instance, methodKey);
+          this.subscribeToInviteEventIfListener(instance, methodKey);
+          this.subscribeToKickEventIfListener(instance, methodKey);
+        });
       });
   }
 
-  private subscribeToEventIfListener(instance: Record<string, any>, methodKey: string) {
+  private subscribeToMessageEventIfListener(instance: Record<string, any>, methodKey: string) {
     const eventListenerMetadata = this.metadataAccessor.getMessageHandlerMetadata(instance[methodKey]);
-    if (!eventListenerMetadata) {
-      return;
-    }
+    if (!eventListenerMetadata) return;
+
     const { event, scope } = eventListenerMetadata;
-    this.botService.addHandler((message) => instance[methodKey].call(instance, message), event, scope);
+    this.botService.addMessageHandler((message) => instance[methodKey].call(instance, message), event, scope);
+  }
+
+  private subscribeToInviteEventIfListener(instance: Record<string, any>, methodKey: string) {
+    const eventListenerMetadata = this.metadataAccessor.getInviteHandlerMetadata(instance[methodKey]);
+    if (!eventListenerMetadata) return;
+
+    this.botService.addInviteHandler((message) => instance[methodKey].call(instance, message), eventListenerMetadata);
+  }
+
+  private subscribeToKickEventIfListener(instance: Record<string, any>, methodKey: string) {
+    const eventListenerMetadata = this.metadataAccessor.getKickHandlerMetadata(instance[methodKey]);
+    if (!eventListenerMetadata) return;
+
+    this.botService.addKickHandler((message) => instance[methodKey].call(instance, message));
   }
 }

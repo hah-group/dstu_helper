@@ -20,6 +20,7 @@ import { TimeRelativeProcessor } from '../util/time-relative.processor';
 import { BotProducer } from './job/bot.producer';
 import { BotMessage } from './type/bot-message.type';
 import { BotResponse } from './type/bot-response.type';
+import { BotEvents } from './bot.events';
 
 const MENTION_PATTERN = new RegExp(/^\[club\d+\|[a-z\d@]+]/gi);
 
@@ -28,6 +29,7 @@ const CONVERSATION_START_ID = 2000000000;
 @Injectable()
 export class BotService extends VkBot {
   private readonly log = new Logger(BotService.name);
+  public readonly events = new BotEvents();
 
   constructor(
     private scheduleService: StudyGroupService,
@@ -38,6 +40,12 @@ export class BotService extends VkBot {
       token: process.env.BOT_TOKEN,
       group_id: parseInt(process.env.GROUP_ID),
     });
+    this.use((ctx, next) => {
+      this.events.emit('event', ctx);
+      next();
+    });
+    this.on((ctx) => this.events.emit('message', ctx));
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     this.startPolling((err) => {
@@ -114,12 +122,12 @@ export class BotService extends VkBot {
     }
   }*/
 
-  public addHandler(
+  public addMessageHandler(
     callback: (message: BotMessage) => Promise<BotResponse> | BotResponse,
     event?: string | RegExp,
     scope?: 'conversation' | 'private' | 'all',
   ): void {
-    this.on(async (ctx) => {
+    this.events.on('message', async (ctx) => {
       const { message } = ctx;
       let messageText = message.text;
       if (!messageText) return;
@@ -154,7 +162,42 @@ export class BotService extends VkBot {
     });
   }
 
-  private async responseHandler(response: BotResponse, ctx: VkBotContext): Promise<void> {
+  public addInviteHandler(
+    callback: (message: BotMessage) => Promise<BotResponse> | BotResponse,
+    scope: 'user' | 'iam',
+  ): void {
+    this.events.on('event', async (ctx) => {
+      if (!ctx.message.action || ctx.message.action.type != 'chat_invite_user') return;
+      if (ctx.message.action.member_id) {
+        if (scope == 'user' && ctx.message.action.member_id < 0) return;
+        else if (scope == 'iam' && ctx.message.action.member_id != parseInt(process.env.GROUP_ID) * -1) return;
+      }
+      const response: BotResponse | undefined = await callback({
+        ...ctx.message,
+        isMentioned: false,
+        isConversation: true,
+      });
+
+      if (response) await this.responseHandler(response, ctx);
+    });
+  }
+
+  public addKickHandler(callback: (message: BotMessage) => Promise<BotResponse> | BotResponse): void {
+    this.events.on('event', async (ctx) => {
+      if (!ctx.message.action || ctx.message.action.type != 'chat_kick_user') return;
+      if (ctx.message.action.member_id && ctx.message.action.member_id < 0) return;
+
+      const response: BotResponse | undefined = await callback({
+        ...ctx.message,
+        isMentioned: false,
+        isConversation: true,
+      });
+
+      if (response) await this.responseHandler(response, ctx);
+    });
+  }
+
+  public async responseHandler(response: BotResponse, ctx: VkBotContext): Promise<void> {
     this.log.debug(`Send message to queue`);
     const { text, reply } = response;
     if (reply) {
