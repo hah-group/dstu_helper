@@ -1,5 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { BotMiddleware } from './bot.middleware';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { VkIoModule } from './vk-io/vk-io.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -30,8 +29,4 @@ import { BullModule } from '@nestjs/bull';
     BotModule,
   ],
 })
-export class AppModule {
-  configure(consumer: MiddlewareConsumer): any {
-    consumer.apply(BotMiddleware).forRoutes('bot');
-  }
-}
+export class AppModule {}

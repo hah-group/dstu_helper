@@ -3,6 +3,6 @@ import { BotJobNamesEnum } from './bot-job-names.enum';
 
 export type BotSendDataType = BotJobBaseDataType & {
   type: BotJobNamesEnum.SEND;
-  ctx: VkBotContext;
   text: string;
+  to: number;
 };

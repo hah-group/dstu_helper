@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DateParser } from '../util/date.parser';
 
 import VkBot from 'node-vk-bot-api';
-import { VkBotContextType } from './vk-bot-context.type';
-import { VkBotInterface } from './vk-bot.interface';
+import { VkBotContextType } from './type/vk-bot-context.type';
+import { VkBotInterface } from './type/vk-bot.interface';
 import { StudyGroupService } from '../study-group/study-group.service';
 import {
   ADD_TO_GROUP,
@@ -17,37 +17,44 @@ import {
 } from '../util/text.processor';
 import * as moment from 'moment';
 import { TimeRelativeProcessor } from '../util/time-relative.processor';
-import { BotProducer } from './bot.producer';
+import { BotProducer } from './job/bot.producer';
+import { BotMessage } from './type/bot-message.type';
+import { BotResponse } from './type/bot-response.type';
+
+const MENTION_PATTERN = new RegExp(/^\[club\d+\|[a-z\d@]+]/gi);
+
+const CONVERSATION_START_ID = 2000000000;
 
 @Injectable()
-export class BotService {
-  public bot: VkBotInterface;
-  private readonly logger = new Logger(BotService.name);
+export class BotService extends VkBot {
+  private readonly log = new Logger(BotService.name);
 
   constructor(
     private scheduleService: StudyGroupService,
     private sendQueue: BotProducer,
     private groupService: StudyGroupService,
   ) {
+    super({
+      token: process.env.BOT_TOKEN,
+      group_id: parseInt(process.env.GROUP_ID),
+    });
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    this.bot = new VkBot({
-      token: process.env.BOT_TOKEN,
-      confirmation: process.env.CONFIRMATION,
+    this.startPolling((err) => {
+      if (err) {
+        console.error(err);
+      }
     });
-
-    this.onMessage = this.onMessage.bind(this);
-    this.bot.on(this.onMessage);
   }
 
-  private async onAddGroup(ctx) {
+  /*private async onAddGroup(ctx) {
     const regex = new RegExp(ADD_TO_GROUP);
     const groupName = regex.exec(ctx.message.text);
     if (groupName[1]) {
       const group = await this.groupService.findGroup(groupName[1].toUpperCase());
       if (!group) return this.sendMessage(ctx, TextProcessor.SOURCE_NOT_FOUND_GROUP);
 
-      this.logger.log(`Adding a new student id${ctx.message.from_id} to the group ${group.name}`);
+      this.log.log(`Adding a new student id${ctx.message.from_id} to the group ${group.name}`);
       await this.groupService.addUserToGroup(group, ctx.message.from_id);
       return this.sendMessage(ctx, TextProcessor.youAddInGroup(group.name));
     } else return this.sendMessage(ctx, TextProcessor.WRITE_GROUP_NAME);
@@ -105,10 +112,66 @@ export class BotService {
     } catch {
       return this.sendMessage(ctx, TextProcessor.NOT_FOUND_GROUP);
     }
+  }*/
+
+  public addHandler(
+    callback: (message: BotMessage) => Promise<BotResponse> | BotResponse,
+    event?: string | RegExp,
+    scope?: 'conversation' | 'private' | 'all',
+  ): void {
+    this.on(async (ctx) => {
+      const { message } = ctx;
+      let messageText = message.text;
+      if (!messageText) return;
+
+      this.log.debug(`Handled message peer_id: ${message.peer_id}`);
+
+      this.log.debug(`Checking scopes (Handler scope: ${scope})`);
+      const isConversation = message.peer_id >= CONVERSATION_START_ID;
+
+      this.log.debug(`Event from conversation: ${isConversation}`);
+      if (scope == 'conversation' && !isConversation) return;
+      else if (scope == 'private' && isConversation) return;
+
+      const isMentioned = !!message.text.match(MENTION_PATTERN);
+
+      messageText = messageText.replace(MENTION_PATTERN, '');
+      messageText = messageText.trim();
+
+      let pattern;
+      if (typeof event === 'string') pattern = new RegExp(`^${event}$`, 'gi');
+      else pattern = new RegExp(event);
+
+      if (messageText.match(pattern)) {
+        const response: BotResponse | undefined = await callback({
+          ...message,
+          text: messageText,
+          isMentioned,
+          isConversation,
+        });
+        if (response) await this.responseHandler(response, ctx);
+      }
+    });
+  }
+
+  private async responseHandler(response: BotResponse, ctx: VkBotContext): Promise<void> {
+    this.log.debug(`Send message to queue`);
+    const { text, reply } = response;
+    if (reply) {
+      await this.sendQueue.reply({
+        text,
+        to: ctx.message.peer_id,
+        from: ctx.message.conversation_message_id,
+      });
+    } else
+      await this.sendQueue.sendMessage({
+        text,
+        to: ctx.message.peer_id,
+      });
   }
 
   private async onMessage(ctx: VkBotContextType) {
-    if (ctx.message.peer_id < 2000000000 || ctx.message.text.length > 33) return;
+    /* if (ctx.message.peer_id < 2000000000 || ctx.message.text.length > 33) return;
 
     if (ctx.message.text.match(ADD_TO_GROUP)) return await this.onAddGroup(ctx);
     if (ctx.message.text === '!помощь') return await this.onHelp(ctx);
@@ -121,10 +184,10 @@ export class BotService {
     )
       return await this.onActivate(ctx);
     else if (ctx.message.text.match(NEXT_AUDIENCE)) return await this.onNext(ctx);
-    else if (ctx.message.text.match(WHERE_AUDIENCE)) return await this.onWhere(ctx);
+    else if (ctx.message.text.match(WHERE_AUDIENCE)) return await this.onWhere(ctx);*/
   }
 
-  private async sendMessage(ctx, text: string) {
+  /*private async sendMessage(ctx, text: string) {
     return await this.sendQueue.send({ ctx, text });
-  }
+  }*/
 }
