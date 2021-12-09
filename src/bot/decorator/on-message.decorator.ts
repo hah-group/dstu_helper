@@ -9,7 +9,7 @@ export interface OnMessageMetadata {
   /**
    * Message (string or pattern) to subscribe to.
    */
-  event?: string | RegExp;
+  event?: string | RegExp | string[] | RegExp[];
 
   scope?: 'conversation' | 'private' | 'all';
 }
@@ -21,5 +21,7 @@ export interface OnMessageMetadata {
  * @param event
  * @param scope
  */
-export const OnMessage = (event?: string | RegExp, scope?: 'conversation' | 'private' | 'all'): MethodDecorator =>
-  SetMetadata(BOT_MESSAGE_LISTENER_METADATA, { event, scope } as OnMessageMetadata);
+export const OnMessage = (
+  event?: string | RegExp | string[] | RegExp[],
+  scope?: 'conversation' | 'private' | 'all',
+): MethodDecorator => SetMetadata(BOT_MESSAGE_LISTENER_METADATA, { event, scope } as OnMessageMetadata);

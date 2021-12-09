@@ -40,8 +40,15 @@ export class BotHandlerLoader implements OnApplicationBootstrap /*, OnApplicatio
     const eventListenerMetadata = this.metadataAccessor.getMessageHandlerMetadata(instance[methodKey]);
     if (!eventListenerMetadata) return;
 
+    const addMessageHandler = (event: string | RegExp, scope) => {
+      this.botService.addMessageHandler((message) => instance[methodKey].call(instance, message), event, scope);
+    };
+
     const { event, scope } = eventListenerMetadata;
-    this.botService.addMessageHandler((message) => instance[methodKey].call(instance, message), event, scope);
+    if (Array.isArray(eventListenerMetadata.event)) {
+      const events = <string[] | RegExp[]>event;
+      events.forEach((eventRecord) => addMessageHandler(eventRecord, scope));
+    } else addMessageHandler(<string | RegExp>event, scope);
   }
 
   private subscribeToInviteEventIfListener(instance: Record<string, any>, methodKey: string) {

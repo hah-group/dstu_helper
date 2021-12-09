@@ -9,8 +9,7 @@ import { BotMessage } from './type/bot-message.type';
 @Injectable()
 export class LkHandler {
   constructor(private readonly botService: BotService) {}
-  @OnMessage('/start', 'private')
-  @OnMessage('/старт', 'private')
+  @OnMessage(['/start', '/старт'], 'private')
   public async firstStart(): Promise<BotResponse> {
     return {
       type: 'text',
