@@ -1,8 +1,8 @@
-import { Schedule } from '@prisma/client';
+//import { Schedule } from '@prisma/client';
 import * as moment from 'moment';
 
 export class TimeRelativeProcessor {
-  public static isNow(
+  /*public static isNow(
     lesson: Omit<Schedule, 'id' | 'groupId' | 'updateAt'>,
     prevLesson?: Omit<Schedule, 'id' | 'groupId' | 'updateAt'>,
   ): boolean {
@@ -33,5 +33,5 @@ export class TimeRelativeProcessor {
 
   private static getCurrentTime(): moment.Moment {
     return moment().add(3, 'h');
-  }
+  }*/
 }

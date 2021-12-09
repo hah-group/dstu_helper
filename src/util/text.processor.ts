@@ -1,13 +1,14 @@
+/*
 import { GroupWithScheduleFullType } from '../study-group/group-with-schedule-full.type';
 import * as moment from 'moment';
 import { WeekdayDefinition } from './weekday.definition';
 import { TimeRelativeProcessor } from './time-relative.processor';
 import { LessonType, Schedule } from '@prisma/client';
 
-export const SCHEDULE_ACTIVATION = /расписание( пар)?.*/gi;
-export const WHAT_ACTIVATION = /(что|чо|шо|че|чё) (?!на завтра)(на |у нас завтра|по парам).*/gi;
+export const SCHEDULE_ACTIVATION = /расписание( пар)?.*!/gi;
+export const WHAT_ACTIVATION = /(что|чо|шо|че|чё) (?!на завтра)(на |у нас завтра|по парам).*!/gi;
 export const WHOM_ACTIVATION = /(.*какие .*?(пары).*|пары.*?какие)/gi;
-export const AT_ACTIVATION = /пары (на|в|во).*/gi;
+export const AT_ACTIVATION = /пары (на|в|во).*!/gi;
 
 export const WHERE_AUDIENCE = /(куда|где|какая).{1,20}(идти|пара|аудитория)/gi;
 
@@ -104,3 +105,4 @@ ${lesson.distance ? '❗️ Пара дистанционная' : ''}\n`;
     }
   }
 }
+*/

@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "LessonType" ADD VALUE 'EXAM_WITHOUT_MARK';

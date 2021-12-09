@@ -8,6 +8,10 @@ import { DstuModule } from './dstu/dstu.module';
 import { BotModule } from './bot/bot.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bull';
+import { ConversationModule } from './conversation/conversation.module';
+import { UserModule } from './user/user.module';
+import { LessonModule } from './lesson/lesson.module';
+import { TeacherModule } from './teacher/teacher.module';
 
 @Module({
   imports: [
@@ -27,6 +31,10 @@ import { BullModule } from '@nestjs/bull';
     CacheModule,
     DstuModule,
     BotModule,
+    ConversationModule,
+    UserModule,
+    LessonModule,
+    TeacherModule,
   ],
 })
 export class AppModule {}

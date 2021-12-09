@@ -9,9 +9,14 @@ import { BotConsumer } from './job/bot.consumer';
 import { BotHandlerLoader } from './decorator/bot-handler.loader';
 import { BotMetadataAccessor } from './decorator/bot-metadata.accessor';
 import { DiscoveryModule } from '@nestjs/core';
+import { SetupHandler } from './setup.handler';
+import { ConversationModule } from '../conversation/conversation.module';
+import { UserModule } from '../user/user.module';
+import { LkHandler } from './lk.handler';
+import { VkIoModule } from '../vk-io/vk-io.module';
 
 @Module({
-  providers: [BotService, BotProducer, BotConsumer, BotHandlerLoader, BotMetadataAccessor],
+  providers: [BotService, BotProducer, BotConsumer, BotHandlerLoader, BotMetadataAccessor, SetupHandler, LkHandler],
   imports: [
     BullModule.registerQueue({
       name: 'bot',
@@ -23,6 +28,9 @@ import { DiscoveryModule } from '@nestjs/core';
     DstuModule,
     StudyGroupModule,
     DiscoveryModule,
+    ConversationModule,
+    UserModule,
+    VkIoModule,
   ],
   controllers: [BotController],
   exports: [BotService],

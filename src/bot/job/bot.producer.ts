@@ -5,6 +5,7 @@ import { BotSendDataType } from './bot-send.data.type';
 import { BotJobDataType } from './bot-job-base.data.type';
 import { BotJobNamesEnum } from './bot-job-names.enum';
 import { BotReplyDataType } from './bot-reply.data.type';
+import { BotEventDataType } from './bot-event.data.type';
 
 @Injectable()
 export class BotProducer {
@@ -19,7 +20,14 @@ export class BotProducer {
 
   public async reply(data: Omit<BotReplyDataType, 'type'>) {
     await this.sendQueue.add(BotJobNamesEnum.REPLY, {
-      type: BotJobNamesEnum.SEND,
+      type: BotJobNamesEnum.REPLY,
+      ...data,
+    });
+  }
+
+  public async sendEvent(data: Omit<BotEventDataType, 'type'>) {
+    await this.sendQueue.add(BotJobNamesEnum.EVENT, {
+      type: BotJobNamesEnum.EVENT,
       ...data,
     });
   }

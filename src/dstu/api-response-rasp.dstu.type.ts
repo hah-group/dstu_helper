@@ -6,6 +6,7 @@ export type ApiResponseRaspDstuType = {
         name: string;
         groupID: number;
       };
+      selectedNumNed: number;
     };
   };
   state: number;
@@ -19,4 +20,5 @@ export type DstuRasp = {
   преподаватель: string;
   аудитория: string;
   номерЗанятия: number;
+  кодПреподавателя: number;
 };

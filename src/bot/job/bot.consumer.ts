@@ -5,6 +5,7 @@ import { BotService } from '../bot.service';
 import { BotJobNamesEnum } from './bot-job-names.enum';
 import { Logger } from '@nestjs/common';
 import { BotReplyDataType } from './bot-reply.data.type';
+import { BotEventDataType } from './bot-event.data.type';
 
 @Processor('bot')
 export class BotConsumer {
@@ -18,6 +19,7 @@ export class BotConsumer {
     await this.sendMessage({
       peer_id: data.to,
       message: data.text,
+      keyboard: data.keyboard,
     });
   }
 
@@ -32,6 +34,21 @@ export class BotConsumer {
         peer_id: data.to,
         conversation_message_ids: data.from,
         is_reply: true,
+      }),
+    });
+  }
+
+  @Process(BotJobNamesEnum.EVENT)
+  public async event(job: Job<BotEventDataType>): Promise<void> {
+    const data = job.data;
+    this.log.debug(`Event to ${data.peerId}`);
+    await this.botService.execute('messages.sendMessageEventAnswer', {
+      event_id: data.eventId,
+      user_id: data.userId,
+      peer_id: data.peerId,
+      event_data: JSON.stringify({
+        type: 'show_snackbar',
+        text: data.text,
       }),
     });
   }

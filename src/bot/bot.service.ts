@@ -5,7 +5,7 @@ import VkBot from 'node-vk-bot-api';
 import { VkBotContextType } from './type/vk-bot-context.type';
 import { VkBotInterface } from './type/vk-bot.interface';
 import { StudyGroupService } from '../study-group/study-group.service';
-import {
+/*import {
   ADD_TO_GROUP,
   AT_ACTIVATION,
   NEXT_AUDIENCE,
@@ -14,13 +14,15 @@ import {
   WHAT_ACTIVATION,
   WHERE_AUDIENCE,
   WHOM_ACTIVATION,
-} from '../util/text.processor';
+} from '../util/text.processor';*/
 import * as moment from 'moment';
 import { TimeRelativeProcessor } from '../util/time-relative.processor';
 import { BotProducer } from './job/bot.producer';
 import { BotMessage } from './type/bot-message.type';
 import { BotResponse } from './type/bot-response.type';
 import { BotEvents } from './bot.events';
+import { Keyboard } from 'vk-io';
+import { VkIoService } from 'src/vk-io/vk-io.service';
 
 const MENTION_PATTERN = new RegExp(/^\[club\d+\|[a-z\d@]+]/gi);
 
@@ -35,6 +37,7 @@ export class BotService extends VkBot {
     private scheduleService: StudyGroupService,
     private sendQueue: BotProducer,
     private groupService: StudyGroupService,
+    private readonly vkIoService: VkIoService,
   ) {
     super({
       token: process.env.BOT_TOKEN,
@@ -76,7 +79,7 @@ export class BotService extends VkBot {
     const atDate = DateParser.Parse(ctx.message.text);
     try {
       const schedule = await this.scheduleService.studyGroup(ctx.message.from_id, atDate);
-      if (schedule.updating) return this.sendMessage(ctx, TextProcessor.SCHEDULE_UPDATING);
+      if (schedule.updateStatus) return this.sendMessage(ctx, TextProcessor.SCHEDULE_UPDATING);
       return this.sendMessage(ctx, TextProcessor.Compile(schedule, atDate.toDate()));
     } catch {
       return this.sendMessage(ctx, TextProcessor.NOT_FOUND_GROUP);
@@ -86,7 +89,7 @@ export class BotService extends VkBot {
   private async onWhere(ctx) {
     try {
       const schedule = await this.scheduleService.studyGroup(ctx.message.from_id, moment().startOf('d'));
-      if (schedule.updating) return this.sendMessage(ctx, TextProcessor.SCHEDULE_UPDATING);
+      if (schedule.updateStatus) return this.sendMessage(ctx, TextProcessor.SCHEDULE_UPDATING);
       const current = schedule.Schedule.find((lesson, index) =>
         TimeRelativeProcessor.isNow(lesson, schedule.Schedule[index - 1]),
       );
@@ -100,7 +103,7 @@ export class BotService extends VkBot {
   private async onNext(ctx) {
     try {
       const schedule = await this.scheduleService.studyGroup(ctx.message.from_id, moment().startOf('d'));
-      if (schedule.updating) return this.sendMessage(ctx, TextProcessor.SCHEDULE_UPDATING);
+      if (schedule.updateStatus) return this.sendMessage(ctx, TextProcessor.SCHEDULE_UPDATING);
 
       const nextIndex = schedule.Schedule.findIndex((lesson, index) =>
         TimeRelativeProcessor.isNext(lesson, schedule.Schedule[index - 1]),
@@ -128,6 +131,8 @@ export class BotService extends VkBot {
     scope?: 'conversation' | 'private' | 'all',
   ): void {
     this.events.on('message', async (ctx) => {
+      if (ctx.message.type !== 'message_new') return;
+
       const { message } = ctx;
       let messageText = message.text;
       if (!messageText) return;
@@ -156,6 +161,7 @@ export class BotService extends VkBot {
           text: messageText,
           isMentioned,
           isConversation,
+          isButton: false,
         });
         if (response) await this.responseHandler(response, ctx);
       }
@@ -167,6 +173,8 @@ export class BotService extends VkBot {
     scope: 'user' | 'iam',
   ): void {
     this.events.on('event', async (ctx) => {
+      if (ctx.message.type !== 'message_new') return;
+
       if (!ctx.message.action || ctx.message.action.type != 'chat_invite_user') return;
       if (ctx.message.action.member_id) {
         if (scope == 'user' && ctx.message.action.member_id < 0) return;
@@ -176,6 +184,7 @@ export class BotService extends VkBot {
         ...ctx.message,
         isMentioned: false,
         isConversation: true,
+        isButton: false,
       });
 
       if (response) await this.responseHandler(response, ctx);
@@ -184,6 +193,8 @@ export class BotService extends VkBot {
 
   public addKickHandler(callback: (message: BotMessage) => Promise<BotResponse> | BotResponse): void {
     this.events.on('event', async (ctx) => {
+      if (ctx.message.type !== 'message_new') return;
+
       if (!ctx.message.action || ctx.message.action.type != 'chat_kick_user') return;
       if (ctx.message.action.member_id && ctx.message.action.member_id < 0) return;
 
@@ -191,6 +202,27 @@ export class BotService extends VkBot {
         ...ctx.message,
         isMentioned: false,
         isConversation: true,
+        isButton: false,
+      });
+
+      if (response) await this.responseHandler(response, ctx);
+    });
+  }
+
+  public addPayloadHandler(callback: (message: BotMessage) => Promise<BotResponse> | BotResponse, type: string): void {
+    this.events.on('event', async (ctx) => {
+      if (!ctx.message.payload || !ctx.message.payload.type) return;
+      if (ctx.message.payload.type !== type) return;
+
+      const { message } = ctx;
+
+      const isConversation = message.peer_id >= CONVERSATION_START_ID;
+
+      const response: BotResponse | undefined = await callback({
+        ...ctx.message,
+        isMentioned: false,
+        isConversation: isConversation,
+        isButton: true,
       });
 
       if (response) await this.responseHandler(response, ctx);
@@ -199,18 +231,40 @@ export class BotService extends VkBot {
 
   public async responseHandler(response: BotResponse, ctx: VkBotContext): Promise<void> {
     this.log.debug(`Send message to queue`);
-    const { text, reply } = response;
-    if (reply) {
-      await this.sendQueue.reply({
-        text,
-        to: ctx.message.peer_id,
-        from: ctx.message.conversation_message_id,
+    if (response.type == 'text') {
+      const { text, reply } = response;
+      if (reply) {
+        await this.sendQueue.reply({
+          text,
+          to: ctx.message.peer_id,
+          from: ctx.message.conversation_message_id,
+        });
+      } else
+        await this.sendQueue.sendMessage({
+          text,
+          to: ctx.message.peer_id,
+          keyboard: response.keyboard?.toString(),
+        });
+    } else if (response.type == 'event') {
+      await this.sendQueue.sendEvent({
+        text: response.text,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        eventId: ctx.message.event_id,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        userId: ctx.message.user_id,
+        peerId: ctx.message.peer_id,
       });
-    } else
-      await this.sendQueue.sendMessage({
-        text,
-        to: ctx.message.peer_id,
-      });
+    }
+  }
+
+  public async isAdminInConversation(conversationId: number): Promise<boolean> {
+    const response = await this.vkIoService.api.messages.getConversationsById({
+      peer_ids: conversationId,
+    });
+
+    return response.count > 0;
   }
 
   private async onMessage(ctx: VkBotContextType) {

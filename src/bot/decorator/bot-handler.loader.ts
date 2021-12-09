@@ -31,6 +31,7 @@ export class BotHandlerLoader implements OnApplicationBootstrap /*, OnApplicatio
           this.subscribeToMessageEventIfListener(instance, methodKey);
           this.subscribeToInviteEventIfListener(instance, methodKey);
           this.subscribeToKickEventIfListener(instance, methodKey);
+          this.subscribeToPayloadEventIfListener(instance, methodKey);
         });
       });
   }
@@ -55,5 +56,12 @@ export class BotHandlerLoader implements OnApplicationBootstrap /*, OnApplicatio
     if (!eventListenerMetadata) return;
 
     this.botService.addKickHandler((message) => instance[methodKey].call(instance, message));
+  }
+
+  private subscribeToPayloadEventIfListener(instance: Record<string, any>, methodKey: string) {
+    const eventListenerMetadata = this.metadataAccessor.getPayloadHandlerMetadata(instance[methodKey]);
+    if (!eventListenerMetadata) return;
+
+    this.botService.addPayloadHandler((message) => instance[methodKey].call(instance, message), eventListenerMetadata);
   }
 }

@@ -1,30 +1,43 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { Schedule, StudyGroup } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { GroupWithScheduleFullType } from './group-with-schedule-full.type';
-import * as moment from 'moment';
-import { CacheService } from '../cache/cache.service';
-import { CacheProducer } from '../cache/cache.producer';
+import { StudyGroup } from './study-group.entity';
+import { StudyGroupFactory } from './study-group.factory';
+import { PrismaPromise } from '@prisma/client';
 
 @Injectable()
 export class StudyGroupService {
-  constructor(
-    private prisma: PrismaService,
-    private cacheService: CacheService,
-    private cacheProducer: CacheProducer,
-  ) {}
+  constructor(private prismaService: PrismaService) {}
 
-  public async setUpdatingFlag(flag: boolean, groupId?: number): Promise<void> {
-    await this.prisma.studyGroup.updateMany({
+  public async getAll(ignoreLessons = false): Promise<StudyGroup[]> {
+    const includes = {
+      Lessons: {
+        include: {
+          Teacher: true,
+        },
+      },
+    };
+
+    const records = await this.prismaService.studyGroup.findMany({
+      where: {},
+      include: ignoreLessons ? undefined : includes,
+    });
+
+    return records.map((record) => {
+      return StudyGroupFactory.create(record);
+    });
+  }
+
+  /*public async setUpdatingFlag(flag: boolean, groupId?: number): Promise<void> {
+    await this.prismaService.studyGroup.updateMany({
       where: { groupId },
       data: {
-        updating: flag,
+        updateStatus: flag,
       },
     });
   }
 
   public async findGroup(groupName: string): Promise<StudyGroup | undefined> {
-    const result = await this.prisma.studyGroup.findUnique({
+    const result = await this.prismaService.studyGroup.findUnique({
       where: {
         name: groupName,
       },
@@ -33,9 +46,9 @@ export class StudyGroupService {
     if (!result) {
       const groupInfo = await this.cacheService.findGroup(groupName);
       if (!groupInfo) return undefined;
-      const group = await this.prisma.studyGroup.create({
+      const group = await this.prismaService.studyGroup.create({
         data: {
-          updating: false,
+          updateStatus: false,
           groupId: groupInfo.id,
           name: groupInfo.name,
         },
@@ -48,7 +61,7 @@ export class StudyGroupService {
   }
 
   public async addUserToGroup(group: StudyGroup, userId: number): Promise<void> {
-    await this.prisma.usersGroup.upsert({
+    await this.prismaService.usersGroup.upsert({
       where: { userId },
       update: {
         Group: {
@@ -69,7 +82,7 @@ export class StudyGroupService {
   }
 
   public async studyGroup(userId: number, atDate: moment.Moment): Promise<GroupWithScheduleFullType> {
-    const group = await this.prisma.usersGroup.findUnique({
+    const group = await this.prismaService.usersGroup.findUnique({
       where: { userId },
       include: {
         Group: {
@@ -105,22 +118,22 @@ export class StudyGroupService {
   }
 
   public async studyGroups(): Promise<StudyGroup[]> {
-    return this.prisma.studyGroup.findMany({});
+    return this.prismaService.studyGroup.findMany({});
   }
 
   public async update(data: GroupWithScheduleFullType): Promise<void> {
-    const group = await this.prisma.studyGroup.findUnique({
+    const group = await this.prismaService.studyGroup.findUnique({
       where: {
         groupId: data.groupId,
       },
     });
-    await this.prisma.schedule.deleteMany({
+    await this.prismaService.schedule.deleteMany({
       where: {
         groupId: group.id,
       },
     });
 
-    await this.prisma.studyGroup.update({
+    await this.prismaService.studyGroup.update({
       where: {
         groupId: data.groupId,
       },
@@ -136,5 +149,63 @@ export class StudyGroupService {
         },
       },
     });
+  }*/
+
+  public save(entity: StudyGroup): PrismaPromise<any> {
+    const data = {
+      name: entity.name,
+      id: entity.id,
+      updateStatus: entity.updateStatus,
+      Lessons: entity.lessons
+        ? entity.lessons.map((lesson) => {
+            return {
+              connectOrCreate: {
+                where: {
+                  id: lesson.id,
+                },
+                create: {
+                  id: lesson.id,
+                  start: lesson.start,
+                  end: lesson.end,
+                  isTopWeek: lesson.isTopWeek,
+                  type: lesson.type,
+                  order: lesson.order,
+                  name: lesson.name,
+                  subgroup: lesson.subgroup,
+                  subsection: lesson.subsection,
+                  corpus: lesson.corpus,
+                  classRoom: lesson.classRoom,
+                  distance: lesson.distance,
+                  Teacher: {
+                    connectOrCreate: {
+                      where: {
+                        id: lesson.teacher.id,
+                      },
+                      create: {
+                        id: lesson.teacher.id,
+                        firstName: lesson.teacher.firstName,
+                        lastName: lesson.teacher.lastName,
+                        middleName: lesson.teacher.middleName,
+                      },
+                    },
+                  },
+                },
+              },
+            };
+          })
+        : undefined,
+    };
+
+    return this.prismaService.studyGroup.upsert({
+      where: {
+        id: entity.id,
+      },
+      create: data,
+      update: data,
+    });
+  }
+
+  public async saveMany(entities: StudyGroup[]): Promise<void> {
+    this.prismaService.$transaction(entities.map((group) => this.save(group)));
   }
 }

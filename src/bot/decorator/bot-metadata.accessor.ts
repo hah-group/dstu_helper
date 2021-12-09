@@ -3,10 +3,15 @@ import { Reflector } from '@nestjs/core';
 import { BOT_MESSAGE_LISTENER_METADATA, OnMessageMetadata } from './on-message.decorator';
 import { BOT_INVITE_LISTENER_METADATA } from './on-invite.decorator';
 import { BOT_KICK_LISTENER_METADATA } from './on-kick.decorator';
+import { BOT_PAYLOAD_LISTENER_METADATA } from './on-payload.decorator';
 
 @Injectable()
 export class BotMetadataAccessor {
   constructor(private readonly reflector: Reflector) {}
+
+  getPayloadHandlerMetadata(target: Type<unknown>): string | undefined {
+    return this.reflector.get(BOT_PAYLOAD_LISTENER_METADATA, target);
+  }
 
   getKickHandlerMetadata(target: Type<unknown>): boolean | undefined {
     return this.reflector.get(BOT_KICK_LISTENER_METADATA, target);

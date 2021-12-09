@@ -5,4 +5,5 @@ export type BotSendDataType = BotJobBaseDataType & {
   type: BotJobNamesEnum.SEND;
   text: string;
   to: number;
+  keyboard?: string;
 };
