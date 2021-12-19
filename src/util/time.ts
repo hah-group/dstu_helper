@@ -4,6 +4,6 @@ export type DateTime = moment.Moment;
 
 export class Time {
   public static get(): DateTime {
-    return moment().add(2, 'w');
+    return moment(/*'2021-12-18 14:40+03'*/);
   }
 }

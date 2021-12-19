@@ -12,11 +12,6 @@ export const pretties: SubjectPrettierDef[] = [
     regex: /(Учебно-тренировочный|Физическая культура)/gi,
     handler: (subject, match) => {
       //пр. Учебно-тренировочный модуль (Киберспорт) => пр. Киберспорт
-      if (subject.indexOf('(') < 0)
-        return {
-          type: LessonTypeDefinition[match[1]],
-          name: match[2],
-        };
       if (subject.match(/Учебно/gi))
         return {
           type: LessonTypeDefinition[match[1]],
@@ -49,7 +44,7 @@ export const pretties: SubjectPrettierDef[] = [
     },
   },
   {
-    regex: /история/gi,
+    regex: /(лек|лаб|пр|зач|экз)\.? история/gi,
     handler: (subject, match) => {
       // пр. История (история России, всеобщая история) => пр. История
       return {
@@ -61,10 +56,11 @@ export const pretties: SubjectPrettierDef[] = [
   {
     regex: /Основы проектной/gi,
     handler: (subject, match) => {
-      //пр. Основы проектной деятельности (Кирпич. Версия 2.0) => пр. Проект "Кирпич. Версия 2.0"
+      //пр. Основы проектной деятельности (Кирпич. Версия 2.0) => пр. Основы проектной деятельности
       return {
         type: LessonTypeDefinition[match[1]],
-        name: `Проект "${match[3]}"`,
+        name: `Проект`,
+        subsection: match[3],
       };
     },
   },

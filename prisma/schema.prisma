@@ -24,6 +24,7 @@ model Conversation {
   title             String?
   settings          Json
   ConversationUsers ConversationUser[]
+  status            ConversationStatus @default(NOT_CONFIGURED)
 }
 
 model ConversationUser {
@@ -42,7 +43,7 @@ model StudyGroup {
   name         String       @unique
   updateStatus UpdateStatus @default(DONE)
   Lessons      Lesson[]
-  User         User[]
+  Users        User[]
 }
 
 model Lesson {
@@ -90,4 +91,10 @@ enum LessonType {
   LABORATORY
   EXAMINATION
   EXAM_WITHOUT_MARK
+}
+
+enum ConversationStatus {
+  NOT_CONFIGURED
+  LIMITED
+  FULL
 }

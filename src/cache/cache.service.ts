@@ -3,6 +3,7 @@ import { DstuService } from '../dstu/dstu.service';
 import * as moment from 'moment';
 
 import { Cron } from '@nestjs/schedule';
+import { StudyGroup } from '../study-group/study-group.entity';
 
 @Injectable()
 export class CacheService {
@@ -18,7 +19,14 @@ export class CacheService {
     this.log.log(`Schedule update is ended in ${moment().diff(startTime, 's', true)} seconds`);
   }
 
-  /*async findGroup(groupName: string): Promise<GroupInfo | undefined> {
+  public async updateGroup(group: StudyGroup): Promise<void> {
+    this.log.log('Running a group schedule update');
+    const startTime = moment();
+    await this.sourceService.updateGroup(group);
+    this.log.log(`Schedule update is ended in ${moment().diff(startTime, 's', true)} seconds`);
+  }
+
+  /*async findGroup(groupName: string): Promise<DstuApiGroupInfo | undefined> {
     this.logger.log(`Find group ${groupName}`);
     const groups = await this.sourceService.getGroups();
     const result = groups.data.find((groupInfo) => groupInfo.name.match(`${groupName}`));

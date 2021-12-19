@@ -1,8 +1,4 @@
-export interface ApiResponseGroupDstuType {
-  data: GroupInfo[];
-}
-
-export interface GroupInfo {
+export interface DstuApiGroupInfo {
   name: string;
   id: number;
 }

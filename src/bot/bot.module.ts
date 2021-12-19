@@ -14,9 +14,21 @@ import { ConversationModule } from '../conversation/conversation.module';
 import { UserModule } from '../user/user.module';
 import { LkHandler } from './lk.handler';
 import { VkIoModule } from '../vk-io/vk-io.module';
+import { UniversityModule } from '../university/university.module';
+import { ScheduleHandler } from './schedule.handler';
+import { CacheModule } from 'src/cache/cache.module';
 
 @Module({
-  providers: [BotService, BotProducer, BotConsumer, BotHandlerLoader, BotMetadataAccessor, SetupHandler, LkHandler],
+  providers: [
+    BotService,
+    BotProducer,
+    BotConsumer,
+    BotHandlerLoader,
+    BotMetadataAccessor,
+    SetupHandler,
+    LkHandler,
+    ScheduleHandler,
+  ],
   imports: [
     BullModule.registerQueue({
       name: 'bot',
@@ -31,6 +43,8 @@ import { VkIoModule } from '../vk-io/vk-io.module';
     ConversationModule,
     UserModule,
     VkIoModule,
+    UniversityModule,
+    CacheModule,
   ],
   controllers: [BotController],
   exports: [BotService],

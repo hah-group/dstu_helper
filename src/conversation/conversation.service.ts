@@ -33,6 +33,7 @@ export class ConversationService {
       id: entity.id,
       title: entity.title,
       settings: entity.settings,
+      status: entity.status,
       ConversationUsers: {
         connectOrCreate: entity.users.map((user) => {
           return {

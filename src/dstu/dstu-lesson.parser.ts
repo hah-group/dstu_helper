@@ -5,8 +5,8 @@ import { pretties } from './subject-prettier';
 import { TeacherArgs } from '../teacher/teacher.entity';
 import * as str from 'string';
 
-const SUBJECT_WITHOUT_BRACKETS = /(лек|лаб|пр|зач)\.? ([а-яa-z\-. ,:\/\d]+?)(?:, п\/г (\d)|$)/i;
-const SUBJECT_WITH_BRACKETS = /(лек|лаб|пр|зач)\.? ([а-яa-z\-. ,:\/\d]+?) ?\((.*?)\)$/i;
+const SUBJECT_WITHOUT_BRACKETS = /(лек|лаб|пр|зач|экз)\.? ([а-яa-z\-. ,:\/\d]+?)(?:, п\/г (\d)|$)/i;
+const SUBJECT_WITH_BRACKETS = /(лек|лаб|пр|зач|экз)\.? ([а-яa-z\-. ,:\/\d]+?) ?\((.*?)\)$/i;
 
 export interface SubjectParsed {
   type: LessonType;
@@ -19,6 +19,8 @@ export default class DstuLessonParser {
   public static subjectParse(subject: string): SubjectParsed | undefined {
     let regex;
     const isBracketsExist = subject.indexOf('(') > -1;
+    if (isBracketsExist && subject.indexOf(')') < 0) subject += ')';
+
     if (isBracketsExist) regex = new RegExp(SUBJECT_WITH_BRACKETS);
     else regex = new RegExp(SUBJECT_WITHOUT_BRACKETS);
 
@@ -66,7 +68,7 @@ export default class DstuLessonParser {
     clearText = clearText.replace('.', ' ');
     if (clearText.match(/,[а-я\d]/i)) clearText = clearText.replace(',', ', ');
     clearText = str(clearText).capitalize().s;
-    clearText = clearText.replace(/(?<dig>\d+)/g, ' $<dig> ');
+    clearText = clearText.replace(/[а-я,.](?<dig>\d+)/g, ' $<dig> ');
     clearText = clearText.replace(/( {2})/g, ' ');
     clearText = clearText.trim();
     return {

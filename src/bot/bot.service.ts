@@ -1,9 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DateParser } from '../util/date.parser';
 
 import VkBot from 'node-vk-bot-api';
 import { VkBotContextType } from './type/vk-bot-context.type';
-import { VkBotInterface } from './type/vk-bot.interface';
 import { StudyGroupService } from '../study-group/study-group.service';
 /*import {
   ADD_TO_GROUP,
@@ -15,14 +13,21 @@ import { StudyGroupService } from '../study-group/study-group.service';
   WHERE_AUDIENCE,
   WHOM_ACTIVATION,
 } from '../util/text.processor';*/
-import * as moment from 'moment';
-import { TimeRelativeProcessor } from '../util/time-relative.processor';
 import { BotProducer } from './job/bot.producer';
-import { BotMessage } from './type/bot-message.type';
-import { BotResponse } from './type/bot-response.type';
+import { BotEvent, BotMessage } from './type/bot-message.type';
+import {
+  BotCallbackResult,
+  BotEventResponse,
+  BotManyResponse,
+  BotMessageResponse,
+  BotReplyResponse,
+  BotResponse,
+} from './type/bot-response.type';
 import { BotEvents } from './bot.events';
-import { Keyboard } from 'vk-io';
 import { VkIoService } from 'src/vk-io/vk-io.service';
+import { ConversationInfo } from '../vk-io/type/conversation-info.type';
+import { VkSendMessageResponse } from './type/vk-send-message-response.type';
+import { KeyboardBuilder } from 'vk-io/lib/structures/keyboard/builder';
 
 const MENTION_PATTERN = new RegExp(/^\[club\d+\|[a-z\d@]+]/gi);
 
@@ -91,7 +96,7 @@ export class BotService extends VkBot {
       const schedule = await this.scheduleService.studyGroup(ctx.message.from_id, moment().startOf('d'));
       if (schedule.updateStatus) return this.sendMessage(ctx, TextProcessor.SCHEDULE_UPDATING);
       const current = schedule.Schedule.find((lesson, index) =>
-        TimeRelativeProcessor.isNow(lesson, schedule.Schedule[index - 1]),
+        TimeRelativeProcessor.now(lesson, schedule.Schedule[index - 1]),
       );
       if (current) return this.sendMessage(ctx, TextProcessor.ShortInfo(current));
       else return this.sendMessage(ctx, TextProcessor.NOW_LESSON_NONE);
@@ -134,15 +139,15 @@ export class BotService extends VkBot {
       if (ctx.message.type !== 'message_new') return;
 
       const { message } = ctx;
-      let messageText = message.text;
+      let messageText = message.text.trim().toLowerCase();
       if (!messageText) return;
 
       this.log.debug(`Handled message peer_id: ${message.peer_id}`);
 
-      this.log.debug(`Checking scopes (Handler scope: ${scope})`);
       const isConversation = message.peer_id >= CONVERSATION_START_ID;
-
       this.log.debug(`Event from conversation: ${isConversation}`);
+
+      if (scope) this.log.debug(`Checking scopes (Handler scope: ${scope})`);
       if (scope == 'conversation' && !isConversation) return;
       else if (scope == 'private' && isConversation) return;
 
@@ -156,12 +161,12 @@ export class BotService extends VkBot {
       else pattern = new RegExp(event);
 
       if (messageText.match(pattern)) {
-        const response: BotResponse | undefined = await callback({
+        const response: BotCallbackResult | undefined = await callback({
           ...message,
           text: messageText,
           isMentioned,
           isConversation,
-          isButton: false,
+          placeholder: (text, keyboard) => this.sendPlaceholder(text, ctx, keyboard),
         });
         if (response) await this.responseHandler(response, ctx);
       }
@@ -180,11 +185,10 @@ export class BotService extends VkBot {
         if (scope == 'user' && ctx.message.action.member_id < 0) return;
         else if (scope == 'iam' && ctx.message.action.member_id != parseInt(process.env.GROUP_ID) * -1) return;
       }
-      const response: BotResponse | undefined = await callback({
+      const response: BotCallbackResult | undefined = await callback({
         ...ctx.message,
         isMentioned: false,
         isConversation: true,
-        isButton: false,
       });
 
       if (response) await this.responseHandler(response, ctx);
@@ -198,77 +202,145 @@ export class BotService extends VkBot {
       if (!ctx.message.action || ctx.message.action.type != 'chat_kick_user') return;
       if (ctx.message.action.member_id && ctx.message.action.member_id < 0) return;
 
-      const response: BotResponse | undefined = await callback({
+      const response: BotCallbackResult | undefined = await callback({
         ...ctx.message,
         isMentioned: false,
         isConversation: true,
-        isButton: false,
       });
 
       if (response) await this.responseHandler(response, ctx);
     });
   }
 
-  public addPayloadHandler(callback: (message: BotMessage) => Promise<BotResponse> | BotResponse, type: string): void {
+  public addPayloadHandler(callback: (message: BotEvent) => Promise<BotResponse> | BotResponse, type: string): void {
     this.events.on('event', async (ctx) => {
       if (!ctx.message.payload || !ctx.message.payload.type) return;
       if (ctx.message.payload.type !== type) return;
-
+      console.log(ctx);
       const { message } = ctx;
 
       const isConversation = message.peer_id >= CONVERSATION_START_ID;
 
-      const response: BotResponse | undefined = await callback({
-        ...ctx.message,
-        isMentioned: false,
-        isConversation: isConversation,
-        isButton: true,
+      const response: BotCallbackResult | undefined = await callback({
+        userId: message.user_id,
+        peerId: message.peer_id,
+        payload: message.payload,
+        isConversation,
+        placeholder: (text, keyboard) => this.sendPlaceholder(text, ctx, keyboard),
+        edit: (text, keyboard) => this.editCurrent(text, ctx, keyboard),
       });
 
       if (response) await this.responseHandler(response, ctx);
     });
   }
 
-  public async responseHandler(response: BotResponse, ctx: VkBotContext): Promise<void> {
-    this.log.debug(`Send message to queue`);
-    if (response.type == 'text') {
-      const { text, reply } = response;
-      if (reply) {
-        await this.sendQueue.reply({
-          text,
-          to: ctx.message.peer_id,
-          from: ctx.message.conversation_message_id,
-        });
-      } else
-        await this.sendQueue.sendMessage({
-          text,
-          to: ctx.message.peer_id,
-          keyboard: response.keyboard?.toString(),
-        });
-    } else if (response.type == 'event') {
-      await this.sendQueue.sendEvent({
-        text: response.text,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        eventId: ctx.message.event_id,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        userId: ctx.message.user_id,
-        peerId: ctx.message.peer_id,
-      });
+  private async sendPlaceholder(text: string, ctx: VkBotContextType, keyboard?: KeyboardBuilder): Promise<void> {
+    this.log.debug(`Add send placeholder message to queue`);
+    const messageSendJob = await this.sendQueue.sendMessage({
+      text,
+      to: ctx.message.peer_id,
+      keyboard: keyboard?.toString(),
+    });
+
+    ctx['placeholder'] = await messageSendJob.finished();
+  }
+
+  private async editCurrent(text: string, ctx: VkBotContextType, keyboard?: KeyboardBuilder): Promise<void> {
+    this.log.debug(`Add edit message to queue`);
+    await this.sendQueue.edit({
+      text,
+      to: ctx.message.peer_id,
+      keyboard: keyboard?.toString(),
+      message_id: 0,
+      conversation_message_id: ctx.message.conversation_message_id,
+    });
+  }
+
+  public async responseHandler(response: BotCallbackResult, ctx: VkBotContextType): Promise<void> {
+    if (Array.isArray(response)) {
+      const responses = <BotManyResponse>response;
+      await Promise.all(responses.map((record) => this.processResponse(record, ctx)));
+    } else await this.processResponse(<BotResponse>response, ctx);
+  }
+
+  private async processResponse(response: BotResponse, ctx: VkBotContextType) {
+    this.log.debug(`Add send message to queue`);
+    switch (response.type) {
+      case 'message':
+        return this.processTextResponse(response, ctx);
+      case 'event':
+        return this.processEventResponse(response, ctx);
+      case 'reply':
+        return this.processReplyResponse(response, ctx);
     }
   }
 
-  public async isAdminInConversation(conversationId: number): Promise<boolean> {
+  private async processTextResponse(response: BotMessageResponse, ctx: VkBotContextType) {
+    if (ctx['placeholder']) return this.processEditResponse(response, ctx);
+
+    const { text, keyboard, directPrivate } = response;
+    await this.sendQueue.sendMessage({
+      text,
+      to: directPrivate ? ctx.message.from_id : ctx.message.peer_id,
+      keyboard: keyboard?.toString(),
+    });
+  }
+
+  private async processEditResponse(response: BotMessageResponse, ctx: VkBotContextType) {
+    const placeholder: VkSendMessageResponse = ctx['placeholder'];
+    const { text, keyboard } = response;
+    await this.sendQueue.edit({
+      text,
+      to: placeholder.peer_id,
+      keyboard: keyboard?.toString(),
+      message_id: placeholder.message_id,
+      conversation_message_id: placeholder.conversation_message_id,
+    });
+  }
+
+  private async processEventResponse(response: BotEventResponse, ctx: VkBotContextType) {
+    await this.sendQueue.sendEvent({
+      text: response.text,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      eventId: ctx.message.event_id,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      userId: ctx.message.user_id,
+      peerId: ctx.message.peer_id,
+    });
+  }
+
+  private async processReplyResponse(response: BotReplyResponse, ctx: VkBotContextType): Promise<void> {
+    await this.sendQueue.reply({
+      text: response.text,
+      to: ctx.message.peer_id,
+      from: ctx.message.conversation_message_id,
+    });
+  }
+
+  public async getConversationInfo(conversationId: number): Promise<ConversationInfo> {
     const response = await this.vkIoService.api.messages.getConversationsById({
       peer_ids: conversationId,
+      extended: true,
     });
+    if (response.count < 1) throw new Error('Forbidden');
+    return {
+      chat: response.items[0].chat_settings,
+      profiles: response.profiles,
+    };
+  }
 
-    return response.count > 0;
+  public async isMessagesAllowed(userId: number): Promise<boolean> {
+    const response = await this.vkIoService.api.messages.isMessagesFromGroupAllowed({
+      group_id: parseInt(process.env.GROUP_ID),
+      user_id: userId,
+    });
+    return response.is_allowed == 1;
   }
 
   private async onMessage(ctx: VkBotContextType) {
-    /* if (ctx.message.peer_id < 2000000000 || ctx.message.text.length > 33) return;
+    /* if (ctx.message.peerId < 2000000000 || ctx.message.text.length > 33) return;
 
     if (ctx.message.text.match(ADD_TO_GROUP)) return await this.onAddGroup(ctx);
     if (ctx.message.text === '!помощь') return await this.onHelp(ctx);

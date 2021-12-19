@@ -1,13 +1,7 @@
-import { User } from './user.entity';
 import { Role } from '@prisma/client';
-import { Nullable } from '../util/nullable';
-import { Conversation } from '../conversation/conversation.entity';
+import { User, UserArgs } from './user.entity';
 
-export interface ConversationUserArgs {
-  id: number;
-  firstName: string;
-  lastName: string;
-  group: Nullable<any>;
+export interface ConversationUserArgs extends UserArgs {
   role: Role;
 }
 
@@ -15,12 +9,8 @@ export class ConversationUser extends User {
   public readonly role: Role;
 
   constructor(params: ConversationUserArgs) {
-    const { firstName, group, id, lastName, role } = params;
-    super({ id, firstName, lastName, group, conversations: new Map() });
+    const { role } = params;
+    super({ ...params });
     this.role = role;
-  }
-
-  public get conversations(): undefined {
-    return;
   }
 }

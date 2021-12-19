@@ -9,6 +9,16 @@ export class UserService {
   constructor(private readonly prismaService: PrismaService, private readonly vkIoService: VkIoService) {}
 
   public async get(id: number): Promise<User> {
+    const record = await this.prismaService.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    if (!record) return this.createNew(id);
+    else return UserFactory.create(record);
+  }
+
+  private async createNew(id: number): Promise<User> {
     const [userInfo] = await this.vkIoService.api.users.get({
       user_ids: `${id}`,
     });
@@ -26,17 +36,9 @@ export class UserService {
       },
       create: data,
       update: data,
-      include: {
-        ConversationUsers: {
-          include: {
-            Conversation: true,
-          },
-        },
-      },
     });
 
-    const { ConversationUsers, ...user } = record;
-    return UserFactory.create(user, ConversationUsers);
+    return UserFactory.create(record);
   }
 
   public async save(entity: User): Promise<void> {
@@ -47,33 +49,7 @@ export class UserService {
       data: {
         firstName: entity.firstName,
         lastName: entity.lastName,
-        ConversationUsers: {
-          connectOrCreate: entity.conversations.map((record) => {
-            return {
-              where: {
-                userId_conversationId: {
-                  userId: entity.id,
-                  conversationId: record.id,
-                },
-              },
-              create: {
-                role: record.role,
-                Conversation: {
-                  connectOrCreate: {
-                    where: {
-                      id: record.id,
-                    },
-                    create: {
-                      id: record.id,
-                      title: record.title,
-                      settings: record.settings,
-                    },
-                  },
-                },
-              },
-            };
-          }),
-        },
+        groupId: entity.groupId,
       },
     });
   }
