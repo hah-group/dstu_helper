@@ -11,6 +11,7 @@ export class Test {
   @OnMessage('/hi')
   public async test(message: TextMessage): Promise<void> {
     console.log('Test');
+    console.log(message.user);
     const kb = new KeyboardBuilder()
       .add(new TextButton('Test1', '1').color('primary'))
       .add(new TextButton('Test2', '2').color('positive'))

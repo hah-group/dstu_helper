@@ -3,7 +3,7 @@ import { MessageJobName } from '../../bot/message-job-name.enum';
 import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
 import { VkService } from '../vk.service';
-import { VkJobAlert, VkJobEdit, VkJobSend } from './vk-job-data.type';
+import { VkJobAlert, VkJobEdit, VkJobGetUser, VkJobSend } from './vk-job-data.type';
 
 @Processor('vk')
 export class VkConsumer {
@@ -31,5 +31,13 @@ export class VkConsumer {
     const { data } = job;
 
     await this.vkService.alertEvent(data.eventId, data.fromId, data.peerId, data.text);
+  }
+
+  @Process('GET_USER')
+  public async getUser(job: Job<VkJobGetUser>): Promise<{ firstName: string; lastName: string } | undefined> {
+    this.log.debug(`Execute get user request job`);
+    const { data } = job;
+
+    return this.vkService.getApiUser(data.userId);
   }
 }

@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Conversation } from './conversation.entity';
 import { ConversationFactory } from './conversation.factory';
 import { Nullable } from '../util/nullable';
+import { SocialType } from '@prisma/client';
 
 @Injectable()
 export class ConversationService {
@@ -54,6 +55,7 @@ export class ConversationService {
                     id: user.id,
                     firstName: user.firstName,
                     lastName: user.lastName,
+                    socialType: <SocialType>user.socialType,
                   },
                 },
               },

@@ -12,6 +12,8 @@ import { TelegramProducer } from './job/telegram.producer';
 import { KeyboardBuilder } from '../bot/keyboard/keyboard.builder';
 import { TelegramCallbackData } from './telegram-callback-data.type';
 import * as util from 'util';
+import { UserService } from 'src/user/user.service';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class TelegramService {
@@ -20,7 +22,11 @@ export class TelegramService {
   private readonly bot: TelegramBot;
   private handlers: Set<Handler> = new Set<Handler>();
 
-  constructor(@Inject(TG_OPTIONS) options: TelegramModuleOptions, private readonly telegramProducer: TelegramProducer) {
+  constructor(
+    @Inject(TG_OPTIONS) options: TelegramModuleOptions,
+    private readonly telegramProducer: TelegramProducer,
+    private readonly userService: UserService,
+  ) {
     this.bot = new TelegramBot(options.token, { polling: true });
     this.bot.on('message', (ctx) => this.onMessageEvent(ctx));
     this.bot.on('callback_query', (ctx) => this.onCallbackEvent(ctx));
@@ -86,29 +92,36 @@ export class TelegramService {
     }
   }
 
-  private onMessageEvent(ctx: TelegramMessage): void {
+  private async getUserFromTelegram(ctx: TelegramMessage | TelegramCallbackQuery): Promise<User> {
+    const user = await this.userService.get(ctx.from.id, SocialSource.TELEGRAM);
+    if (!user) {
+      return await this.userService.createNew(
+        ctx.from.id,
+        ctx.from.first_name,
+        ctx.from.last_name,
+        SocialSource.TELEGRAM,
+      );
+    }
+    return user;
+  }
+
+  private async onMessageEvent(ctx: TelegramMessage): Promise<void> {
     this.log.debug(`New message from ${ctx.from.id}`);
 
+    const user = await this.getUserFromTelegram(ctx);
     const ctxData: TelegramMessageData = {
       text: ctx.text,
-      user: {
-        id: ctx.from.id,
-        firstName: ctx.from.first_name,
-        lastName: ctx.from.last_name,
-      },
+      user: user,
     };
     this.handlers.forEach((handler) => this.executeMessageHandler(handler, ctxData));
   }
 
-  private onCallbackEvent(ctx: TelegramCallbackQuery): void {
+  private async onCallbackEvent(ctx: TelegramCallbackQuery): Promise<void> {
     this.log.debug(`New callback event from ${ctx.from.id}`);
 
+    const user = await this.getUserFromTelegram(ctx);
     const ctxData: TelegramCallbackData = {
-      user: {
-        id: ctx.from.id,
-        firstName: ctx.from.first_name,
-        lastName: ctx.from.last_name,
-      },
+      user: user,
       data: ctx.data,
       callbackId: ctx.id,
       text: ctx.message?.text,
@@ -166,7 +179,7 @@ export class TelegramService {
   private buildTextMessage(ctx: TelegramMessageData): TelegramTextMessage {
     return {
       text: ctx.text,
-      userId: ctx.user.id,
+      user: ctx.user,
       from: SocialSource.TELEGRAM,
       type: EventType.ON_MESSAGE,
       send: (text, keyboard?) => this.sendCallback(ctx, text, keyboard),
@@ -176,7 +189,7 @@ export class TelegramService {
 
   private buildCallbackMessage(ctx: TelegramCallbackData): TelegramInlineButtonMessage {
     return {
-      userId: ctx.user.id,
+      user: ctx.user,
       from: SocialSource.TELEGRAM,
       type: EventType.ON_INLINE_BUTTON,
       edit: (text: string, alertText?, keyboard?) => this.editCallback(ctx, text, alertText, keyboard),

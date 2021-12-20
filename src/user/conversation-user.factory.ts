@@ -1,6 +1,7 @@
 import Prisma, { Role } from '@prisma/client';
 import { ConversationUser } from './conversation-user.entity';
 import { User } from './user.entity';
+import { SocialSource } from '../bot/social.enum';
 
 export class ConversationUserFactory {
   public static create(params: Prisma.ConversationUser & { User: Prisma.User }): ConversationUser {
@@ -8,6 +9,7 @@ export class ConversationUserFactory {
     return new ConversationUser({
       role,
       ...User,
+      socialType: <SocialSource>User.socialType,
     });
   }
 
@@ -18,6 +20,7 @@ export class ConversationUserFactory {
       firstName: user.firstName,
       lastName: user.lastName,
       groupId: user.groupId,
+      socialType: user.socialType,
     });
   }
 }

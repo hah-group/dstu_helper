@@ -5,6 +5,7 @@ import { VkService } from './vk.service';
 import { BullModule } from '@nestjs/bull';
 import { VkProducer } from './job/vk.producer';
 import { VkConsumer } from './job/vk.consumer';
+import { UserModule } from '../user/user.module';
 
 @Global()
 @Module({})
@@ -30,6 +31,7 @@ export class VkModule {
             duration: 1000,
           },
         }),
+        UserModule,
       ],
     };
   }

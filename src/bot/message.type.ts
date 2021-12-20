@@ -1,6 +1,7 @@
 import { SocialSource } from './social.enum';
 import { KeyboardBuilder } from './keyboard/keyboard.builder';
 import { EventType } from './metadata-type.enum';
+import { User } from '../user/user.entity';
 
 export type TextMessage = VkTextMessage | TelegramTextMessage;
 export type InlineButtonMessage = TelegramInlineButtonMessage | VkInlineButtonMessage;
@@ -8,7 +9,7 @@ export type Message = TextMessage | InlineButtonMessage;
 
 interface BaseMessage {
   text: string;
-  userId: number;
+  user: User;
   from: SocialSource;
   type: EventType;
 }
@@ -29,7 +30,7 @@ export interface TelegramTextMessage extends BaseTextMessage {
 }
 
 export interface BaseInlineButtonMessage {
-  userId: number;
+  user: User;
   from: SocialSource;
   type: EventType.ON_INLINE_BUTTON;
   edit: (text: string, alertText?: string, keyboard?: KeyboardBuilder) => Promise<void>;

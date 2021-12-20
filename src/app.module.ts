@@ -13,6 +13,7 @@ import { ConversationModule } from './conversation/conversation.module';
 import { UserModule } from './user/user.module';
 import { LessonModule } from './lesson/lesson.module';
 import { TeacherModule } from './teacher/teacher.module';
+import { PrivateScheduleModule } from './private-schedule/private-schedule.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { TeacherModule } from './teacher/teacher.module';
     UserModule,
     LessonModule,
     TeacherModule,
+    PrivateScheduleModule,
   ],
   providers: [],
 })

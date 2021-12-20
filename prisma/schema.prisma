@@ -12,10 +12,11 @@ generator client {
 
 model User {
   id                Int                @id
+  socialType SocialType
   firstName         String
   lastName          String
   groupId           Int?
-  Group             StudyGroup?        @relation(fields: [groupId], references: [od])
+  Group             StudyGroup?        @relation(fields: [groupId], references: [id])
   ConversationUsers ConversationUser[]
 }
 
@@ -97,4 +98,9 @@ enum ConversationStatus {
   NOT_CONFIGURED
   LIMITED
   FULL
+}
+
+enum SocialType {
+  VK
+  TELEGRAM
 }

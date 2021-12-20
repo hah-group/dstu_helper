@@ -1,6 +1,6 @@
 import { MessageJobName } from '../../bot/message-job-name.enum';
 
-export type VkJobData = VkJobSend | VkJobEdit | VkJobAlert;
+export type VkJobData = VkJobSend | VkJobEdit | VkJobAlert | VkJobGetUser;
 
 export interface VkJobSend {
   type: MessageJobName.SEND;
@@ -24,4 +24,9 @@ export interface VkJobAlert {
   eventId: string;
   fromId: number;
   text: string;
+}
+
+export interface VkJobGetUser {
+  type: 'GET_USER';
+  userId: number;
 }

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Job, Queue } from 'bull';
 import { MessageJobName } from '../../bot/message-job-name.enum';
-import { VkJobAlert, VkJobData, VkJobEdit, VkJobSend } from './vk-job-data.type';
+import { VkJobAlert, VkJobData, VkJobEdit, VkJobGetUser, VkJobSend } from './vk-job-data.type';
 
 @Injectable()
 export class VkProducer {
@@ -30,6 +30,14 @@ export class VkProducer {
     this.log.debug(`Add alert action to queue`);
     return this.queue.add(MessageJobName.ALERT, {
       type: MessageJobName.ALERT,
+      ...data,
+    });
+  }
+
+  public async getUser(data: Omit<VkJobGetUser, 'type'>): Promise<Job<VkJobData>> {
+    this.log.debug(`Add get user request to queue`);
+    return this.queue.add('GET_USER', {
+      type: 'GET_USER',
       ...data,
     });
   }

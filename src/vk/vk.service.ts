@@ -12,6 +12,8 @@ import { SocialSource } from '../bot/social.enum';
 import { VkProducer } from './job/vk.producer';
 import { KeyboardBuilder } from '../bot/keyboard/keyboard.builder';
 import * as util from 'util';
+import { UserService } from '../user/user.service';
+import { User } from '../user/user.entity';
 
 const CONVERSATION_START_ID = 2000000000;
 
@@ -23,7 +25,11 @@ export class VkService {
   private readonly bot: VkBot;
   private handlers: Set<Handler> = new Set<Handler>();
 
-  constructor(@Inject(VK_OPTIONS) options: VkModuleOptions, private readonly vkProducer: VkProducer) {
+  constructor(
+    @Inject(VK_OPTIONS) options: VkModuleOptions,
+    private readonly vkProducer: VkProducer,
+    private readonly userService: UserService,
+  ) {
     this.vkApi = new VK({
       token: options.token,
     });
@@ -107,10 +113,47 @@ export class VkService {
     }
   }
 
-  private onEvent(ctx: VkBotContext): void {
+  public async getApiUser(userId: number): Promise<{ firstName: string; lastName: string } | undefined> {
+    try {
+      const [userData] = await this.vkApi.api.users.get({
+        user_ids: `${userId}`,
+      });
+
+      return {
+        firstName: userData.first_name,
+        lastName: userData.last_name,
+      };
+    } catch (e) {
+      this.log.error(`Get user request for ${userId} failed`);
+      this.log.error(util.inspect(e, false, null, true));
+    }
+  }
+
+  private async getUserFromVk(ctx: VkBotContext): Promise<User | undefined> {
+    const user = await this.userService.get(ctx.message.from_id, SocialSource.VK);
+    if (!user) {
+      const job = await this.vkProducer.getUser({
+        userId: ctx.message.from_id,
+      });
+
+      const result = await job.finished();
+      if (!result) return;
+
+      const { firstName, lastName } = result;
+      return await this.userService.createNew(ctx.message.from_id, firstName, lastName, SocialSource.VK);
+    }
+    return user;
+  }
+
+  private async onEvent(ctx: VkBotContext): Promise<void> {
     this.log.debug(`New message from ${ctx.message.peer_id}`);
+
+    const user = await this.getUserFromVk(ctx);
+    if (!user) return;
+
     const message: any = ctx.message;
     const type: EventType = VkEvent[message.type];
+
     let ctxData: VkMessageData;
     switch (type) {
       case EventType.ON_MESSAGE:
@@ -119,6 +162,7 @@ export class VkService {
           peerId: message.peer_id,
           fromId: message.from_id,
           text: message.text,
+          user: user,
         };
         break;
       case EventType.ON_INLINE_BUTTON:
@@ -129,6 +173,7 @@ export class VkService {
           eventId: message.event_id,
           payload: message.payload,
           lastMessageId: message.conversation_message_id,
+          user: user,
         };
         break;
     }
@@ -194,7 +239,7 @@ export class VkService {
     const isConversation = ctx.peerId > CONVERSATION_START_ID;
     return {
       text: ctx.text,
-      userId: ctx.fromId,
+      user: ctx.user,
       from: SocialSource.VK,
       type: EventType.ON_MESSAGE,
       send: (text, keyboard?: KeyboardBuilder) => this.sendCallback(ctx, text, keyboard),
@@ -205,7 +250,7 @@ export class VkService {
 
   private buildCallbackMessage(ctx: VkMessageEventData): VkInlineButtonMessage {
     return {
-      userId: ctx.fromId,
+      user: ctx.user,
       from: SocialSource.VK,
       type: EventType.ON_INLINE_BUTTON,
       payload: ctx.payload,

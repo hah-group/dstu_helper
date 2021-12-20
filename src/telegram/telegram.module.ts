@@ -5,6 +5,7 @@ import { TG_OPTIONS } from './constants';
 import { BullModule } from '@nestjs/bull';
 import { TelegramProducer } from './job/telegram.producer';
 import { TelegramConsumer } from './job/telegram.consumer';
+import { UserModule } from '../user/user.module';
 
 @Global()
 @Module({})
@@ -30,6 +31,7 @@ export class TelegramModule {
             duration: 1000,
           },
         }),
+        UserModule,
       ],
     };
   }
