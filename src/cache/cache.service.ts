@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DstuService } from '../dstu/dstu.service';
 import * as moment from 'moment';
 
@@ -9,26 +9,26 @@ import { StudyGroup } from '../study-group/study-group.entity';
 export class CacheService {
   private readonly log = new Logger('CacheService');
 
-  constructor(private sourceService: DstuService) {}
+  constructor(private dstuService: DstuService) {}
 
   @Cron('0 30 0 * * *')
   public async update(): Promise<void> {
     this.log.log('Running a schedule update');
     const startTime = moment();
-    await this.sourceService.update();
+    await this.dstuService.update();
     this.log.log(`Schedule update is ended in ${moment().diff(startTime, 's', true)} seconds`);
   }
 
   public async updateGroup(group: StudyGroup): Promise<void> {
     this.log.log('Running a group schedule update');
     const startTime = moment();
-    await this.sourceService.updateGroup(group);
+    await this.dstuService.updateGroup(group);
     this.log.log(`Schedule update is ended in ${moment().diff(startTime, 's', true)} seconds`);
   }
 
   /*async findGroup(groupName: string): Promise<DstuApiGroupInfo | undefined> {
     this.logger.log(`Find group ${groupName}`);
-    const groups = await this.sourceService.getGroups();
+    const groups = await this.dstuService.getGroups();
     const result = groups.data.find((groupInfo) => groupInfo.name.match(`${groupName}`));
     this.logger.log(`Group ${groupName} ${result ? 'found' : 'not found'}`);
     return result;
@@ -37,8 +37,8 @@ export class CacheService {
   public async receiveSchedule(group: StudyGroup): Promise<GroupWithScheduleFullType> {
     const currentDate = moment().startOf('week');
     const nextDate = moment().startOf('week').add(1, 'w');
-    const schedule = await this.sourceService.get(currentDate.toDate(), group.groupId);
-    const scheduleNextWeek = await this.sourceService.get(nextDate.toDate(), group.groupId);
+    const schedule = await this.dstuService.get(currentDate.toDate(), group.groupId);
+    const scheduleNextWeek = await this.dstuService.get(nextDate.toDate(), group.groupId);
     const resultSchedule: GroupWithScheduleFullType = {
       ...schedule,
       Schedule: schedule.Schedule.concat(scheduleNextWeek.Schedule),

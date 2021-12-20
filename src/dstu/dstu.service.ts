@@ -3,20 +3,20 @@ import { ApiResponseRaspDstuType, DstuRasp } from './api-response-rasp.dstu.type
 import * as moment from 'moment';
 import DstuLessonParser from './dstu-lesson.parser';
 import { DstuApiGroupInfo } from './api-response-group.dstu.type';
-import { DateTime, Time } from 'src/util/time';
 import { StudyGroupService } from 'src/study-group/study-group.service';
-import { Lesson, LessonArgs } from '../lesson/lesson.entity';
-import { StudyGroup } from '../study-group/study-group.entity';
-import { TeacherArgs } from '../teacher/teacher.entity';
 import { LessonService } from 'src/lesson/lesson.service';
-import { LessonFactory } from '../lesson/lesson.factory';
 import { DstuProducer } from './job/dstu.producer';
+import { Time } from 'src/util/time';
 import { UpdateStatus } from '@prisma/client';
-import { UniversityGroup } from '../university/university-group.type';
+import { StudyGroup } from '../study-group/study-group.entity';
+import { Lesson, LessonArgs } from '../lesson/lesson.entity';
+import { TeacherArgs } from '../teacher/teacher.entity';
+import { LessonFactory } from '../lesson/lesson.factory';
+import * as util from 'util';
 
 @Injectable()
 export class DstuService {
-  private readonly log = new Logger('DstuService');
+  private readonly log = new Logger('DSTU');
 
   constructor(
     private readonly studyGroupService: StudyGroupService,
@@ -43,7 +43,7 @@ export class DstuService {
       } catch (e) {
         const err = <Error>e;
         this.log.error(`Group schedule updating error: ${err.message}`);
-        this.log.error(err.stack);
+        this.log.error(util.inspect(err, false, null, true));
         group.updateStatus = UpdateStatus.FAILURE;
         this.studyGroupService.save(group);
       }
@@ -61,7 +61,7 @@ export class DstuService {
       } catch (e) {
         const err = <Error>e;
         this.log.error(`Group schedule saving error: ${err.message}`);
-        this.log.error(err.stack);
+        this.log.error(util.inspect(err, false, null, true));
         group.updateStatus = UpdateStatus.FAILURE;
       }
     }
@@ -81,7 +81,7 @@ export class DstuService {
     } catch (e) {
       const err = <Error>e;
       this.log.error(`Group schedule updating error: ${err.message}`);
-      this.log.error(err.stack);
+      this.log.error(util.inspect(err, false, null, true));
       group.updateStatus = 'FAILURE';
     }
 
@@ -132,13 +132,13 @@ export class DstuService {
     return result.map((record) => LessonFactory.create(record.lesson, record.teacher));
   }
 
-  public async findGroup(query: string): Promise<UniversityGroup | undefined> {
+  public async findGroup(query: string): Promise<DstuApiGroupInfo | undefined> {
     try {
       const groups = await this.getGroups();
       return groups.find((record) => query.indexOf(record.name) > -1);
     } catch (e) {
       this.log.error(`Fetching groups failure: ${e.message}`);
-      this.log.error(e.stack);
+      this.log.error(util.inspect(e, false, null, true));
     }
 
     return;

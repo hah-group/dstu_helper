@@ -3,16 +3,16 @@ CREATE TYPE "ClassType" AS ENUM ('LECTURE', 'PRACTICAL', 'LABORATORY');
 
 -- CreateTable
 CREATE TABLE "StudyGroups" (
-    "id" SERIAL NOT NULL,
+    "buttonId" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "groupId" INTEGER NOT NULL,
 
-    CONSTRAINT "StudyGroups_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "StudyGroups_pkey" PRIMARY KEY ("buttonId")
 );
 
 -- CreateTable
 CREATE TABLE "Schedule" (
-    "id" SERIAL NOT NULL,
+    "buttonId" SERIAL NOT NULL,
     "groupId" INTEGER NOT NULL,
     "upWeek" BOOLEAN NOT NULL,
     "weekDay" INTEGER NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE "Schedule" (
     "classRoom" TEXT NOT NULL,
     "distance" BOOLEAN NOT NULL,
 
-    CONSTRAINT "Schedule_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Schedule_pkey" PRIMARY KEY ("buttonId")
 );
 
 -- CreateIndex

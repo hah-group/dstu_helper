@@ -3,7 +3,7 @@ import { CacheService } from './cache.service';
 
 @Controller('cache')
 export class CacheController {
-  private readonly logger = new Logger(CacheController.name);
+  private readonly logger = new Logger('Cache');
 
   constructor(private readonly cacheService: CacheService) {}
 

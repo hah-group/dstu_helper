@@ -15,7 +15,7 @@ DROP TABLE "Schedule";
 
 -- CreateTable
 CREATE TABLE "Lesson" (
-    "id" SERIAL NOT NULL,
+    "buttonId" SERIAL NOT NULL,
     "groupId" INTEGER NOT NULL,
     "start" TIMESTAMP NOT NULL,
     "end" TIMESTAMP NOT NULL,
@@ -29,11 +29,11 @@ CREATE TABLE "Lesson" (
     "distance" BOOLEAN NOT NULL,
     "updateAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "Lesson_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Lesson_pkey" PRIMARY KEY ("buttonId")
 );
 
 -- AddForeignKey
-ALTER TABLE "Lesson" ADD CONSTRAINT "Lesson_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "StudyGroup"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Lesson" ADD CONSTRAINT "Lesson_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "StudyGroup"("buttonId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Lesson" ADD CONSTRAINT "Lesson_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "Teacher"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Lesson" ADD CONSTRAINT "Lesson_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "Teacher"("buttonId") ON DELETE RESTRICT ON UPDATE CASCADE;

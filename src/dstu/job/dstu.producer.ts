@@ -7,8 +7,9 @@ import { DstuJobRequestData } from './dstu-job-request-data.type';
 
 @Injectable()
 export class DstuProducer {
-  private readonly log = new Logger('DstuProducer');
-  constructor(@InjectQueue('dstu_service') private queue: Queue<DstuJobData>) {}
+  private readonly log = new Logger('DSTUQueue');
+
+  constructor(@InjectQueue('dstu') private queue: Queue<DstuJobData>) {}
 
   public async request(data: Omit<DstuJobRequestData, 'type'>): Promise<Job<DstuJobRequestData>> {
     this.log.log(`Add request in queue`);

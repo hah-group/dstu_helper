@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { VkIoService } from 'src/vk-io/vk-io.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from './user.entity';
 import { UserFactory } from './user.factory';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService, private readonly vkIoService: VkIoService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   public async get(id: number): Promise<User> {
     const record = await this.prismaService.user.findUnique({
@@ -14,16 +13,11 @@ export class UserService {
         id: id,
       },
     });
-    if (!record) return this.createNew(id);
-    else return UserFactory.create(record);
+    if (record) return UserFactory.create(record);
   }
 
-  private async createNew(id: number): Promise<User> {
-    const [userInfo] = await this.vkIoService.api.users.get({
-      user_ids: `${id}`,
-    });
-
-    const userEntity = UserFactory.createNew(id, userInfo.first_name, userInfo.last_name);
+  private async createNew(id: number, firstName: string, lastName: string): Promise<User> {
+    const userEntity = UserFactory.createNew(id, firstName, lastName);
 
     const data = {
       id: userEntity.id,

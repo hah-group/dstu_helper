@@ -2,8 +2,8 @@ import * as moment from 'moment';
 import { LessonTypeDefinition } from './lesson-type.definition';
 import { LessonType } from '@prisma/client';
 import { pretties } from './subject-prettier';
-import { TeacherArgs } from '../teacher/teacher.entity';
 import * as str from 'string';
+import { TeacherArgs } from '../teacher/teacher.entity';
 
 const SUBJECT_WITHOUT_BRACKETS = /(лек|лаб|пр|зач|экз)\.? ([а-яa-z\-. ,:\/\d]+?)(?:, п\/г (\d)|$)/i;
 const SUBJECT_WITH_BRACKETS = /(лек|лаб|пр|зач|экз)\.? ([а-яa-z\-. ,:\/\d]+?) ?\((.*?)\)$/i;

@@ -12,11 +12,11 @@ DROP TABLE "StudyGroups";
 
 -- CreateTable
 CREATE TABLE "StudyGroup" (
-    "id" SERIAL NOT NULL,
+    "buttonId" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "groupId" INTEGER NOT NULL,
 
-    CONSTRAINT "StudyGroup_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "StudyGroup_pkey" PRIMARY KEY ("buttonId")
 );
 
 -- CreateIndex

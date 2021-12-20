@@ -3,13 +3,13 @@ import { DstuService } from './dstu.service';
 import { BullModule } from '@nestjs/bull';
 import { DstuProducer } from './job/dstu.producer';
 import { DstuConsumer } from './job/dstu.consumer';
-import { StudyGroupModule } from '../study-group/study-group.module';
+import { StudyGroupModule } from 'src/study-group/study-group.module';
 import { LessonModule } from '../lesson/lesson.module';
 
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: 'dstu_service',
+      name: 'dstu',
       limiter: {
         max: 2,
         duration: 1000,

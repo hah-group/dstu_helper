@@ -9,5 +9,5 @@ DROP INDEX "StudyGroup_groupId_key";
 
 -- AlterTable
 ALTER TABLE "StudyGroup" DROP COLUMN "groupId",
-ALTER COLUMN "id" DROP DEFAULT;
+ALTER COLUMN "buttonId" DROP DEFAULT;
 DROP SEQUENCE "StudyGroup_id_seq";

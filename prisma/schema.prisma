@@ -11,16 +11,16 @@ generator client {
 }
 
 model User {
-  id                Int                @id
+  buttonId                Int                @buttonId
   firstName         String
   lastName          String
   groupId           Int?
-  Group             StudyGroup?        @relation(fields: [groupId], references: [id])
+  Group             StudyGroup?        @relation(fields: [groupId], references: [buttonId])
   ConversationUsers ConversationUser[]
 }
 
 model Conversation {
-  id                Int                @id
+  buttonId                Int                @buttonId
   title             String?
   settings          Json
   ConversationUsers ConversationUser[]
@@ -28,18 +28,18 @@ model Conversation {
 }
 
 model ConversationUser {
-  id             Int          @id @default(autoincrement())
+  buttonId             Int          @buttonId @default(autoincrement())
   userId         Int
   conversationId Int
   role           Role
-  User           User         @relation(fields: [userId], references: [id])
-  Conversation   Conversation @relation(fields: [conversationId], references: [id])
+  User           User         @relation(fields: [userId], references: [buttonId])
+  Conversation   Conversation @relation(fields: [conversationId], references: [buttonId])
 
   @@unique([userId, conversationId])
 }
 
 model StudyGroup {
-  id           Int          @id
+  buttonId           Int          @buttonId
   name         String       @unique
   updateStatus UpdateStatus @default(DONE)
   Lessons      Lesson[]
@@ -47,7 +47,7 @@ model StudyGroup {
 }
 
 model Lesson {
-  id         String     @id
+  buttonId         String     @buttonId
   groupId    Int
   start      DateTime   @db.Timestamp
   end        DateTime   @db.Timestamp
@@ -62,12 +62,12 @@ model Lesson {
   classRoom  String?
   distance   Boolean
   updateAt   DateTime   @default(now())
-  Group      StudyGroup @relation(fields: [groupId], references: [id])
-  Teacher    Teacher?   @relation(fields: [teacherId], references: [id])
+  Group      StudyGroup @relation(fields: [groupId], references: [buttonId])
+  Teacher    Teacher?   @relation(fields: [teacherId], references: [buttonId])
 }
 
 model Teacher {
-  id         Int      @id
+  buttonId         Int      @buttonId
   firstName  String?
   lastName   String
   middleName String?

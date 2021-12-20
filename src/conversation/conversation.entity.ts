@@ -2,8 +2,8 @@ import { Nullable } from '../util/nullable';
 import Prisma, { Role } from '@prisma/client';
 import { Logger } from '@nestjs/common';
 import { User } from '../user/user.entity';
-import { ConversationUser } from 'src/user/conversation-user.entity';
 import { ConversationUserFactory } from '../user/conversation-user.factory';
+import { ConversationUser } from '../user/conversation-user.entity';
 
 export interface ConversationArgs {
   id: number;

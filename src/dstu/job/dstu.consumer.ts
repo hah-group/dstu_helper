@@ -6,9 +6,9 @@ import Axios from 'axios';
 import { DstuJobRequestData } from './dstu-job-request-data.type';
 import { Job } from 'bull';
 
-@Processor('dstu_service')
+@Processor('dstu')
 export class DstuConsumer {
-  private readonly log = new Logger('DstuConsumer');
+  private readonly log = new Logger('DSTUQueue');
 
   @Process(DstuJobName.REQUEST)
   public async update(job: Job<DstuJobRequestData>): Promise<ApiResponseRaspDstuType> {

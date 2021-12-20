@@ -18,13 +18,13 @@ DROP TABLE "UsersGroup";
 
 -- CreateTable
 CREATE TABLE "Teacher" (
-    "id" INTEGER NOT NULL,
+    "buttonId" INTEGER NOT NULL,
     "firstName" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
     "middleName" TEXT NOT NULL,
 
-    CONSTRAINT "Teacher_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Teacher_pkey" PRIMARY KEY ("buttonId")
 );
 
 -- AddForeignKey
-ALTER TABLE "Schedule" ADD CONSTRAINT "Schedule_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "Teacher"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Schedule" ADD CONSTRAINT "Schedule_teacherId_fkey" FOREIGN KEY ("teacherId") REFERENCES "Teacher"("buttonId") ON DELETE RESTRICT ON UPDATE CASCADE;

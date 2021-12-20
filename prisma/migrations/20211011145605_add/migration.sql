@@ -11,12 +11,12 @@ ADD COLUMN     "subjectId" INTEGER NOT NULL;
 
 -- CreateTable
 CREATE TABLE "Subject" (
-    "id" SERIAL NOT NULL,
+    "buttonId" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "tutor" TEXT NOT NULL,
 
-    CONSTRAINT "Subject_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Subject_pkey" PRIMARY KEY ("buttonId")
 );
 
 -- AddForeignKey
-ALTER TABLE "Schedule" ADD CONSTRAINT "Schedule_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "Subject"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Schedule" ADD CONSTRAINT "Schedule_subjectId_fkey" FOREIGN KEY ("subjectId") REFERENCES "Subject"("buttonId") ON DELETE RESTRICT ON UPDATE CASCADE;

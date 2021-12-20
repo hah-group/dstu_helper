@@ -1,9 +1,10 @@
+/*
 import { Injectable, Logger } from '@nestjs/common';
 
 import VkBot from 'node-vk-bot-api';
 import { VkBotContextType } from './type/vk-bot-context.type';
 import { StudyGroupService } from '../study-group/study-group.service';
-/*import {
+/!*import {
   ADD_TO_GROUP,
   AT_ACTIVATION,
   NEXT_AUDIENCE,
@@ -12,7 +13,7 @@ import { StudyGroupService } from '../study-group/study-group.service';
   WHAT_ACTIVATION,
   WHERE_AUDIENCE,
   WHOM_ACTIVATION,
-} from '../util/text.processor';*/
+} from '../util/text.processor';*!/
 import { BotProducer } from './job/bot.producer';
 import { BotEvent, BotMessage } from './type/bot-message.type';
 import {
@@ -24,7 +25,7 @@ import {
   BotResponse,
 } from './type/bot-response.type';
 import { BotEvents } from './bot.events';
-import { VkIoService } from 'src/vk-io/vk-io.service';
+import { VkService } from 'src/vk/vk-io.service';
 import { ConversationInfo } from '../vk-io/type/conversation-info.type';
 import { VkSendMessageResponse } from './type/vk-send-message-response.type';
 import { KeyboardBuilder } from 'vk-io/lib/structures/keyboard/builder';
@@ -42,7 +43,7 @@ export class BotService extends VkBot {
     private scheduleService: StudyGroupService,
     private sendQueue: BotProducer,
     private groupService: StudyGroupService,
-    private readonly vkIoService: VkIoService,
+    private readonly vkIoService: VkService,
   ) {
     super({
       token: process.env.BOT_TOKEN,
@@ -63,14 +64,14 @@ export class BotService extends VkBot {
     });
   }
 
-  /*private async onAddGroup(ctx) {
+  /!*private async onAddGroup(ctx) {
     const regex = new RegExp(ADD_TO_GROUP);
     const groupName = regex.exec(ctx.message.text);
     if (groupName[1]) {
       const group = await this.groupService.findGroup(groupName[1].toUpperCase());
       if (!group) return this.sendMessage(ctx, TextProcessor.SOURCE_NOT_FOUND_GROUP);
 
-      this.log.log(`Adding a new student id${ctx.message.from_id} to the group ${group.name}`);
+      this.log.log(`Adding a new student buttonId${ctx.message.from_id} to the group ${group.name}`);
       await this.groupService.addUserToGroup(group, ctx.message.from_id);
       return this.sendMessage(ctx, TextProcessor.youAddInGroup(group.name));
     } else return this.sendMessage(ctx, TextProcessor.WRITE_GROUP_NAME);
@@ -128,7 +129,7 @@ export class BotService extends VkBot {
     } catch {
       return this.sendMessage(ctx, TextProcessor.NOT_FOUND_GROUP);
     }
-  }*/
+  }*!/
 
   public addMessageHandler(
     callback: (message: BotMessage) => Promise<BotResponse> | BotResponse,
@@ -340,7 +341,7 @@ export class BotService extends VkBot {
   }
 
   private async onMessage(ctx: VkBotContextType) {
-    /* if (ctx.message.peerId < 2000000000 || ctx.message.text.length > 33) return;
+    /!* if (ctx.message.peerId < 2000000000 || ctx.message.text.length > 33) return;
 
     if (ctx.message.text.match(ADD_TO_GROUP)) return await this.onAddGroup(ctx);
     if (ctx.message.text === '!помощь') return await this.onHelp(ctx);
@@ -353,10 +354,11 @@ export class BotService extends VkBot {
     )
       return await this.onActivate(ctx);
     else if (ctx.message.text.match(NEXT_AUDIENCE)) return await this.onNext(ctx);
-    else if (ctx.message.text.match(WHERE_AUDIENCE)) return await this.onWhere(ctx);*/
+    else if (ctx.message.text.match(WHERE_AUDIENCE)) return await this.onWhere(ctx);*!/
   }
 
-  /*private async sendMessage(ctx, text: string) {
+  /!*private async sendMessage(ctx, text: string) {
     return await this.sendQueue.send({ ctx, text });
-  }*/
+  }*!/
 }
+*/
