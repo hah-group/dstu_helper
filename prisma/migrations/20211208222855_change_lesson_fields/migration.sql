@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Lesson" ALTER COLUMN "corpus" DROP NOT NULL,
-ALTER COLUMN "classRoom" DROP NOT NULL;

@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Teacher" ALTER COLUMN "firstName" DROP NOT NULL,
-ALTER COLUMN "middleName" DROP NOT NULL;
