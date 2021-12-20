@@ -7,7 +7,7 @@ import { VkJobAlert, VkJobEdit, VkJobGetUser, VkJobSend } from './vk-job-data.ty
 
 @Processor('vk')
 export class VkConsumer {
-  private readonly log = new Logger('VkConsumer');
+  private readonly log = new Logger('VKQueue');
 
   constructor(private readonly vkService: VkService) {}
 

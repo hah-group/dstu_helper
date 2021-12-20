@@ -6,7 +6,7 @@ import { VkJobAlert, VkJobData, VkJobEdit, VkJobGetUser, VkJobSend } from './vk-
 
 @Injectable()
 export class VkProducer {
-  private readonly log = new Logger('VkProducer');
+  private readonly log = new Logger('VKQueue');
 
   constructor(@InjectQueue('vk') private readonly queue: Queue<VkJobData>) {}
 
