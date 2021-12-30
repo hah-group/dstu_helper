@@ -12,10 +12,13 @@ generator client {
 
 model User {
   id                Int                @id
-  socialType SocialType
+  socialType        SocialType
   firstName         String
-  lastName          String
+  lastName          String?
   groupId           Int?
+  stage             String             @default("NOT_PRIVATE_STARTED")
+  menu              Json?
+  locale            String             @default("ru")
   Group             StudyGroup?        @relation(fields: [groupId], references: [id])
   ConversationUsers ConversationUser[]
 }
@@ -77,7 +80,10 @@ model Teacher {
 
 enum Role {
   STUDENT
+  HEADMAN_UNCHECKED
+  INVITING
   ADMIN
+  HEADMAN
 }
 
 enum UpdateStatus {
