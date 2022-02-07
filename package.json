@@ -1,10 +1,10 @@
 {
-  "name": "schedule-bot",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "name": "dstu-helper",
+  "version": "1.0.0",
+  "description": "DSTU Helper bot for VK and Telegram",
+  "author": "Efim Belyakov (belyakov.efim@gmail.com)",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
