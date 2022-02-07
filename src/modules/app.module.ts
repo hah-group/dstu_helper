@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { VkModule } from './vk/vk.module';
 import { TelegramModule } from './telegram/telegram.module';
@@ -19,6 +19,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SystemNotificationModule } from './system-notification/system-notification.module';
 import { ConversationBotModule } from './conversation-bot/conversation-bot.module';
 import { BotExceptionModule } from './bot-exception/bot-exception.module';
+import { VkMiddleware } from './vk/vk.middleware';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { BotExceptionModule } from './bot-exception/bot-exception.module';
     VkModule.registerAsync({
       token: process.env.BOT_TOKEN,
       groupId: parseInt(process.env.GROUP_ID),
+      confirmation: process.env.CONFIRMATION,
     }),
     TelegramModule.registerAsync({
       token: process.env.TG_BOT_TOKEN,
@@ -54,4 +56,8 @@ import { BotExceptionModule } from './bot-exception/bot-exception.module';
     BotExceptionModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer): any {
+    if (process.env.FLAVOUR == 'prod') consumer.apply(VkMiddleware).forRoutes('bot/vk');
+  }
+}

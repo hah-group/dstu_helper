@@ -33,7 +33,7 @@ export class VkService {
   private readonly log = new Logger('VK');
 
   private readonly vkApi: VK;
-  private readonly bot: VkBot;
+  public readonly bot: VkBot;
   private handlers: Set<Handler> = new Set<Handler>();
 
   constructor(
@@ -46,9 +46,11 @@ export class VkService {
       token: options.token,
       apiVersion: '5.144',
     });
+
     this.bot = new VkBot({
       token: options.token,
       group_id: options.groupId,
+      confirmation: options.confirmation,
     });
 
     this.bot.use((ctx) => {
@@ -60,11 +62,13 @@ export class VkService {
       }
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    this.bot.startPolling((err) => {
-      this.log.warn(`Polling started (can be only dev env)`);
-    });
+    if (process.env.FLAVOUR == 'dev') {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      this.bot.startPolling((err) => {
+        this.log.warn(`Polling started (can be only dev env)`);
+      });
+    }
   }
 
   public async getConversationInfo(conversationId: number): Promise<VkConversationInfo> {
