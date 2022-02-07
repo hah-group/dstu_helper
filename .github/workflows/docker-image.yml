@@ -3,6 +3,8 @@ name: Create and publish a Docker image
 on:
   push:
     branches: [ 'master' ]
+    tags:
+      - "*.*.*"
 
 env:
   REGISTRY: ${{ secrets.REGISTRY }}
@@ -32,4 +34,6 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/dstu_helper_app
           labels: latest
+
+
 

@@ -16,18 +16,26 @@ services:
     image: "${APP_DOCKER_IMAGE}"
     ports:
       - "3050:3000"
+
   database:
-      environment:
-        - POSTGRES_USER
-        - POSTGRES_PASSWORD
-        - POSTGRES_DB
-      image: "postgres"
-      volumes:
-        - "/db:/var/lib/postgresql/data/"
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    image: "postgres"
+    volumes:
+      - "dstu_helper_bot_db:/var/lib/postgresql/data/"
+
   redis:
     image: redis
     environment:
-        - REDIS_HOST
-        - REDIS_PORT
+      - REDIS_HOST
+      - REDIS_PORT
     volumes:
-      - "/redis:/data"
+      - "dstu_helper_bot_redis:/data"
+
+volumes:
+  dstu_helper_bot_db:
+    external: true
+  dstu_helper_bot_redis:
+    external: true
