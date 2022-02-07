@@ -4,13 +4,16 @@ services:
   app:
     environment:
       - BOT_TOKEN
+      - TG_BOT_TOKEN
+      - GROUP_ID
       - CONFIRMATION
-      - ACCESS_TOKEN
       - DATABASE_URL
       - REDIS_HOST
       - REDIS_PORT
       - CHUNK_SIZE
-    image: "${APP_DOCKER_IMAGE}"
+      - SYSTEM_NOTIFICATION_TG_USER
+      - FLAVOUR
+    build: ./
     ports:
       - "3050:3000"
   database:
