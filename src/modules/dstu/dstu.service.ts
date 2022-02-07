@@ -122,7 +122,6 @@ export class DstuService {
 
       result.push({
         lesson: {
-          //id: `${rasp['код']}`,
           groupId: group.id,
           start: DstuLessonParser.dateParser(rasp['датаНачала']),
           end: DstuLessonParser.dateParser(rasp['датаОкончания']),
@@ -175,10 +174,7 @@ export class DstuService {
     return response.data;
   }
 
-  private async getSchedule(/*date: DateTime, */ groupId: number /*, addWeek = 0*/): Promise<ApiResponseRaspDstuType> {
-    /* const dateString = moment(date).add(addWeek, 'w').format('YYYY-MM-DD');*/
-
-    //const url = `https://edu.donstu.ru/api/Rasp?idGroup=${groupId}&sdate=${dateString}`;
+  private async getSchedule(groupId: number): Promise<ApiResponseRaspDstuType> {
     const url = `https://edu.donstu.ru/api/Rasp?idGroup=${groupId}`;
     const job = await this.dstuProducer.request({ url });
     return job.finished();
