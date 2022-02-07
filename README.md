@@ -1,2 +1,18 @@
-##DSTU Helper Bot
-[![Deployment status](https://github.com/hah-group/dstu_helper/actions/workflows/docker-image.yml/badge.svg?branch=master)](https://github.com/hah-group/dstu_helper/actions/workflows/docker-image.yml)
+# DSTU Schedule Bot
+
+Бот доставки расписания в беседы и личные сообщения в ВК и Телеграм
+
+### DSTU API
+
+Работа бота осуществляется на этих эндпоинтах:
+
+- Получение списка всех групп: `https://edu.donstu.ru/api/raspGrouplist`
+- Получение расписания для группы (за весь период): `https://edu.donstu.ru/api/Rasp?idGroup`
+
+### Technologies
+
+- В качестве очереди сообщений (для предотвращения бана со стороны соц сетей): `Redis`
+- База данных: `PostgreSQL`
+- Контейнеризация: `Docker`
+- ORM: `Prisma`
+- Фреймворк: `NestJS`
