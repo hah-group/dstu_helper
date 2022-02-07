@@ -1,24 +1,33 @@
-name: Push Docker Image Registry
+name: Create and publish a Docker image
 
 on:
   push:
-    branches:
-      - 'master'
-    tags:
-      - '*.*.*'
+    branches: [ 'master' ]
+
+env:
+  REGISTRY: ${{ secrets.REGISTRY }}
+
 jobs:
-  build:
+  build-and-push-image:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag registry.mtdl.ru/dstu_helper_app:latest
-    - name: Push Docker image
-      run: docker push registry.mtdl.ru/dstu_helper_app:latest
-    - name: Invoke deployment hook
-      uses: distributhor/workflow-webhook@v1
-      env:
-        webhook_url: ${{ secrets.WEBHOOK_URL }}
-        webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/dstu_helper_app
+          labels: latest
 
