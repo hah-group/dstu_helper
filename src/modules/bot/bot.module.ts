@@ -4,10 +4,9 @@ import { VkModule } from '../vk/vk.module';
 import { TelegramModule } from '../telegram/telegram.module';
 import { DiscoveryModule } from '@nestjs/core';
 import { BotMetadataAccessor } from './decorator/bot-metadata.accessor';
-import { Test } from './test';
 
 @Module({
-  providers: [BotHandlerLoader, BotMetadataAccessor, Test],
+  providers: [BotHandlerLoader, BotMetadataAccessor],
   imports: [DiscoveryModule, VkModule, TelegramModule],
 })
 export class BotModule {}

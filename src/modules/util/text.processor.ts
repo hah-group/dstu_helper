@@ -47,10 +47,13 @@ export class TextProcessor {
       const data = text.data;
       let phrase = text.phrase;
 
-      for (const match of phrase.match(/([A-Z_\d]+)/g)) {
-        const localized = localization(match, locale, data);
-        phrase = phrase.replace(match, localized);
-      }
+      const matches = phrase.match(/([A-Z_\d]+)/g);
+
+      if (matches)
+        for (const match of matches) {
+          const localized = localization(match, locale, data);
+          phrase = phrase.replace(match, localized);
+        }
 
       result.push(phrase);
     }
@@ -84,10 +87,7 @@ export class TextProcessor {
     const lessonOrders = groupProcessor.getOrders();
     for (const lessonOrder of lessonOrders) {
       const gropedLessons = groupProcessor.getLessonGroup(lessonOrder);
-      if (!gropedLessons) {
-        console.log(lessonAtDay.map((lesson) => lesson.order == lessonOrder));
-        continue;
-      }
+      if (!gropedLessons) continue;
 
       let processedTexts: ProcessedTextInstance[];
       let anyLessonInOrder: Lesson;

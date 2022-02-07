@@ -3,6 +3,7 @@ import Prisma from '@prisma/client';
 import { User } from '../user/user.entity';
 import { DateTime } from '../util/time';
 import { GroupUpdateFailedException } from '../bot-exception/exception/group-update-failed.exception';
+import { GroupUpdateInProgressException } from '../bot-exception/exception/group-update-in-progress.exception';
 
 export interface StudyGroupArgs {
   id: number;
@@ -49,5 +50,6 @@ export class StudyGroup {
 
   public validate(): void {
     if (this.updateStatus == 'FAILURE') throw new GroupUpdateFailedException(this);
+    else if (this.updateStatus == 'IN_PROGRESS') throw new GroupUpdateInProgressException(this);
   }
 }

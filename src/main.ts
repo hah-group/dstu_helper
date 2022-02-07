@@ -4,21 +4,16 @@ import { AppModule } from './modules/app.module';
 import * as path from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: process.env.FLAVOUR == 'dev' ? ['error', 'warn', 'log', 'verbose', 'debug'] : ['error', 'warn', 'log'],
+  });
   await app.listen(3000);
 
-  console.log(path.join(__dirname, 'locales'));
   i18n.configure({
     locales: ['ru', 'en'],
     directory: path.join(__dirname, 'locales'),
   });
-
   i18n.setLocale('ru');
-  console.log(
-    i18n.__mf('TEST, what is', {
-      name: 'Efim',
-    }),
-  );
 }
 
 bootstrap();

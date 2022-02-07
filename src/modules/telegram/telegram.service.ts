@@ -130,7 +130,10 @@ export class TelegramService {
       user: user,
       username: ctx.from.username,
     };
-    this.handlers.forEach((handler) => this.executeMessageHandler(handler, ctxData));
+
+    this.sendCallback(ctxData, TextProcessor.buildSimpleText('PRIVATE_MESSAGES_NOT_AVAILABLE'), undefined, true).then();
+    return;
+    //this.handlers.forEach((handler) => this.executeMessageHandler(handler, ctxData));
   }
 
   private async onCallbackEvent(ctx: TelegramCallbackQuery): Promise<void> {

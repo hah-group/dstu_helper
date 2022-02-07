@@ -26,7 +26,7 @@ export class TelegramConsumer {
     try {
       return this.telegramService.editMessage(data.chatId, data.messageId, data.text, data.keyboard);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }
 

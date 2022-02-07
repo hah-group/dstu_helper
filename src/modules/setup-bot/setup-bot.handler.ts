@@ -12,8 +12,6 @@ import { StudyGroup } from '../study-group/study-group.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InternalEvent } from '../util/internal-event.enum';
 import { PrivateMainMenuKeyboard } from '../private-schedule/private-main-menu.keyboard';
-import { UpdateStatus } from '@prisma/client';
-import { GroupUpdateFailedException } from '../bot-exception/exception/group-update-failed.exception';
 import {
   SetupBotLanguageEnglishButton,
   SetupBotLanguageKeyboard,
@@ -85,10 +83,7 @@ export class SetupBotHandler {
       await message.placeholder(TextProcessor.buildSimpleText('SETUP_STEP_GETTING_SCHEDULE'));
       await this.cacheService.updateGroup(group);
 
-      if (group.updateStatus == UpdateStatus.FAILURE) {
-        await message.send(TextProcessor.buildSimpleText('LEGACY_1'));
-        throw new GroupUpdateFailedException(group);
-      }
+      group.validate();
     }
 
     await message.send(TextProcessor.buildSimpleText('SETUP_STEP_SCHEDULE_READY'), PrivateMainMenuKeyboard, true);

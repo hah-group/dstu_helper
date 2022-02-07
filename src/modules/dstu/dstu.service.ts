@@ -149,7 +149,7 @@ export class DstuService {
   public async findGroup(query: string): Promise<DstuApiGroupInfo | undefined> {
     let prettyQuery = query;
     prettyQuery = query.toUpperCase();
-    prettyQuery = prettyQuery.replace(/[ \-,.]*/gi, '');
+    prettyQuery = prettyQuery.replace(/[ \-]*/gi, '');
 
     try {
       const groups = await this.getGroups();

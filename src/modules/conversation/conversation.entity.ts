@@ -37,6 +37,14 @@ export class Conversation {
     this._users.set(user.id, conversationUser);
   }
 
+  public reset(): void {
+    this.log.debug(`Reset conversation ${this.id}`);
+    this._users.clear();
+    //this.settings = {};
+    this._status = 'NOT_CONFIGURED';
+    this._title = null;
+  }
+
   public get users(): ConversationUser[] {
     const users = [];
     this._users.forEach((value) => users.push(value));
@@ -46,6 +54,11 @@ export class Conversation {
   public isAdmin(user: User): boolean {
     const conversationUser = this._users.get(user.id);
     return conversationUser && conversationUser.role == Role.ADMIN;
+  }
+
+  public isInviting(user: User): boolean {
+    const conversationUser = this._users.get(user.id);
+    return conversationUser && conversationUser.role == Role.INVITING;
   }
 
   public isAccessToSettings(user: User): boolean {

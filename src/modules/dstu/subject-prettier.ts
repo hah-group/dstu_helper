@@ -1,6 +1,5 @@
 import { SubjectParsed } from './dstu-lesson.parser';
 import { LessonTypeDefinition } from './lesson-type.definition';
-import * as str from 'string';
 
 interface SubjectPrettierDef {
   regex: RegExp;
@@ -39,7 +38,7 @@ export const pretties: SubjectPrettierDef[] = [
       // пр. Иностранный язык (английский) => пр. Английский язык
       return {
         type: LessonTypeDefinition[match[1]],
-        name: match[3] ? `${str(match[3]).capitalize().s} язык` : match[2],
+        name: match[3] ? `${match[3]} язык` : match[2],
       };
     },
   },

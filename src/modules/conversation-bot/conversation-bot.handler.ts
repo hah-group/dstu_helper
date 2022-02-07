@@ -40,16 +40,27 @@ export class ConversationBotHandler {
     private readonly cacheService: CacheService,
   ) {}
 
-  @OnMessage('/check', 'conversation')
-  public async test() {
-    await this.vkService.getConversationInfo(2000000001);
-  }
-
   @OnInvite('iam')
   public async onSelfInvite(message: InviteMessage): Promise<void> {
-    console.log('Invite');
     const conversation = ConversationFactory.createNew(message.peerId);
     conversation.addUser(message.fromUser, 'INVITING');
+    await message.send(TextProcessor.buildSimpleText('ON_IAM_INVITE_START_TEXT'), ConversationBotCheckAdminKeyboard);
+    await this.conversationService.save(conversation);
+  }
+
+  @OnMessage(/^\/сброс/gi, 'conversation')
+  public async onReset(message: TextMessage): Promise<void> {
+    if (message.from != SocialSource.VK) return;
+
+    const conversation = await this.conversationService.get(message.peerId);
+    if (!conversation) throw new Error('Conversation not found');
+
+    if (!conversation.isAccessToSettings(message.user)) {
+      await message.send(TextProcessor.buildSimpleText('CONVERSATION_RESET_DATA_DENIED'));
+      return;
+    }
+
+    conversation.reset();
     await message.send(TextProcessor.buildSimpleText('ON_IAM_INVITE_START_TEXT'), ConversationBotCheckAdminKeyboard);
     await this.conversationService.save(conversation);
   }
@@ -59,8 +70,10 @@ export class ConversationBotHandler {
     if (message.from != SocialSource.VK) return;
     const conversation = await this.conversationService.get(message.peerId);
 
-    if (!conversation.isMember(message.user))
+    if (!conversation.isMember(message.user) || !conversation.isInviting(message.user)) {
       await message.alert(TextProcessor.buildSimpleText('CONVERSATION_ADMIN_CHECK_DENIED'));
+      return;
+    }
 
     try {
       const result = await this.vkService.getConversationInfo(message.peerId);
@@ -87,7 +100,7 @@ export class ConversationBotHandler {
   public async findGroup(message: InlineButtonMessage, conversation: Conversation): Promise<void> {
     await message.send(TextProcessor.buildSimpleText('CONVERSATION_START_FIND_GROUP'));
 
-    const prettyGroupTitle = conversation.title.match(/([а-я]+[ \-.,]\d{2})/gi);
+    const prettyGroupTitle = conversation.title.match(/([а-я]+[ \-]*\d{2})/gi);
     const groupRawData = await this.dstuService.findGroup(prettyGroupTitle ? prettyGroupTitle[0] : conversation.title);
     if (!groupRawData) {
       await message.send(TextProcessor.buildSimpleText('CONVERSATION_FIND_GROUP_FAILED'));
@@ -98,13 +111,15 @@ export class ConversationBotHandler {
 
     if (!group) {
       group = StudyGroupFactory.createNew(groupRawData.id, groupRawData.name);
-      for (const conversationUser of conversation.users) {
-        group.addUser(conversationUser);
-      }
-
-      conversation.status = 'FULL';
-      await this.studyGroupService.save(group);
     }
+
+    for (const conversationUser of conversation.users) {
+      group.addUser(conversationUser);
+    }
+
+    conversation.status = 'FULL';
+    await this.studyGroupService.save(group);
+    await this.conversationService.save(conversation);
 
     await this.requestSchedule(message, group);
   }
@@ -147,6 +162,32 @@ export class ConversationBotHandler {
     await this.requestSchedule(message, toGroup);
   }
 
+  @OnMessage(/^\/моя группа [а-я]+[ \-,.]*\d{2}/gi, 'conversation')
+  public async changeMyGroup(message: TextMessage): Promise<void> {
+    if (message.from != SocialSource.VK) return;
+
+    const groupName = message.text.match(/([а-я]+[ \-.,]*\d{2})/gi);
+    if (!groupName) {
+      await message.send(TextProcessor.buildSimpleText('CONVERSATION_CHANGE_GROUP_FAILED'));
+      return;
+    }
+
+    const groupRawData = await this.dstuService.findGroup(groupName[0]);
+    if (!groupRawData) {
+      await message.send(TextProcessor.buildSimpleText('CONVERSATION_CHANGE_GROUP_FAILED'));
+      return;
+    }
+
+    let toGroup = await this.studyGroupService.getById(groupRawData.id);
+
+    if (!toGroup) toGroup = StudyGroupFactory.createNew(groupRawData.id, groupRawData.name);
+
+    toGroup.addUser(message.user);
+
+    await this.studyGroupService.save(toGroup);
+    await this.requestSchedule(message, toGroup);
+  }
+
   @OnMessage([SCHEDULE_ACTIVATION, WHAT_ACTIVATION, AT_ACTIVATION, WHOM_ACTIVATION], 'conversation')
   public async schedule(message: TextMessage): Promise<void> {
     if (banWordsExits(message.text)) return;
@@ -179,7 +220,11 @@ export class ConversationBotHandler {
 
   @OnInvite('user')
   public async onUserInvite(message: InviteMessage): Promise<void> {
-    console.log('Invite user');
-    console.log(message);
+    const group = await this.studyGroupService.getByUser(message.fromUser);
+    if (!group) throw new Error('Not found group');
+
+    if (message.invitedUser && !message.invitedUser.groupId) group.addUser(message.invitedUser);
+
+    await this.studyGroupService.save(group);
   }
 }

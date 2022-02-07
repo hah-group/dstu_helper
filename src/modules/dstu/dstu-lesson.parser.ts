@@ -5,8 +5,8 @@ import { pretties } from './subject-prettier';
 import * as str from 'string';
 import { TeacherArgs } from '../teacher/teacher.entity';
 
-const SUBJECT_WITHOUT_BRACKETS = /(лек|лаб|пр|зач|экз)\.? ([а-яa-z\-. ,:\/\d]+?)(?:, п\/г (\d)|$)/i;
-const SUBJECT_WITH_BRACKETS = /(лек|лаб|пр|зач|экз)\.? ([а-яa-z\-. ,:\/\d]+?) ?\((.*?)\)$/i;
+const SUBJECT_WITHOUT_BRACKETS = /(лек|лаб|пр|пра|зач|экз)\.? ([а-яa-z\-. ,:\/\d]+?)(?:, п\/г (\d)|$)/i;
+const SUBJECT_WITH_BRACKETS = /(лек|лаб|пр|пра|зач|экз)\.? ([а-яa-z\-. ,:\/\d]+?) ?\((.*?)\)$/i;
 
 export interface SubjectParsed {
   type: LessonType;
@@ -30,13 +30,13 @@ export default class DstuLessonParser {
       const pretty = this.subjectPrettier(subject, match);
       const result: SubjectParsed = {
         type: LessonTypeDefinition[match[1]],
-        name: match[2],
+        name: str(match[2]).capitalize().s,
       };
 
       if (!isBracketsExist) result.subgroup = match[3] ? parseInt(match[3]) : undefined;
       else result.subsection = match[3] ? match[3] : undefined;
 
-      return pretty ? pretty : result;
+      return pretty ? { ...pretty, name: str(pretty.name.trim()).capitalize().s } : result;
     }
   }
 
@@ -71,11 +71,11 @@ export default class DstuLessonParser {
     clearText = clearText.replace('.', ' ');
     if (clearText.match(/,[а-я\d]/i)) clearText = clearText.replace(',', ', ');
     clearText = str(clearText).capitalize().s;
-    clearText = clearText.replace(/[а-я,.](?<dig>\d+)/g, ' $<dig> ');
+    clearText = clearText.replace(/(?<word>[а-я,.])(?<dig>\d+)/g, '$<word> $<dig> ');
     clearText = clearText.replace(/( {2})/g, ' ');
     clearText = clearText.trim();
     return {
-      classRoom: clearText,
+      classRoom: str(clearText).capitalize().s,
       distance: false,
     };
   }

@@ -44,6 +44,7 @@ export class VkService {
   ) {
     this.vkApi = new VK({
       token: options.token,
+      apiVersion: '5.144',
     });
     this.bot = new VkBot({
       token: options.token,
@@ -71,10 +72,14 @@ export class VkService {
       peer_ids: conversationId,
       extended: true,
     });
+    const profiles = await this.vkApi.api.messages.getConversationMembers({
+      peer_id: conversationId,
+      count: 200,
+    });
     if (response.count < 1) throw new Error('Forbidden');
     return {
       chat: response.items[0].chat_settings,
-      profiles: response.profiles,
+      profiles: profiles.profiles,
     };
   }
 
@@ -200,6 +205,20 @@ export class VkService {
         };
         break;
     }
+
+    if (type != EventType.ON_INLINE_BUTTON) {
+      const isConversation = ctxData.peerId > CONVERSATION_START_ID;
+      if (!isConversation) {
+        this.sendCallback(
+          ctxData,
+          TextProcessor.buildSimpleText('PRIVATE_MESSAGES_NOT_AVAILABLE'),
+          undefined,
+          true,
+        ).then();
+        return;
+      }
+    }
+
     this.handlers.forEach((handler) => ctxData && this.processHandler(handler, ctxData));
   }
 
@@ -252,6 +271,7 @@ export class VkService {
     const { event, scope } = metadata;
 
     const isConversation = ctx.peerId > CONVERSATION_START_ID;
+
     if (scope) {
       if (scope == 'conversation' && !isConversation) return;
       else if (scope == 'private' && isConversation) return;
