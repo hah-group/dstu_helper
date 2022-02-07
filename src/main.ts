@@ -1,10 +1,19 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import * as i18n from 'i18n';
+import { AppModule } from './modules/app.module';
+import * as path from 'path';
 
 async function bootstrap() {
-  console.log("Start APP!");
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: process.env.FLAVOUR == 'dev' ? ['error', 'warn', 'log', 'verbose', 'debug'] : ['error', 'warn', 'log'],
+  });
   await app.listen(3000);
+
+  i18n.configure({
+    locales: ['ru', 'en'],
+    directory: path.join(__dirname, 'locales'),
+  });
+  i18n.setLocale('ru');
 }
 
 bootstrap();

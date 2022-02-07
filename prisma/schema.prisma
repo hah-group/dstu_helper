@@ -10,41 +10,103 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id                Int                @id
+  socialType        SocialType
+  firstName         String
+  lastName          String?
+  groupId           Int?
+  stage             String             @default("NOT_PRIVATE_STARTED")
+  menu              Json?
+  locale            String             @default("ru")
+  Group             StudyGroup?        @relation(fields: [groupId], references: [id])
+  ConversationUsers ConversationUser[]
+}
+
+model Conversation {
+  id                Int                @id
+  title             String?
+  settings          Json
+  ConversationUsers ConversationUser[]
+  status            ConversationStatus @default(NOT_CONFIGURED)
+}
+
+model ConversationUser {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  conversationId Int
+  role           Role
+  User           User         @relation(fields: [userId], references: [id])
+  Conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  @@unique([userId, conversationId])
+}
+
 model StudyGroup {
-  id         Int          @id @default(autoincrement())
-  name       String       @unique
-  groupId    Int          @unique
-  updating   Boolean
-  Schedule   Schedule[]
-  UsersGroup UsersGroup[]
+  id           Int          @id
+  name         String       @unique
+  updateStatus UpdateStatus @default(DONE)
+  Lessons      Lesson[]
+  Users        User[]
 }
 
-model Schedule {
-  id           Int        @id @default(autoincrement())
-  groupId      Int
-  start        DateTime   @db.Timestamp
-  end          DateTime   @db.Timestamp
-  lessonType   LessonType
-  lessonNumber Int
-  subjectName  String
-  tutorName    String
-  subgroup     Int?
-  corpus       String
-  classRoom    String
-  distance     Boolean
-  updateAt     DateTime   @default(now())
-  Group        StudyGroup @relation(fields: [groupId], references: [id])
+model Lesson {
+  id         String     @id
+  groupId    Int
+  start      DateTime   @db.Timestamp
+  end        DateTime   @db.Timestamp
+  isTopWeek  Boolean
+  type       LessonType
+  order      Int
+  name       String
+  teacherId  Int?
+  subgroup   Int?
+  subsection String?
+  corpus     String?
+  classRoom  String?
+  distance   Boolean
+  updateAt   DateTime   @default(now())
+  Group      StudyGroup @relation(fields: [groupId], references: [id])
+  Teacher    Teacher?   @relation(fields: [teacherId], references: [id])
 }
 
-model UsersGroup {
-  id      Int        @id @default(autoincrement())
-  groupId Int
-  userId  Int        @unique
-  Group   StudyGroup @relation(fields: [groupId], references: [id])
+model Teacher {
+  id         Int      @id
+  firstName  String?
+  lastName   String
+  middleName String?
+  Lessons    Lesson[]
+}
+
+enum Role {
+  STUDENT
+  HEADMAN_UNCHECKED
+  INVITING
+  ADMIN
+  HEADMAN
+}
+
+enum UpdateStatus {
+  DONE
+  IN_PROGRESS
+  FAILURE
 }
 
 enum LessonType {
   LECTURE
   PRACTICAL
   LABORATORY
+  EXAMINATION
+  EXAM_WITHOUT_MARK
+}
+
+enum ConversationStatus {
+  NOT_CONFIGURED
+  LIMITED
+  FULL
+}
+
+enum SocialType {
+  VK
+  TELEGRAM
 }
