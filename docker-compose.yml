@@ -13,7 +13,7 @@ services:
       - CHUNK_SIZE
       - SYSTEM_NOTIFICATION_TG_USER
       - FLAVOUR
-    build: ./
+    image: "${APP_DOCKER_IMAGE}"
     ports:
       - "3050:3000"
   database:
