@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { InternalEvent } from '../util/internal-event.enum';
 import { SocialSource } from '../bot/type/social.enum';
@@ -15,7 +15,7 @@ export interface SystemNotification {
 }
 
 @Injectable()
-export class SystemNotificationService {
+export class SystemNotificationService implements OnApplicationBootstrap {
   constructor(private readonly telegramService: TelegramService) {}
 
   @OnEvent(InternalEvent.SYSTEM_NOTIFICATION)
@@ -55,6 +55,15 @@ ${
     : ''
 }`,
       keyboard,
+    );
+  }
+
+  public async onApplicationBootstrap(): Promise<void> {
+    if (process.env.FLAVOUR != 'prod') return;
+
+    await this.telegramService.sendMessage(
+      parseInt(process.env.SYSTEM_NOTIFICATION_TG_USER),
+      `Application deployed with version: <code>${process.env.npm_package_version}</code>`,
     );
   }
 }
