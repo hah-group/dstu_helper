@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { VkModule } from './vk/vk.module';
 import { TelegramModule } from './telegram/telegram.module';
@@ -57,6 +57,12 @@ import { VkMiddleware } from './vk/vk.middleware';
   ],
 })
 export class AppModule {
+  private readonly log = new Logger('App');
+
+  constructor() {
+    this.log.log(`Application starting with version: ${process.env.npm_package_version}`);
+  }
+
   configure(consumer: MiddlewareConsumer): any {
     if (process.env.FLAVOUR == 'prod') consumer.apply(VkMiddleware).forRoutes('bot/vk');
   }
