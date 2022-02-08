@@ -13,6 +13,7 @@ services:
       - CHUNK_SIZE
       - SYSTEM_NOTIFICATION_TG_USER
       - FLAVOUR
+      - TZ
     image: "${APP_DOCKER_IMAGE}"
     ports:
       - "3050:3000"
@@ -22,6 +23,7 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
+      - TZ
     image: "postgres"
     volumes:
       - "dstu_helper_bot_db:/var/lib/postgresql/data/"
@@ -31,6 +33,7 @@ services:
     environment:
       - REDIS_HOST
       - REDIS_PORT
+      - TZ
     volumes:
       - "dstu_helper_bot_redis:/data"
 
