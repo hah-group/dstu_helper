@@ -190,6 +190,8 @@ export class ConversationBotHandler {
 
   @OnMessage([SCHEDULE_ACTIVATION, WHAT_ACTIVATION, AT_ACTIVATION, WHOM_ACTIVATION], 'conversation')
   public async schedule(message: TextMessage): Promise<void> {
+    if (!message.user.groupIsInitialized()) return;
+
     if (banWordsExits(message.text)) return;
 
     const group = await this.studyGroupService.getByUser(message.user);
@@ -202,6 +204,8 @@ export class ConversationBotHandler {
 
   @OnMessage(WHERE_AUDIENCE, 'conversation')
   public async currentLesson(message: TextMessage): Promise<void> {
+    if (!message.user.groupIsInitialized()) return;
+
     const group = await this.studyGroupService.getByUser(message.user);
     if (!group) throw new Error('Not found group');
     group.validate();
@@ -211,6 +215,8 @@ export class ConversationBotHandler {
 
   @OnMessage(NEXT_AUDIENCE, 'conversation')
   public async nextLesson(message: TextMessage): Promise<void> {
+    if (!message.user.groupIsInitialized()) return;
+
     const group = await this.studyGroupService.getByUser(message.user);
     if (!group) throw new Error('Not found group');
     group.validate();
@@ -220,6 +226,8 @@ export class ConversationBotHandler {
 
   @OnInvite('user')
   public async onUserInvite(message: InviteMessage): Promise<void> {
+    if (!message.fromUser.groupIsInitialized()) return;
+
     const group = await this.studyGroupService.getByUser(message.fromUser);
     if (!group) throw new Error('Not found group');
 

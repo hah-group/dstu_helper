@@ -170,6 +170,7 @@ export class VkService {
   private async getUserFromVk(userId: number): Promise<User | undefined> {
     const user = await this.userService.get(userId, SocialSource.VK);
     if (!user) {
+      this.log.log(`New user ${userId}`);
       const job = await this.vkProducer.getUser({
         userId: userId,
       });

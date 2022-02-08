@@ -44,4 +44,8 @@ export class User {
   public set stage(value) {
     this._stage = value;
   }
+
+  public groupIsInitialized(): boolean {
+    return !!this.groupId;
+  }
 }
