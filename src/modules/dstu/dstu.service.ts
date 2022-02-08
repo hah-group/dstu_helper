@@ -12,7 +12,6 @@ import { StudyGroup } from '../study-group/study-group.entity';
 import { Lesson, LessonArgs } from '../lesson/lesson.entity';
 import { TeacherArgs } from '../teacher/teacher.entity';
 import { LessonFactory } from '../lesson/lesson.factory';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GroupUpdateFailedException } from '../bot-exception/exception/group-update-failed.exception';
 
 @Injectable()
@@ -23,7 +22,6 @@ export class DstuService {
     private readonly studyGroupService: StudyGroupService,
     private readonly lessonService: LessonService,
     private readonly dstuProducer: DstuProducer,
-    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   public async update(): Promise<void> {
@@ -51,7 +49,7 @@ export class DstuService {
       }
     });
     await Promise.all(promises);
-    //TODO Fix group status
+
     this.log.log(`Total lessons entity ${totalCount}`);
     this.log.log(`Saving collected schedule in DB`);
     for (const group of groups) {
@@ -146,15 +144,19 @@ export class DstuService {
   }
 
   public async findGroup(query: string): Promise<DstuApiGroupInfo | undefined> {
+    this.log.log(`Finding group for query: ${query}`);
+
     let prettyQuery = query;
     prettyQuery = query.toUpperCase();
     prettyQuery = prettyQuery.replace(/[ \-]*/gi, '');
 
     try {
       const groups = await this.getGroups();
-      return groups.find((record) => {
+      const result = groups.find((record) => {
         return prettyQuery.indexOf(record.name.toUpperCase()) == 0;
       });
+      this.log.log(`Group found result: ${!!result}`);
+      return result;
     } catch (e) {
       this.log.error(`Fetching groups failure: ${e.message}`);
       this.log.error(e.stack);

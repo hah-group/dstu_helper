@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { InternalEvent } from '../util/internal-event.enum';
 import { SocialSource } from '../bot/type/social.enum';
@@ -15,8 +15,25 @@ export interface SystemNotification {
 }
 
 @Injectable()
-export class SystemNotificationService {
+export class SystemNotificationService implements OnApplicationBootstrap {
   constructor(private readonly telegramService: TelegramService) {}
+
+  private static formatText(text: string): string {
+    let htmlText = text.replace(/</gi, '&lt;');
+    htmlText = htmlText.replace(/>/gi, '&gt;');
+    htmlText = htmlText.replace(/&/gi, '&amp;');
+    htmlText = htmlText.replace(/"/gi, '&quot;');
+    return htmlText;
+  }
+
+  public async onApplicationBootstrap(): Promise<void> {
+    if (process.env.FLAVOUR != 'prod') return;
+
+    await this.telegramService.sendMessage(
+      parseInt(process.env.SYSTEM_NOTIFICATION_TG_USER),
+      `Application deployed with version: <code>${process.env.npm_package_version}</code>`,
+    );
+  }
 
   @OnEvent(InternalEvent.SYSTEM_NOTIFICATION)
   public async sendNotification(params: SystemNotification): Promise<void> {
@@ -39,22 +56,16 @@ export class SystemNotificationService {
         .inline()
         .toJSON(SocialSource.TELEGRAM, 'ru');
 
-    await this.telegramService.sendMessage(
-      parseInt(process.env.SYSTEM_NOTIFICATION_TG_USER),
-      `${Time.get().format('DD.MM.YYYY HH:mm:ss.SSS Z')}
+    const text = `${Time.get().format('DD.MM.YYYY HH:mm:ss.SSS Z')}
 <b>${error.type}</b>
-<b>${error.message}</b>
-
-<code>${error.stack}</code>
-
+<b>${SystemNotificationService.formatText(error.message)}</b>
 
 ${
   error.data
     ? `<b>Error data:</b>
-<code>${JSON.stringify(error.data, undefined, 2)}</code>`
+<code>${SystemNotificationService.formatText(JSON.stringify(error.data, undefined, 2))}</code>`
     : ''
-}`,
-      keyboard,
-    );
+}`;
+    await this.telegramService.sendMessage(parseInt(process.env.SYSTEM_NOTIFICATION_TG_USER), text, keyboard);
   }
 }
