@@ -53,16 +53,21 @@ export class ConversationBotHandler {
     if (message.from != SocialSource.VK) return;
 
     const conversation = await this.conversationService.get(message.peerId);
-    if (!conversation) throw new Error('Conversation not found');
+    if (conversation) {
+      if (!conversation.isAccessToSettings(message.user)) {
+        await message.send(TextProcessor.buildSimpleText('CONVERSATION_RESET_DATA_DENIED'));
+        return;
+      }
 
-    if (!conversation.isAccessToSettings(message.user)) {
-      await message.send(TextProcessor.buildSimpleText('CONVERSATION_RESET_DATA_DENIED'));
-      return;
+      conversation.reset();
+      await this.conversationService.save(conversation);
+    } else {
+      const conversation = ConversationFactory.createNew(message.peerId);
+      conversation.addUser(message.user, 'INVITING');
+      await this.conversationService.save(conversation);
     }
 
-    conversation.reset();
     await message.send(TextProcessor.buildSimpleText('ON_IAM_INVITE_START_TEXT'), ConversationBotCheckAdminKeyboard);
-    await this.conversationService.save(conversation);
   }
 
   @OnInlineButton(ConversationBotCheckAdminButton)
