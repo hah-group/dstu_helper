@@ -14,7 +14,7 @@ services:
       - SYSTEM_NOTIFICATION_TG_USER
       - FLAVOUR
       - TZ
-    image: "${APP_DOCKER_IMAGE}"
+    image: "registry.mtdl.ru/dstu_helper_app"
     ports:
       - "3050:3000"
 
