@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { OnInvite } from '../bot/decorator/on-invite.decorator';
 import { InlineButtonMessage, InviteMessage, TextMessage } from '../bot/type/message.type';
 import {
@@ -32,6 +32,8 @@ import { DateParser } from '../util/date.parser';
 
 @Injectable()
 export class ConversationBotHandler {
+  private readonly log = new Logger('ConversationBotHandler');
+
   constructor(
     private readonly conversationService: ConversationService,
     private readonly vkService: VkService,
@@ -42,6 +44,8 @@ export class ConversationBotHandler {
 
   @OnInvite('iam')
   public async onSelfInvite(message: InviteMessage): Promise<void> {
+    this.log.log(`Invite to new conversation ${message.peerId}`);
+
     const conversation = ConversationFactory.createNew(message.peerId);
     conversation.addUser(message.fromUser, 'INVITING');
     await message.send(TextProcessor.buildSimpleText('ON_IAM_INVITE_START_TEXT'), ConversationBotCheckAdminKeyboard);
@@ -51,6 +55,7 @@ export class ConversationBotHandler {
   @OnMessage(/^\/сброс/gi, 'conversation')
   public async onReset(message: TextMessage): Promise<void> {
     if (message.from != SocialSource.VK) return;
+    this.log.log(`Reset conversation ${message.peerId}`);
 
     const conversation = await this.conversationService.get(message.peerId);
     if (conversation) {
@@ -168,6 +173,8 @@ export class ConversationBotHandler {
 
     if (!toGroup) toGroup = StudyGroupFactory.createNew(groupRawData.id, groupRawData.name);
 
+    this.log.log(`Change group in conversation ${message.peerId} to group ${toGroup.name}`);
+
     for (const conversationUser of conversation.users) {
       toGroup.addUser(conversationUser);
     }
@@ -196,6 +203,8 @@ export class ConversationBotHandler {
 
     if (!toGroup) toGroup = StudyGroupFactory.createNew(groupRawData.id, groupRawData.name);
 
+    this.log.log(`Change group user ${message.user.id} to group ${toGroup.name}`);
+
     toGroup.addUser(message.user);
 
     await this.studyGroupService.save(toGroup);
@@ -204,13 +213,15 @@ export class ConversationBotHandler {
 
   @OnMessage([SCHEDULE_ACTIVATION, WHAT_ACTIVATION, AT_ACTIVATION, WHOM_ACTIVATION], 'conversation')
   public async schedule(message: TextMessage): Promise<void> {
+    if (message.from != SocialSource.VK) return;
     if (!message.user.groupIsInitialized()) return;
-
     if (banWordsExits(message.text)) return;
 
     const group = await this.studyGroupService.getByUser(message.user);
     if (!group) throw new Error('Not found group');
     group.validate();
+
+    this.log.log(`Request schedule in ${message.peerId}`);
 
     const atDate = DateParser.Parse(message.text);
     await message.send(TextProcessor.lessons(group, atDate, false));
@@ -218,34 +229,44 @@ export class ConversationBotHandler {
 
   @OnMessage(WHERE_AUDIENCE, 'conversation')
   public async currentLesson(message: TextMessage): Promise<void> {
+    if (message.from != SocialSource.VK) return;
     if (!message.user.groupIsInitialized()) return;
 
     const group = await this.studyGroupService.getByUser(message.user);
     if (!group) throw new Error('Not found group');
     group.validate();
+
+    this.log.log(`Request audience in ${message.peerId}`);
 
     await message.send(TextProcessor.short(group, true));
   }
 
   @OnMessage(NEXT_AUDIENCE, 'conversation')
   public async nextLesson(message: TextMessage): Promise<void> {
+    if (message.from != SocialSource.VK) return;
     if (!message.user.groupIsInitialized()) return;
 
     const group = await this.studyGroupService.getByUser(message.user);
     if (!group) throw new Error('Not found group');
     group.validate();
 
+    this.log.log(`Request next audience in ${message.peerId}`);
+
     await message.send(TextProcessor.short(group, false));
   }
 
   @OnInvite('user')
   public async onUserInvite(message: InviteMessage): Promise<void> {
+    //TODO Fix conversation group
+    if (message.from != SocialSource.VK) return;
     if (!message.fromUser.groupIsInitialized()) return;
 
     const group = await this.studyGroupService.getByUser(message.fromUser);
     if (!group) throw new Error('Not found group');
 
     if (message.invitedUser && !message.invitedUser.groupId) group.addUser(message.invitedUser);
+
+    this.log.log(`New user in conversation ${message.peerId}, set group ${group.name}`);
 
     await this.studyGroupService.save(group);
   }

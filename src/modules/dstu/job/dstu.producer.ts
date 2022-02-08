@@ -12,7 +12,7 @@ export class DstuProducer {
   constructor(@InjectQueue('dstu') private queue: Queue<DstuJobData>) {}
 
   public async request(data: Omit<DstuJobRequestData, 'type'>): Promise<Job<DstuJobRequestData>> {
-    this.log.log(`Add request in queue`);
+    this.log.debug(`Add request in queue`);
     return this.queue.add(DstuJobName.REQUEST, {
       type: DstuJobName.REQUEST,
       ...data,

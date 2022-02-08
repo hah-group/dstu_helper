@@ -4,6 +4,7 @@ import { User } from '../user/user.entity';
 import { DateTime } from '../util/time';
 import { GroupUpdateFailedException } from '../bot-exception/exception/group-update-failed.exception';
 import { GroupUpdateInProgressException } from '../bot-exception/exception/group-update-in-progress.exception';
+import { Logger } from '@nestjs/common';
 
 export interface StudyGroupArgs {
   id: number;
@@ -14,20 +15,24 @@ export interface StudyGroupArgs {
 }
 
 export class StudyGroup {
+  private readonly log = new Logger('StudyGroup');
+
   public readonly id: number;
   public readonly name: string;
-  public updateStatus: Prisma.UpdateStatus;
-  public readonly lessons: Lesson[];
-  private readonly _users: Map<number, User>;
 
   constructor(params: StudyGroupArgs) {
     const { id, lessons, name, updateStatus, users } = params;
     this.id = id;
     this.name = name;
-    this.updateStatus = updateStatus;
+    this._updateStatus = updateStatus;
     this.lessons = lessons;
     this._users = users;
   }
+
+  public readonly lessons: Lesson[];
+  private readonly _users: Map<number, User>;
+
+  public _updateStatus: Prisma.UpdateStatus;
 
   public addUser(user: User): void {
     this._users.set(user.id, user);
@@ -42,6 +47,15 @@ export class StudyGroup {
     const users = [];
     this._users.forEach((value) => users.push(value));
     return users;
+  }
+
+  public get updateStatus(): Prisma.UpdateStatus {
+    return this._updateStatus;
+  }
+
+  public set updateStatus(value: Prisma.UpdateStatus) {
+    this._updateStatus = value;
+    this.log.debug(`Set group ${this.name} update status ${value}`);
   }
 
   public getLessonsAtDay(date: DateTime): Lesson[] {
