@@ -19,6 +19,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
@@ -31,8 +34,11 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/dstu_helper_app
-          labels: latest
+          tags: ${{ env.REGISTRY }}/dstu_helper_app:${{ env.RELEASE_VERSION }}
 
-
+      - name: Invoke deployment hook
+        uses: distributhor/workflow-webhook@v2
+        env:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
 
