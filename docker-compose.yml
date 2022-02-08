@@ -27,6 +27,8 @@ services:
     image: "postgres"
     volumes:
       - "dstu_helper_bot_db:/var/lib/postgresql/data/"
+    ports:
+      - "13050:3000"
 
   redis:
     image: redis
