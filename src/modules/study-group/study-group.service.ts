@@ -10,6 +10,8 @@ export class StudyGroupService {
   constructor(private prismaService: PrismaService) {}
 
   public async getByUser(user: User): Promise<StudyGroup | undefined> {
+    if (!user.groupId) return;
+
     const record = await this.prismaService.studyGroup.findUnique({
       where: {
         id: user.groupId,

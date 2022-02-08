@@ -29,6 +29,7 @@ import { StudyGroupService } from '../study-group/study-group.service';
 import { StudyGroup } from '../study-group/study-group.entity';
 import { CacheService } from '../cache/cache.service';
 import { DateParser } from '../util/date.parser';
+import { GroupNotFoundException } from '../bot-exception/exception/group-not-found.exception';
 
 @Injectable()
 export class ConversationBotHandler {
@@ -214,11 +215,10 @@ export class ConversationBotHandler {
   @OnMessage([SCHEDULE_ACTIVATION, WHAT_ACTIVATION, AT_ACTIVATION, WHOM_ACTIVATION], 'conversation')
   public async schedule(message: TextMessage): Promise<void> {
     if (message.from != SocialSource.VK) return;
-    if (!message.user.groupIsInitialized()) return;
     if (banWordsExits(message.text)) return;
 
     const group = await this.studyGroupService.getByUser(message.user);
-    if (!group) throw new Error('Not found group');
+    if (!group) throw new GroupNotFoundException(message.user);
     group.validate();
 
     this.log.log(`Request schedule in ${message.peerId} for group ${group.name}`);
@@ -230,10 +230,9 @@ export class ConversationBotHandler {
   @OnMessage(WHERE_AUDIENCE, 'conversation')
   public async currentLesson(message: TextMessage): Promise<void> {
     if (message.from != SocialSource.VK) return;
-    if (!message.user.groupIsInitialized()) return;
 
     const group = await this.studyGroupService.getByUser(message.user);
-    if (!group) throw new Error('Not found group');
+    if (!group) throw new GroupNotFoundException(message.user);
     group.validate();
 
     this.log.log(`Request audience in ${message.peerId} for group ${group.name}`);
@@ -247,7 +246,7 @@ export class ConversationBotHandler {
     if (!message.user.groupIsInitialized()) return;
 
     const group = await this.studyGroupService.getByUser(message.user);
-    if (!group) throw new Error('Not found group');
+    if (!group) throw new GroupNotFoundException(message.user);
     group.validate();
 
     this.log.log(`Request next audience in ${message.peerId} for group ${group.name}`);
@@ -262,12 +261,12 @@ export class ConversationBotHandler {
     if (!message.fromUser.groupIsInitialized()) return;
 
     const group = await this.studyGroupService.getByUser(message.fromUser);
-    if (!group) throw new Error('Not found group');
+    if (group) {
+      if (message.invitedUser && !message.invitedUser.groupId) group.addUser(message.invitedUser);
 
-    if (message.invitedUser && !message.invitedUser.groupId) group.addUser(message.invitedUser);
+      this.log.log(`New user in conversation ${message.peerId}, set group ${group.name}`);
 
-    this.log.log(`New user in conversation ${message.peerId}, set group ${group.name}`);
-
-    await this.studyGroupService.save(group);
+      await this.studyGroupService.save(group);
+    }
   }
 }
