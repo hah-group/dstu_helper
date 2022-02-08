@@ -164,7 +164,6 @@ export class ConversationBotHandler {
       return;
     }
 
-    const conversation = await this.conversationService.get(message.peerId);
     let toGroup = await this.studyGroupService.getById(groupRawData.id);
 
     if (!toGroup) toGroup = StudyGroupFactory.createNew(groupRawData.id, groupRawData.name);
