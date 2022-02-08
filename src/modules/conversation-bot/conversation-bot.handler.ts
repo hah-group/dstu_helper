@@ -146,6 +146,12 @@ export class ConversationBotHandler {
   public async changeGroup(message: TextMessage): Promise<void> {
     if (message.from != SocialSource.VK) return;
 
+    const conversation = await this.conversationService.get(message.peerId);
+    if (!conversation.isAccessToSettings(message.user)) {
+      await message.send(TextProcessor.buildSimpleText('CONVERSATION_CHANGE_GROUP_DENIED'));
+      return;
+    }
+
     const groupName = message.text.match(/([а-я]+[ \-.,]*\d{2})/gi);
     if (!groupName) {
       await message.send(TextProcessor.buildSimpleText('CONVERSATION_CHANGE_GROUP_FAILED'));
