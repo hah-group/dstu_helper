@@ -190,7 +190,10 @@ export class VkService {
     const message: any = ctx.message;
     const type: EventType = VkEvent[message.type];
 
-    const user = await this.getUserFromVk(message.from_id || message.user_id);
+    const userId = message.from_id || message.user_id;
+    if (userId < 0) return;
+
+    const user = await this.getUserFromVk(userId);
     if (!user) return;
 
     let ctxData: VkMessageData | undefined;
