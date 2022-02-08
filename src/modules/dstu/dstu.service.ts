@@ -155,7 +155,7 @@ export class DstuService {
       const result = groups.find((record) => {
         return prettyQuery.indexOf(record.name.toUpperCase()) == 0;
       });
-      this.log.log(`Group found result: ${result}`);
+      this.log.log(`Group found result: ${!!result}`);
       return result;
     } catch (e) {
       this.log.error(`Fetching groups failure: ${e.message}`);

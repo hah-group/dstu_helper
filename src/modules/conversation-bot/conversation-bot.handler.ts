@@ -87,6 +87,8 @@ export class ConversationBotHandler {
     }
 
     try {
+      this.log.log(`Conversation init ${conversation.id}`);
+
       const result = await this.vkService.getConversationInfo(message.peerId);
       await message.alert(TextProcessor.buildSimpleText('CONVERSATION_ADMIN_CHECK_SUCCESS'));
       await message.edit(TextProcessor.buildSimpleText('CONVERSATION_START_INIT'));
