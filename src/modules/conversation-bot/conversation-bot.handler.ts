@@ -30,6 +30,7 @@ import { StudyGroup } from '../study-group/study-group.entity';
 import { CacheService } from '../cache/cache.service';
 import { DateParser } from '../util/date.parser';
 import { GroupNotFoundException } from '../bot-exception/exception/group-not-found.exception';
+import { Time } from '../util/time';
 
 @Injectable()
 export class ConversationBotHandler {
@@ -148,6 +149,9 @@ export class ConversationBotHandler {
     }
 
     await message.send(TextProcessor.buildSimpleText(setup ? 'CONVERSATION_SCHEDULE_READY' : 'SCHEDULE_READY'));
+
+    const atDate = Time.get();
+    await message.send(TextProcessor.lessons(group, atDate, false));
   }
 
   @OnMessage(/^\/группа [а-я]+[ \-,.]*\d{2}/gi, 'conversation')
