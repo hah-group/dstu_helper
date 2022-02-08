@@ -221,7 +221,7 @@ export class ConversationBotHandler {
     if (!group) throw new Error('Not found group');
     group.validate();
 
-    this.log.log(`Request schedule in ${message.peerId}`);
+    this.log.log(`Request schedule in ${message.peerId} for group ${group.name}`);
 
     const atDate = DateParser.Parse(message.text);
     await message.send(TextProcessor.lessons(group, atDate, false));
@@ -236,7 +236,7 @@ export class ConversationBotHandler {
     if (!group) throw new Error('Not found group');
     group.validate();
 
-    this.log.log(`Request audience in ${message.peerId}`);
+    this.log.log(`Request audience in ${message.peerId} for group ${group.name}`);
 
     await message.send(TextProcessor.short(group, true));
   }
@@ -250,7 +250,7 @@ export class ConversationBotHandler {
     if (!group) throw new Error('Not found group');
     group.validate();
 
-    this.log.log(`Request next audience in ${message.peerId}`);
+    this.log.log(`Request next audience in ${message.peerId} for group ${group.name}`);
 
     await message.send(TextProcessor.short(group, false));
   }
