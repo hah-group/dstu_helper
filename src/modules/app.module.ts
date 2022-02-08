@@ -1,4 +1,4 @@
-import { Logger, MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { VkModule } from './vk/vk.module';
 import { TelegramModule } from './telegram/telegram.module';
@@ -20,8 +20,6 @@ import { SystemNotificationModule } from './system-notification/system-notificat
 import { ConversationBotModule } from './conversation-bot/conversation-bot.module';
 import { BotExceptionModule } from './bot-exception/bot-exception.module';
 import { VkMiddleware } from './vk/vk.middleware';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const pjson = require('./package.json');
 
 @Module({
   imports: [
@@ -59,12 +57,6 @@ const pjson = require('./package.json');
   ],
 })
 export class AppModule {
-  private readonly log = new Logger('App');
-
-  constructor() {
-    this.log.log(`App version: ${pjson.version}`);
-  }
-
   configure(consumer: MiddlewareConsumer): any {
     if (process.env.FLAVOUR == 'prod') consumer.apply(VkMiddleware).forRoutes('bot/vk');
   }
