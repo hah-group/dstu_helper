@@ -129,13 +129,17 @@ export class ConversationBotHandler {
     await this.requestSchedule(message, group);
   }
 
-  public async requestSchedule(message: InlineButtonMessage | TextMessage, group: StudyGroup): Promise<void> {
+  public async requestSchedule(
+    message: InlineButtonMessage | TextMessage,
+    group: StudyGroup,
+    setup = true,
+  ): Promise<void> {
     if (group.lessons.length < 1) {
       await message.send(TextProcessor.buildSimpleText('CONVERSATION_GETTING_SCHEDULE'));
       await this.cacheService.updateGroup(group);
     }
 
-    await message.send(TextProcessor.buildSimpleText('CONVERSATION_SCHEDULE_READY'));
+    await message.send(TextProcessor.buildSimpleText(setup ? 'CONVERSATION_SCHEDULE_READY' : 'SCHEDULE_READY'));
   }
 
   @OnMessage(/^\/группа [а-я]+[ \-,.]*\d{2}/gi, 'conversation')
@@ -164,7 +168,7 @@ export class ConversationBotHandler {
     }
 
     await this.studyGroupService.save(toGroup);
-    await this.requestSchedule(message, toGroup);
+    await this.requestSchedule(message, toGroup, false);
   }
 
   @OnMessage(/^\/моя группа [а-я]+[ \-,.]*\d{2}/gi, 'conversation')
@@ -190,7 +194,7 @@ export class ConversationBotHandler {
     toGroup.addUser(message.user);
 
     await this.studyGroupService.save(toGroup);
-    await this.requestSchedule(message, toGroup);
+    await this.requestSchedule(message, toGroup, false);
   }
 
   @OnMessage([SCHEDULE_ACTIVATION, WHAT_ACTIVATION, AT_ACTIVATION, WHOM_ACTIVATION], 'conversation')
