@@ -4,7 +4,11 @@ import { InlineButtonMessage, InviteMessage, TextMessage } from '../bot/type/mes
 import {
   AT_ACTIVATION,
   banWordsExits,
+  LANG_ORDER,
   NEXT_AUDIENCE,
+  ORDER_FIRST_LESSON_ACTIVATION,
+  ORDER_LAST_LESSON_ACTIVATION,
+  ORDER_LESSON_ACTIVATION,
   SCHEDULE_ACTIVATION,
   TextProcessor,
   WHAT_ACTIVATION,
@@ -31,6 +35,7 @@ import { CacheService } from '../cache/cache.service';
 import { DateParser } from '../util/date.parser';
 import { GroupNotFoundException } from '../bot-exception/exception/group-not-found.exception';
 import { Time } from '../util/time';
+import { LanguageOrderDefinition } from '../util/definition/language-order.definition';
 
 @Injectable()
 export class ConversationBotHandler {
@@ -258,6 +263,61 @@ export class ConversationBotHandler {
     this.log.log(`Request next audience in ${message.peerId} for group ${group.name}`);
 
     await message.send(TextProcessor.short(group, false));
+  }
+
+  @OnMessage(ORDER_LESSON_ACTIVATION, 'conversation')
+  public async orderLesson(message: TextMessage): Promise<void> {
+    if (message.from != SocialSource.VK) return;
+    if (!message.user.groupIsInitialized()) return;
+
+    const group = await this.studyGroupService.getByUser(message.user);
+    if (!group) throw new GroupNotFoundException(message.user);
+    group.validate();
+
+    const orderMatch = message.text.match(/\d/);
+    let order: number | undefined;
+
+    if (orderMatch) {
+      order = parseInt(orderMatch[0]);
+    } else {
+      const langOrderMatch = message.text.match(LANG_ORDER);
+      order = LanguageOrderDefinition[langOrderMatch[0] || ''];
+    }
+
+    if (!order) return;
+
+    this.log.log(`Request order audience ${order} in ${message.peerId} for group ${group.name}`);
+
+    await message.send(TextProcessor.order(group, order));
+  }
+
+  @OnMessage(ORDER_LAST_LESSON_ACTIVATION, 'conversation')
+  public async orderLastLesson(message: TextMessage): Promise<void> {
+    if (message.from != SocialSource.VK) return;
+    if (!message.user.groupIsInitialized()) return;
+
+    const group = await this.studyGroupService.getByUser(message.user);
+    if (!group) throw new GroupNotFoundException(message.user);
+    group.validate();
+
+    this.log.log(`Request order last audience in ${message.peerId} for group ${group.name}`);
+
+    await message.send(TextProcessor.order(group, -1));
+  }
+
+  @OnMessage(ORDER_FIRST_LESSON_ACTIVATION, 'conversation')
+  public async orderFirstLesson(message: TextMessage): Promise<void> {
+    if (message.from != SocialSource.VK) return;
+    if (!message.user.groupIsInitialized()) return;
+
+    const group = await this.studyGroupService.getByUser(message.user);
+    if (!group) throw new GroupNotFoundException(message.user);
+    group.validate();
+
+    this.log.log(`Request order last audience in ${message.peerId} for group ${group.name}`);
+
+    const atDate = DateParser.Parse(message.text);
+    await message.send(TextProcessor.order(group, 0, atDate));
   }
 
   @OnInvite('user')

@@ -19,9 +19,16 @@ export const WHAT_ACTIVATION = /(что|чо|шо|че|чё)( (за|по|у на
 export const AT_ACTIVATION = /пары (на|в|во) [а-яё\d]+/gi;
 export const WHOM_ACTIVATION = /(.*какие (завтра|послезавтра)? (пары).*|пары.*?какие)/gi;
 
+export const LANG_ORDER = /первая|вторая|третья|четв[её]ртая|пятая|шестая|седьмая/i;
+export const ORDER_LESSON_ACTIVATION =
+  /^(какая|где|\d|первая|вторая|третья|четв[её]ртая|пятая|шестая|седьмая) (\d|первая|вторая|третья|четв[её]ртая|пятая|шестая|седьмая|пара|какая) (пара|какая|где)/gi;
+export const ORDER_LAST_LESSON_ACTIVATION = /^(какая|где|ласт|последняя) (пара|последняя|ласт) (пара|какая|где)/gi;
+export const ORDER_FIRST_LESSON_ACTIVATION =
+  /^(к какой|завтра|сегодня)( нам)? (к какой|завтра|сегодня|паре) (паре|сегодня|завтра)/gi;
+
 export const BAN_WORDS = /(задали)/i;
 
-export const WHERE_AUDIENCE = /(куда|где|какая) (идти|пара|аудитория)/gi;
+export const WHERE_AUDIENCE = /^(куда|где|какая) (идти|пара|аудитория)/gi;
 export const NEXT_AUDIENCE = /^(какая |где |что )?(некст|следующая|след)( пара)?$/gi;
 
 export const banWordsExits = (text: string): boolean => {
@@ -176,6 +183,46 @@ export class TextProcessor {
     };
   }
 
+  public static order(group: StudyGroup, order: number, atDate = Time.get()): ProcessedText {
+    const lessonAtDay = group.getLessonsAtDay(atDate);
+    const groupProcessor = new LessonGroupProcessor(lessonAtDay);
+
+    if (order < 0) order = groupProcessor.getOrders()[groupProcessor.getOrders().length - 1];
+    if (order == 0) order = groupProcessor.getOrders()[0];
+
+    const target: LessonGroupResult | undefined = groupProcessor.getLessonGroup(order);
+
+    if (!target) return this.notOrderLesson(lessonAtDay.length, order, atDate);
+
+    let outLesson: Lesson;
+    let result: ProcessedTextInstance[];
+
+    switch (target.type) {
+      case 'SINGLE':
+        result = this.singleLesson(target);
+        outLesson = target.lesson;
+        break;
+      case 'SINGLE_DIFFERENT_CLASS_ROOMS':
+        result = this.singleManyClassRoomsLesson(target);
+        outLesson = target.firstLesson;
+        break;
+      case 'MULTIPLY':
+        result = this.multiplyLessons(target);
+        outLesson = target.lessons[0];
+        break;
+    }
+
+    result.unshift(this.lessonHeader(outLesson, true));
+
+    const resultPhrases = result.map((processedText) => processedText.phrase);
+    const resultData = result.map((processedText) => processedText.data);
+
+    return {
+      phrase: resultPhrases.join('\n'),
+      data: lodash.assign({}, ...resultData),
+    };
+  }
+
   public static atDateButton(date: DateTime, offset: number): ProcessedTextInstance {
     if (offset == 0) return this.buildSimpleText('SCHEDULE_AT_DATE_BUTTON_NOW');
 
@@ -209,6 +256,17 @@ export class TextProcessor {
     else
       return {
         phrase: 'LESSONS_IS_ENDED',
+      };
+  }
+
+  private static notOrderLesson(todayCount: number, order: number, atDate: DateTime): ProcessedTextInstance {
+    if (todayCount < 1) return this.scheduleEmpty(atDate);
+    else
+      return {
+        phrase: 'ORDER_LESSON_NOT',
+        data: {
+          orderLesson: order,
+        },
       };
   }
 

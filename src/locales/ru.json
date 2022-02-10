@@ -40,6 +40,7 @@
   "SCHEDULE_AT_DAY_IS": "Пар на",
   "SCHEDULE_AT_DAY_IS_NOT": "нет",
   "LESSONS_IS_ENDED": "Пары на сегодня закончились",
+  "ORDER_LESSON_NOT": "Сегодня {{orderLesson}} пары нет",
   "IS_LAST_LESSON_IN_DAY": "Это последняя пара",
   "CLOSEST_LESSON": "Ближайшая пара:",
   "LESSON_HEADER": "📌 {{lessonOrder}} пара",
