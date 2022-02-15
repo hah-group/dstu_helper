@@ -48,27 +48,27 @@ describe('Date parser', () => {
   });
 
   it('15 декабря', () => {
-    const result = DateParser.Parse('15 декабря', moment());
+    const result = DateParser.Parse('15 декабря', moment('2021-12-12'));
     expect(result.isSame(moment('2021-12-15'), 'd')).toBe(true);
   });
 
   it('11 число', () => {
-    const result = DateParser.Parse('11 число', moment());
+    const result = DateParser.Parse('11 число', moment('2021-12-12'));
     expect(result.isSame(moment('2021-12-11'), 'd')).toBe(true);
   });
 
   it('15 января', () => {
-    const result = DateParser.Parse('15 января', moment());
+    const result = DateParser.Parse('15 января', moment('2021-12-12'));
     expect(result.isSame(moment('2022-01-15'), 'd')).toBe(true);
   });
 
   it('15 число', () => {
-    const result = DateParser.Parse('15 число', moment());
+    const result = DateParser.Parse('15 число', moment('2021-12-12'));
     expect(result.isSame(moment('2021-12-15'), 'd')).toBe(true);
   });
 
   it('15 02', () => {
-    const result = DateParser.Parse('15 02', moment());
+    const result = DateParser.Parse('15 02', moment('2021-12-12'));
     expect(result.isSame(moment('2022-02-15'), 'd')).toBe(true);
   });
 
@@ -88,22 +88,22 @@ describe('Date parser', () => {
   });
 
   it('21 декабря 22', () => {
-    const result = DateParser.Parse('21 декабря 22', moment());
+    const result = DateParser.Parse('21 декабря 22', moment('2021-12-12'));
     expect(result.isSame(moment('2022-12-21'), 'd')).toBe(true);
   });
 
   it('21 декабря 2022', () => {
-    const result = DateParser.Parse('21 декабря 2022', moment());
+    const result = DateParser.Parse('21 декабря 2022', moment('2021-12-12'));
     expect(result.isSame(moment('2022-12-21'), 'd')).toBe(true);
   });
 
   it('21.01', () => {
-    const result = DateParser.Parse('21.01', moment());
+    const result = DateParser.Parse('21.01', moment('2021-12-12'));
     expect(result.isSame(moment('2022-01-21'), 'd')).toBe(true);
   });
 
   it('21.01.2024', () => {
-    const result = DateParser.Parse('21.01.2024', moment());
+    const result = DateParser.Parse('21.01.2024', moment('2021-12-12'));
     expect(result.isSame(moment('2024-01-21'), 'd')).toBe(true);
   });
 
