@@ -3,13 +3,23 @@ import { DateParser } from './date.parser';
 
 describe('Date parser', () => {
   it('сегодня', () => {
-    const result = DateParser.Parse('сегодня', moment('2021-12-12'));
+    const result = DateParser.Parse('сегодня', moment('2021-12-12 10:00'));
+    expect(result.isSame(moment('2021-12-12'), 'd')).toBe(true);
+  });
+
+  it('сегодня 2:20', () => {
+    const result = DateParser.Parse('сегодня', moment('2021-12-12 2:20'));
     expect(result.isSame(moment('2021-12-12'), 'd')).toBe(true);
   });
 
   it('завтра', () => {
-    const result = DateParser.Parse('завтра', moment('2021-12-12'));
+    const result = DateParser.Parse('завтра', moment('2021-12-12 10:00'));
     expect(result.isSame(moment('2021-12-13'), 'd')).toBe(true);
+  });
+
+  it('завтра 2:20', () => {
+    const result = DateParser.Parse('завтра', moment('2021-12-12 2:20'));
+    expect(result.isSame(moment('2021-12-12'), 'd')).toBe(true);
   });
 
   it('послезавтра', () => {
@@ -23,7 +33,7 @@ describe('Date parser', () => {
   });
 
   it('после поза завтра', () => {
-    const result = DateParser.Parse('после поза завтра', moment('2021-12-12'));
+    const result = DateParser.Parse('после поза завтра', moment('2021-12-12 10:00'));
     expect(result.isSame(moment('2021-12-13'), 'd')).toBe(true);
   });
 
@@ -108,8 +118,13 @@ describe('Date parser', () => {
   });
 
   it('вчера', () => {
-    const result = DateParser.Parse('вчера', moment('2021-12-12'));
+    const result = DateParser.Parse('вчера', moment('2021-12-12 10:00'));
     expect(result.isSame(moment('2021-12-11'), 'd')).toBe(true);
+  });
+
+  it('вчера 2:20', () => {
+    const result = DateParser.Parse('вчера', moment('2021-12-12 2:20'));
+    expect(result.isSame(moment('2021-12-10'), 'd')).toBe(true);
   });
 
   it('позавчера', () => {

@@ -4,7 +4,7 @@ import { parseInt } from 'lodash';
 import { Logger } from '@nestjs/common';
 
 const MNEMONIC_REGEX =
-  /((?:поза *)*вчера|завтра|(?:после *)*завтра|понедельник|пн|вторник|вт|среду|ср|четверг|чт|пятницу|пт|субботу|сб|воскресенье|вс)(?= |$)/i;
+  /((?:поза *)*вчера|сегодня|завтра|(?:после *)*завтра|понедельник|пн|вторник|вт|среду|ср|четверг|чт|пятницу|пт|субботу|сб|воскресенье|вс)(?= |$)/i;
 const DATE_REGEX =
   /(\d{1,2}) (январ|феврал|март|апрел|ма|июн|июл|август|сентябр|октябр|ноябр|декабр|число)[а-я]? ?(\d{2,4})?|\d{1,2}[.\/\- ]\d{1,2}(?:[.\/\- ]\d{2,4})?/i;
 
@@ -83,17 +83,22 @@ export class DateParser {
       return date;
     }
 
-    const relativeAdd = this.relativeAdd(message);
+    const relativeAdd = this.relativeAdd(message, currentDate);
     date.add(relativeAdd, 'd');
 
     return date;
   }
 
-  private static relativeAdd(mnemonic: string): number {
+  private static relativeAdd(mnemonic: string, currentDate: DateTime): number {
     let add = 0;
+
+    const currentHours = currentDate.hour();
 
     if (mnemonic.match(/(после)/gi)) add += mnemonic.match(/(после)/gi).length;
     if (mnemonic.match(/(поза)/gi)) add += mnemonic.match(/(поза)/gi).length * -1;
+
+    if (add == 0 && mnemonic.match(/(сегодня|завтра)/gi) && currentHours >= 0 && currentHours < 3) return 0;
+    else if (add == 0 && mnemonic.match(/(вчера)/gi) && currentHours >= 0 && currentHours < 3) return -2;
 
     if (mnemonic.match(/(завтра)/gi)) add += 1;
     if (mnemonic.match(/(вчера)/gi)) add -= 1;
