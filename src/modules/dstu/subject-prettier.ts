@@ -23,7 +23,12 @@ export const pretties: SubjectPrettierDef[] = [
             type: LessonTypeDefinition[match[1]],
             name: 'Физическая культура и спорт', //FUCKED for пр. Физическая культура и спорт: основная группа
           };
-        //пр. Физическая культура и спорт (Общая физическая подготовка) => пр. Общая физическая подготовка
+        //пр. Физическая культура и спорт (Специальная медицинская группа) => пр. Общая физическая подготовка
+        else if (subject.match(/медицинская/gi))
+          return {
+            type: LessonTypeDefinition[match[1]],
+            name: 'Физическая культура и спорт', //FUCKED for пр. Физическая культура и спорт (Специальная медицинская группа)
+          };
         else
           return {
             type: LessonTypeDefinition[match[1]],

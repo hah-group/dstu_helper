@@ -6,7 +6,7 @@ import * as str from 'string';
 import { TeacherArgs } from '../teacher/teacher.entity';
 
 const SUBJECT_WITHOUT_BRACKETS = /(лек|лаб|пр|пра|зач|экз)\.? ([а-яa-z\-. ,:\/\d]+?)(?:, п\/г (\d)|$)/i;
-const SUBJECT_WITH_BRACKETS = /(лек|лаб|пр|пра|зач|экз)\.? ([а-яa-z\-. ,:\/\d]+?) ?\((.*?)\)$/i;
+const SUBJECT_WITH_BRACKETS = /(лек|лаб|пр|пра|зач|экз)\.? ([а-яa-z\-. ,:\/\d]+?) ?\((.*?)\)/i;
 
 export interface SubjectParsed {
   type: LessonType;
