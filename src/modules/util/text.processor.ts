@@ -13,10 +13,16 @@ import {
 import * as lodash from 'lodash';
 import { i18nReplacements, localization } from './localization';
 import { TimeRelativeProcessor } from './time-relative.processor';
+import { DATE_REGEX_BODY, FULL_DATE_REGEX_BODY, MNEMONIC_REGEX_BODY } from './date.parser';
 
-export const SCHEDULE_ACTIVATION = /^расписание( пар)?/gi;
-export const WHAT_ACTIVATION = /(что|чо|шо|че|чё)( (за|по|у нас|завтра))* (парам|пары)( на)?( завтра)?.*$/gi;
-export const AT_ACTIVATION = /пары (на|в|во) [а-яё\d]+/gi;
+const ANY_DATE = `${MNEMONIC_REGEX_BODY}|${DATE_REGEX_BODY}|${FULL_DATE_REGEX_BODY}`;
+
+export const SCHEDULE_ACTIVATION = new RegExp(`^расписание( пар)?(( (${ANY_DATE}))|( на (${ANY_DATE})))?$`, 'gi');
+export const WHAT_ACTIVATION = new RegExp(
+  `(что|чо|шо|че|чё)( (за|по|у нас|(${ANY_DATE})|на ${ANY_DATE}))* (парам|пары)( на)?( (${ANY_DATE}))?$`,
+  'gi',
+);
+export const AT_ACTIVATION = new RegExp(`пары( (на|в|во))?( (${ANY_DATE}))+`, 'gi');
 export const WHOM_ACTIVATION = /(.*какие (завтра|послезавтра)? (пары).*|пары.*?какие)/gi;
 
 export const LANG_ORDER = /первая|вторая|третья|четв[её]ртая|пятая|шестая|седьмая/i;

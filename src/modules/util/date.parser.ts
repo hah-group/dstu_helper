@@ -3,12 +3,16 @@ import { DateTime, Time } from './time';
 import { parseInt } from 'lodash';
 import { Logger } from '@nestjs/common';
 
-const MNEMONIC_REGEX =
-  /((?:поза *)*вчера|сегодня|завтра|(?:после *)*завтра|понедельник|пн|вторник|вт|среду|ср|четверг|чт|пятницу|пт|субботу|сб|воскресенье|вс)(?= |$)/i;
-const DATE_REGEX =
-  /(\d{1,2}) (январ|феврал|март|апрел|ма|июн|июл|август|сентябр|октябр|ноябр|декабр|число)[а-я]? ?(\d{2,4})?|\d{1,2}[.\/\- ]\d{1,2}(?:[.\/\- ]\d{2,4})?/i;
+export const MNEMONIC_REGEX_BODY =
+  '((?:поза *)*вчера|сегодня|завтра|(?:после *)*завтра|понедельник|пн|вторник|вт|среду|ср|четверг|чт|пятницу|пт|субботу|сб|воскресенье|вс)(?= |$)';
+const MNEMONIC_REGEX = new RegExp(MNEMONIC_REGEX_BODY, 'i');
 
-const FULL_DATE_REGEX = /(\d{1,2})[.\/\- ](\d{1,2})(?:[.\/\- ](\d{2,4}))?/i;
+export const DATE_REGEX_BODY =
+  '(\\d{1,2}) (январ|феврал|март|апрел|ма|июн|июл|август|сентябр|октябр|ноябр|декабр|число)[а-я]? ?(\\d{2,4})?|\\d{1,2}[.\\/\\- ]\\d{1,2}(?:[.\\/\\- ]\\d{2,4})?';
+const DATE_REGEX = new RegExp(DATE_REGEX_BODY, 'i');
+
+export const FULL_DATE_REGEX_BODY = '(\\d{1,2})[.\\/\\- ](\\d{1,2})(?:[.\\/\\- ](\\d{2,4}))?';
+const FULL_DATE_REGEX = new RegExp(FULL_DATE_REGEX_BODY, 'i');
 
 export class DateParser {
   private static readonly log = new Logger('DateParser');
