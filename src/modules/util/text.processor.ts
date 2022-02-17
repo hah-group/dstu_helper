@@ -36,7 +36,7 @@ export const ORDER_FIRST_LESSON_ACTIVATION =
 export const BAN_WORDS = /(задали)/i;
 
 export const WHERE_AUDIENCE = /^(куда|где|какая) (идти|пара|аудитория)/gi;
-export const NEXT_AUDIENCE = /^(какая |где |что )?(некст|следующая|след)( пара)?$/gi;
+export const NEXT_AUDIENCE = /^(какая |где |что )?(некст|следующая|след)( пара)?/gi;
 
 export const banWordsExits = (text: string): boolean => {
   return !!text.match(BAN_WORDS);

@@ -15,7 +15,7 @@ services:
       - FLAVOUR
       - TZ
       - USE_POLLING
-    image: "registry.mtdl.ru/dstu_helper_app:1.0.8r2"
+    image: "registry.mtdl.ru/dstu_helper_app:1.0.8r3"
     ports:
       - "3050:3000"
 
