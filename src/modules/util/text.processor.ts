@@ -14,6 +14,7 @@ import * as lodash from 'lodash';
 import { i18nReplacements, localization } from './localization';
 import { TimeRelativeProcessor } from './time-relative.processor';
 import { DATE_REGEX_BODY, FULL_DATE_REGEX_BODY, MNEMONIC_REGEX_BODY } from './date.parser';
+import { Logger } from '@nestjs/common';
 
 const ANY_DATE = `${MNEMONIC_REGEX_BODY}|${DATE_REGEX_BODY}|${FULL_DATE_REGEX_BODY}`;
 
@@ -49,6 +50,8 @@ export class ProcessedTextInstance {
 export type ProcessedText = ProcessedTextInstance | ProcessedTextInstance[];
 
 export class TextProcessor {
+  private static readonly log = new Logger('TextProcessor');
+
   public static buildText(texts: ProcessedText, locale: string): string {
     const result: string[] = [];
 
@@ -143,10 +146,18 @@ export class TextProcessor {
   }
 
   public static short(group: StudyGroup, now: boolean): ProcessedText {
-    const lessonAtDay = group.getLessonsAtDay(Time.get());
-    const groupProcessor = new LessonGroupProcessor(lessonAtDay);
+    const currentTime = Time.get();
+    this.log.debug(`Request time: ${currentTime}`);
 
-    let order = now ? TimeRelativeProcessor.now(false, Time.get()) : TimeRelativeProcessor.next(Time.get());
+    const lessonAtDay = group.getLessonsAtDay(currentTime);
+    this.log.debug(`Lessons at day: ${lessonAtDay.length}`);
+
+    const groupProcessor = new LessonGroupProcessor(lessonAtDay);
+    this.log.debug(`Group processor result`);
+    console.log(groupProcessor);
+
+    let order = now ? TimeRelativeProcessor.now(false, currentTime) : TimeRelativeProcessor.next(currentTime);
+    this.log.debug(`Requested order: ${order}, with now flag: ${now}, at ${Time.get()}`);
 
     const firstInOrder = groupProcessor.getOrders()[0];
     const isClosest = order < firstInOrder;
@@ -154,10 +165,14 @@ export class TextProcessor {
 
     const target: LessonGroupResult | undefined = groupProcessor.getLessonGroup(order);
 
+    this.log.debug(`FirstInOrder: ${firstInOrder} | IsClosest: ${isClosest}`);
+    this.log.debug(`Target result`);
+    console.log(target);
+
     if (!target)
       return now
-        ? this.notNowLessons(lessonAtDay.length, Time.get())
-        : this.notNextLessons(lessonAtDay.length, Time.get());
+        ? this.notNowLessons(lessonAtDay.length, currentTime)
+        : this.notNextLessons(lessonAtDay.length, currentTime);
 
     let outLesson: Lesson;
     let result: ProcessedTextInstance[];

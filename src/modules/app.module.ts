@@ -64,6 +64,6 @@ export class AppModule {
   }
 
   configure(consumer: MiddlewareConsumer): any {
-    if (process.env.FLAVOUR == 'prod') consumer.apply(VkMiddleware).forRoutes('bot/vk');
+    if (process.env.USE_POLLING == 'false') consumer.apply(VkMiddleware).forRoutes('bot/vk');
   }
 }
