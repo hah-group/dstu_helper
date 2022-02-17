@@ -14,6 +14,7 @@ services:
       - SYSTEM_NOTIFICATION_TG_USER
       - FLAVOUR
       - TZ
+      - USE_POLLING
     image: "registry.mtdl.ru/dstu_helper_app:1.0.8r2"
     ports:
       - "3050:3000"
