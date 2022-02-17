@@ -7,4 +7,5 @@ export const LessonTypeDefinition = {
   лаб: LessonType.LABORATORY,
   экз: LessonType.EXAMINATION,
   зач: LessonType.EXAM_WITHOUT_MARK,
+  зчО: LessonType.EXAM_WITHOUT_MARK,
 };
