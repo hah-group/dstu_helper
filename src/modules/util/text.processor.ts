@@ -153,8 +153,6 @@ export class TextProcessor {
     this.log.debug(`Lessons at day: ${lessonAtDay.length}`);
 
     const groupProcessor = new LessonGroupProcessor(lessonAtDay);
-    this.log.debug(`Group processor result`);
-    console.log(groupProcessor);
 
     let order = now ? TimeRelativeProcessor.now(false, currentTime) : TimeRelativeProcessor.next(currentTime);
     this.log.debug(`Requested order: ${order}, with now flag: ${now}, at ${Time.get()}`);
@@ -166,8 +164,6 @@ export class TextProcessor {
     const target: LessonGroupResult | undefined = groupProcessor.getLessonGroup(order);
 
     this.log.debug(`FirstInOrder: ${firstInOrder} | IsClosest: ${isClosest}`);
-    this.log.debug(`Target result`);
-    console.log(target);
 
     if (!target)
       return now
