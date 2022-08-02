@@ -5,6 +5,7 @@ import { ConversationFactory } from './conversation.factory';
 import { Nullable } from '../util/nullable';
 import { SocialType } from '@prisma/client';
 
+
 @Injectable()
 export class ConversationService {
   constructor(private readonly prismaService: PrismaService) {}
