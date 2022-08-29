@@ -35,6 +35,7 @@ export class CacheService {
     this.log.log(`Schedule update is ended in ${moment().diff(startTime, 's', true)} seconds`);
   }
 
+  @Cron('0 0 12 30 08 *')
   public async bumpGroupCourse(): Promise<BumpedGroupsResult[]> {
     this.log.log('Delete all lessons');
     const lessonBatch = await this.lessonService.deleteAll();
