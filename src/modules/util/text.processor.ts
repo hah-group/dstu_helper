@@ -15,6 +15,7 @@ import { i18nReplacements, localization } from './localization';
 import { TimeRelativeProcessor } from './time-relative.processor';
 import { DATE_REGEX_BODY, FULL_DATE_REGEX_BODY, MNEMONIC_REGEX_BODY } from './date.parser';
 import { Logger } from '@nestjs/common';
+import { BumpedGroupsResult } from '../dstu/dstu.service';
 
 const ANY_DATE = `${MNEMONIC_REGEX_BODY}|${DATE_REGEX_BODY}|${FULL_DATE_REGEX_BODY}`;
 
@@ -260,6 +261,30 @@ export class TextProcessor {
           : `SCHEDULE_AT_DATE_BUTTON_PREVIOUS_WEEK ${dateText}`,
       );
     }
+  }
+
+  public static groupCourseBump(groups: BumpedGroupsResult[]): ProcessedTextInstance {
+    const stringBuilder: ProcessedTextInstance[] = [];
+
+    if (groups.length < 2) {
+      stringBuilder.push(this.buildSimpleText('GROUP_COURSE_BUMP_ONE_HEADER', { groupName: groups[0].group.name }));
+    } else {
+      stringBuilder.push(this.buildSimpleText('GROUP_COURSE_BUMP_MANY_HEADER'));
+      groups.forEach((group) => {
+        stringBuilder.push({
+          phrase: `${group.oldGroup.name} -> ${group.group.name}`,
+        });
+      });
+    }
+    stringBuilder.push(this.buildSimpleText('\nGROUP_COURSE_SET_GROUP_HELP'));
+
+    const resultPhrases = stringBuilder.map((processedText) => processedText.phrase);
+    const resultData = stringBuilder.map((processedText) => processedText.data);
+
+    return {
+      phrase: resultPhrases.join('\n'),
+      data: lodash.assign({}, ...resultData),
+    };
   }
 
   private static scheduleEmpty(atDate: DateTime, structDate = false): ProcessedTextInstance {

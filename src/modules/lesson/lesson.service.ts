@@ -2,12 +2,17 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Lesson } from './lesson.entity';
 import { PrismaPromise } from '@prisma/client';
+import { BatchPayload } from '../study-group/study-group.service';
 
 @Injectable()
 export class LessonService {
   private readonly log = new Logger('LessonService');
 
   constructor(private readonly prismaService: PrismaService) {}
+
+  public async deleteAll(): Promise<BatchPayload> {
+    return this.prismaService.lesson.deleteMany();
+  }
 
   public save(entity: Lesson): PrismaPromise<any> {
     const entityId = entity.id;

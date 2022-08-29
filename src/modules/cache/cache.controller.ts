@@ -12,4 +12,9 @@ export class CacheController {
     this.logger.warn('Manual cache update');
     await this.cacheService.update();
   }
+
+  @Get('bump-group')
+  async bumpGroup(): Promise<any> {
+    return this.cacheService.bumpGroupCourse();
+  }
 }

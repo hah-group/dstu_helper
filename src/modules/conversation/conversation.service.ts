@@ -5,7 +5,6 @@ import { ConversationFactory } from './conversation.factory';
 import { Nullable } from '../util/nullable';
 import { SocialType } from '@prisma/client';
 
-
 @Injectable()
 export class ConversationService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -28,6 +27,23 @@ export class ConversationService {
 
     const { ConversationUsers, ...conversation } = data;
     return ConversationFactory.create(conversation, ConversationUsers);
+  }
+
+  public async getAll(): Promise<Conversation[]> {
+    const data = await this.prismaService.conversation.findMany({
+      include: {
+        ConversationUsers: {
+          include: {
+            User: true,
+          },
+        },
+      },
+    });
+
+    return data.map((record) => {
+      const { ConversationUsers, ...conversation } = record;
+      return ConversationFactory.create(conversation, ConversationUsers);
+    });
   }
 
   public async save(entity: Conversation): Promise<void> {

@@ -5,6 +5,7 @@ import { DateTime } from '../util/time';
 import { GroupUpdateFailedException } from '../bot-exception/exception/group-update-failed.exception';
 import { GroupUpdateInProgressException } from '../bot-exception/exception/group-update-in-progress.exception';
 import { Logger } from '@nestjs/common';
+import { DstuApiGroupInfo } from '../dstu/api-response-group.dstu.type';
 
 export interface StudyGroupArgs {
   id: number;
@@ -15,10 +16,11 @@ export interface StudyGroupArgs {
 }
 
 export class StudyGroup {
+  public id: number;
+  public name: string;
+  public readonly lessons: Lesson[];
   private readonly log = new Logger('StudyGroup');
-
-  public readonly id: number;
-  public readonly name: string;
+  private readonly _users: Map<number, User>;
 
   constructor(params: StudyGroupArgs) {
     const { id, lessons, name, updateStatus, users } = params;
@@ -29,10 +31,22 @@ export class StudyGroup {
     this._users = users;
   }
 
-  public readonly lessons: Lesson[];
-  private readonly _users: Map<number, User>;
-
   public _updateStatus: Prisma.UpdateStatus;
+
+  public get updateStatus(): Prisma.UpdateStatus {
+    return this._updateStatus;
+  }
+
+  public set updateStatus(value: Prisma.UpdateStatus) {
+    this._updateStatus = value;
+    this.log.debug(`Set group ${this.name} update status ${value}`);
+  }
+
+  public get users(): User[] {
+    const users = [];
+    this._users.forEach((value) => users.push(value));
+    return users;
+  }
 
   public addUser(user: User): void {
     this._users.set(user.id, user);
@@ -43,19 +57,9 @@ export class StudyGroup {
     this._users.delete(user.id);
   }
 
-  public get users(): User[] {
-    const users = [];
-    this._users.forEach((value) => users.push(value));
-    return users;
-  }
-
-  public get updateStatus(): Prisma.UpdateStatus {
-    return this._updateStatus;
-  }
-
-  public set updateStatus(value: Prisma.UpdateStatus) {
-    this._updateStatus = value;
-    this.log.debug(`Set group ${this.name} update status ${value}`);
+  public updateGroupInfo(info: DstuApiGroupInfo) {
+    this.name = info.name;
+    this.id = info.id;
   }
 
   public getLessonsAtDay(date: DateTime): Lesson[] {

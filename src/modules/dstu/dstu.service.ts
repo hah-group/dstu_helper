@@ -13,6 +13,12 @@ import { Lesson, LessonArgs } from '../lesson/lesson.entity';
 import { TeacherArgs } from '../teacher/teacher.entity';
 import { LessonFactory } from '../lesson/lesson.factory';
 import { GroupUpdateFailedException } from '../bot-exception/exception/group-update-failed.exception';
+import * as lodash from 'lodash';
+
+export interface BumpedGroupsResult {
+  oldGroup: StudyGroup;
+  group: StudyGroup;
+}
 
 @Injectable()
 export class DstuService {
@@ -88,6 +94,38 @@ export class DstuService {
     }
 
     await this.studyGroupService.save(group);
+  }
+
+  public async bumpGroups(): Promise<BumpedGroupsResult[]> {
+    const groups = await this.studyGroupService.getAll();
+
+    const groupsInfo = await this.getGroups();
+    const groupsInfoMap = lodash.keyBy(groupsInfo, (groupInfo) => groupInfo.name);
+
+    const updatedGroups = lodash.compact(
+      groups.map((group) => {
+        this.log.log(`Try transition group ${group.name}`);
+
+        const oldGroup = lodash.cloneDeep(group);
+        const match = group.name.match(/[а-я]+(\d)\d/i);
+        if (!match || !lodash.isNumber(parseInt(match[1]))) return;
+
+        const course = parseInt(match[1]) + 1;
+        const newGroupName = group.name.replace(/([а-я]+)\d(\d)/i, `$1${course}$2`);
+        const newInfo = groupsInfoMap[newGroupName];
+        if (newInfo) {
+          this.log.log(`Group transition success (${group.name}|${group.id} -> ${newInfo.name}|${newInfo.id})`);
+          group.updateGroupInfo(newInfo);
+          return {
+            group: group,
+            oldGroup: oldGroup,
+          };
+        }
+      }),
+    );
+
+    await this.studyGroupService.saveMany(groups);
+    return updatedGroups;
   }
 
   public async getLessons(group: StudyGroup): Promise<Lesson[]> {
@@ -166,7 +204,13 @@ export class DstuService {
   }
 
   public async getGroups(): Promise<DstuApiGroupInfo[]> {
-    const dateString = `${Time.get().format('YYYY')}-${Time.get().add(1, 'y').format('YYYY')}`;
+    let dateString;
+    if (Time.get().isAfter(moment('08-15', 'MM-DD'))) {
+      dateString = `${Time.get().format('YYYY')}-${Time.get().add(1, 'y').format('YYYY')}`;
+    } else {
+      dateString = `${Time.get().subtract(1, 'y').format('YYYY')}-${Time.get().format('YYYY')}`;
+    }
+
     const url = `https://edu.donstu.ru/api/raspGrouplist?year${dateString}`;
 
     const job = await this.dstuProducer.request({ url });

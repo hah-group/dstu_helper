@@ -27,7 +27,7 @@ import { OnMessage } from '../bot/decorator/on-message.decorator';
 import { SocialSource } from '../bot/type/social.enum';
 import { UserFactory } from '../user/user.factory';
 import { Conversation } from '../conversation/conversation.entity';
-import { DstuService } from '../dstu/dstu.service';
+import { BumpedGroupsResult, DstuService } from '../dstu/dstu.service';
 import { StudyGroupFactory } from '../study-group/study-group.factory';
 import { StudyGroupService } from '../study-group/study-group.service';
 import { StudyGroup } from '../study-group/study-group.entity';
@@ -36,6 +36,10 @@ import { DateParser } from '../util/date.parser';
 import { GroupNotFoundException } from '../bot-exception/exception/group-not-found.exception';
 import { Time } from '../util/time';
 import { LanguageOrderDefinition } from '../util/definition/language-order.definition';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import * as lodash from 'lodash';
+import { InternalEvent } from '../util/internal-event.enum';
+import { delay } from '../util/delay';
 
 @Injectable()
 export class ConversationBotHandler {
@@ -47,7 +51,31 @@ export class ConversationBotHandler {
     private readonly dstuService: DstuService,
     private readonly studyGroupService: StudyGroupService,
     private readonly cacheService: CacheService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
+
+  @OnEvent(InternalEvent.BROADCAST_BUMP_GROUP_COURSE_NOTIFICATION)
+  public async broadcastGroupCourseBump(groups: BumpedGroupsResult[]): Promise<void> {
+    this.log.log(`Start broadcast conversation notifications`);
+    const conversations = await this.conversationService.getAll();
+    this.log.log(`All conversations ${conversations.length}`);
+    const groupsMap = lodash.keyBy(groups, (group) => group.group.id);
+    this.log.log(`Updated groups ${groups.length}`);
+    for (const conversation of conversations) {
+      const conversationGroupsIds = conversation.groupsIds;
+      const conversationGroups = lodash.compact(
+        conversationGroupsIds.map((conversationGroupId) => groupsMap[conversationGroupId]),
+      );
+      this.log.log(`For conversation ${conversation.id} groups ${conversationGroups.length}`);
+      if (conversationGroups.length < 1) continue;
+
+      this.log.log(`Send bump notification for conversation ${conversation.id}`);
+      await this.vkService.sendMessageInQueue(conversation.id, TextProcessor.groupCourseBump(conversationGroups));
+
+      this.log.log('Delay 500ms');
+      await delay(500);
+    }
+  }
 
   @OnInvite('iam')
   public async onSelfInvite(message: InviteMessage): Promise<void> {

@@ -40,16 +40,6 @@ export default class DstuLessonParser {
     }
   }
 
-  private static subjectPrettier(subject: string, match: RegExpMatchArray): SubjectParsed | undefined {
-    for (const pretty of pretties) {
-      if (!subject.match(pretty.regex)) continue;
-
-      const prettyResult = pretty.handler(subject, match);
-      if (prettyResult && prettyResult.type && prettyResult.name) return prettyResult;
-      return undefined;
-    }
-  }
-
   public static classRoomParse(
     classRoom: string,
   ): { corpus?: string; classRoom?: string; distance: boolean } | undefined {
@@ -102,6 +92,16 @@ export default class DstuLessonParser {
       lastName: str(match[1]).capitalize().s,
       middleName: str(match[3]).capitalize().s,
     };
+  }
+
+  private static subjectPrettier(subject: string, match: RegExpMatchArray): SubjectParsed | undefined {
+    for (const pretty of pretties) {
+      if (!subject.match(pretty.regex)) continue;
+
+      const prettyResult = pretty.handler(subject, match);
+      if (prettyResult && prettyResult.type && prettyResult.name) return prettyResult;
+      return undefined;
+    }
   }
 
   /* private static isCurrent(dateStart: Date, dateEnd: Date): boolean {

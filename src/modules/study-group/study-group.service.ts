@@ -5,6 +5,10 @@ import { StudyGroupFactory } from './study-group.factory';
 import { PrismaPromise } from '@prisma/client';
 import { User } from '../user/user.entity';
 
+export type BatchPayload = {
+  count: number;
+};
+
 @Injectable()
 export class StudyGroupService {
   constructor(private prismaService: PrismaService) {}
@@ -123,14 +127,31 @@ export class StudyGroupService {
 
     return this.prismaService.studyGroup.upsert({
       where: {
-        id: entity.id,
+        name: entity.name,
       },
       create: data,
       update: data,
     });
   }
 
-  public async saveMany(entities: StudyGroup[]): Promise<void> {
-    this.prismaService.$transaction(entities.map((group) => this.save(group)));
+  public async clearUnused(): Promise<BatchPayload> {
+    const users = await this.prismaService.user.findMany({
+      where: {
+        groupId: {
+          not: null,
+        },
+      },
+    });
+    return this.prismaService.studyGroup.deleteMany({
+      where: {
+        id: {
+          notIn: users.map((user) => user.groupId),
+        },
+      },
+    });
+  }
+
+  public async saveMany(entities: StudyGroup[]): Promise<any[]> {
+    return this.prismaService.$transaction(entities.map((group) => this.save(group)));
   }
 }

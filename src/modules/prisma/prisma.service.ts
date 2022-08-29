@@ -8,6 +8,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       log: process.env.FLAVOUR == 'dev' ? ['warn', 'error', 'info'] : ['warn', 'error'],
     });
   }
+
   async onModuleInit() {
     await this.$connect();
   }

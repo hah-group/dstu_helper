@@ -1,15 +1,24 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DstuService } from '../dstu/dstu.service';
+import { BumpedGroupsResult, DstuService } from '../dstu/dstu.service';
 import * as moment from 'moment';
 
 import { Cron } from '@nestjs/schedule';
 import { StudyGroup } from '../study-group/study-group.entity';
+import { LessonService } from '../lesson/lesson.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { InternalEvent } from '../util/internal-event.enum';
+import { StudyGroupService } from '../study-group/study-group.service';
 
 @Injectable()
 export class CacheService {
   private readonly log = new Logger('CacheService');
 
-  constructor(private dstuService: DstuService) {}
+  constructor(
+    private dstuService: DstuService,
+    private readonly lessonService: LessonService,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly studyGroupService: StudyGroupService,
+  ) {}
 
   @Cron('0 30 0 * * *')
   public async update(): Promise<void> {
@@ -24,6 +33,25 @@ export class CacheService {
     const startTime = moment();
     await this.dstuService.updateGroup(group);
     this.log.log(`Schedule update is ended in ${moment().diff(startTime, 's', true)} seconds`);
+  }
+
+  public async bumpGroupCourse(): Promise<BumpedGroupsResult[]> {
+    this.log.log('Delete all lessons');
+    const lessonBatch = await this.lessonService.deleteAll();
+    this.log.log(`Deleted ${lessonBatch.count} lessons`);
+
+    this.log.log('Try bump group course');
+    const startTime = moment();
+    const groups = await this.dstuService.bumpGroups();
+    this.log.log(`Group bump course is ended in ${moment().diff(startTime, 's', true)} seconds`);
+
+    this.log.log('Delete unused groups');
+    const groupBatch = await this.studyGroupService.clearUnused();
+    this.log.log(`Deleted ${groupBatch.count} groups`);
+
+    await this.update();
+    this.eventEmitter.emit(InternalEvent.BROADCAST_BUMP_GROUP_COURSE_NOTIFICATION, groups);
+    return groups;
   }
 
   /*async findGroup(groupName: string): Promise<DstuApiGroupInfo | undefined> {

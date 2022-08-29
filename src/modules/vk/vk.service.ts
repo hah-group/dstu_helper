@@ -30,10 +30,9 @@ const CONVERSATION_START_ID = 2000000000;
 
 @Injectable()
 export class VkService {
-  private readonly log = new Logger('VK');
-
-  private readonly vkApi: VK;
   public readonly bot: VkBot;
+  private readonly log = new Logger('VK');
+  private readonly vkApi: VK;
   private handlers: Set<Handler> = new Set<Handler>();
 
   constructor(
@@ -105,6 +104,15 @@ export class VkService {
       this.log.error(`Send message to ${peerId} failed`);
       this.log.error(e.stack);
     }
+  }
+
+  public async sendMessageInQueue(peerId: number, text: ProcessedText): Promise<void> {
+    const message = TextProcessor.buildText(text, 'ru');
+    //this.log.debug(`Simulating send to peer: ${peerId} message:\n${message}`);
+    await this.vkProducer.send({
+      peerId: peerId,
+      text: message,
+    });
   }
 
   public async editMessage(params: Omit<VkJobEdit, 'type'>): Promise<void> {

@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import { User } from '../user/user.entity';
 import { ConversationUserFactory } from '../user/conversation-user.factory';
 import { ConversationUser } from '../user/conversation-user.entity';
+import * as lodash from 'lodash';
 
 export interface ConversationArgs {
   id: number;
@@ -14,12 +15,9 @@ export interface ConversationArgs {
 }
 
 export class Conversation {
-  private readonly log = new Logger('Conversation');
-
   public readonly id: number;
-  private _title: Nullable<string>;
   public readonly settings: any;
-  private _status: Prisma.ConversationStatus;
+  private readonly log = new Logger('Conversation');
   private readonly _users: Map<number, ConversationUser>;
 
   constructor(params: ConversationArgs) {
@@ -29,6 +27,38 @@ export class Conversation {
     this._title = title;
     this._status = status;
     this._users = users;
+  }
+
+  private _title: Nullable<string>;
+
+  public get title(): Nullable<string> {
+    return this._title;
+  }
+
+  public set title(value) {
+    this._title = value;
+  }
+
+  private _status: Prisma.ConversationStatus;
+
+  public get status(): Prisma.ConversationStatus {
+    return this._status;
+  }
+
+  public set status(value) {
+    this.log.log(`Set conversation ${this.id} status ${value}`);
+    this._status = value;
+  }
+
+  public get users(): ConversationUser[] {
+    const users = [];
+    this._users.forEach((value) => users.push(value));
+    return users;
+  }
+
+  public get groupsIds(): number[] {
+    const groupsIds = this.users.map((user) => user.groupId);
+    return lodash.uniq(groupsIds);
   }
 
   public addUser(user: User, role: Prisma.Role = 'STUDENT'): void {
@@ -43,12 +73,6 @@ export class Conversation {
     //this.settings = {};
     this._status = 'NOT_CONFIGURED';
     this._title = null;
-  }
-
-  public get users(): ConversationUser[] {
-    const users = [];
-    this._users.forEach((value) => users.push(value));
-    return users;
   }
 
   public isAdmin(user: User): boolean {
@@ -68,22 +92,5 @@ export class Conversation {
 
   public isMember(user: User): boolean {
     return !!this._users.get(user.id);
-  }
-
-  public get status(): Prisma.ConversationStatus {
-    return this._status;
-  }
-
-  public set status(value) {
-    this.log.log(`Set conversation ${this.id} status ${value}`);
-    this._status = value;
-  }
-
-  public get title(): Nullable<string> {
-    return this._title;
-  }
-
-  public set title(value) {
-    this._title = value;
   }
 }

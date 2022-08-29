@@ -3,6 +3,7 @@ import { LessonType } from '@prisma/client';
 export const LessonTypeDefinition = {
   пр: LessonType.PRACTICAL,
   Пра: LessonType.PRACTICAL,
+  фв: LessonType.PRACTICAL,
   лек: LessonType.LECTURE,
   лаб: LessonType.LABORATORY,
   экз: LessonType.EXAMINATION,
