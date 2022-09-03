@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { OnMessage } from '../bot/decorator/on-message.decorator';
-import { TextMessage } from '../bot/type/message.type';
+import { OnMessage } from '../../framework/bot/decorator/on-message.decorator';
+import { TextMessage } from '../../framework/bot/type/message.type';
 import { UserService } from '../user/user.service';
 import { UserStage } from '../user/user-stage.enum';
-import { IsUserStage } from '../bot/decorator/is-user-stage.decorator';
+import { IsUserStage } from '../../framework/bot/decorator/is-user-stage.decorator';
 import { DstuService } from 'src/modules/dstu/dstu.service';
 import { StudyGroupFactory } from '../study-group/study-group.factory';
 import { StudyGroupService } from '../study-group/study-group.service';

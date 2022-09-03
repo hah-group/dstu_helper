@@ -2,8 +2,8 @@ import { Lesson } from 'src/modules/lesson/lesson.entity';
 import Prisma from '@prisma/client';
 import { User } from '../user/user.entity';
 import { DateTime } from '../util/time';
-import { GroupUpdateFailedException } from '../bot-exception/exception/group-update-failed.exception';
-import { GroupUpdateInProgressException } from '../bot-exception/exception/group-update-in-progress.exception';
+import { GroupUpdateFailedException } from '../../framework/bot-exception/exception/group-update-failed.exception';
+import { GroupUpdateInProgressException } from '../../framework/bot-exception/exception/group-update-in-progress.exception';
 import { Logger } from '@nestjs/common';
 import { DstuApiGroupInfo } from '../dstu/api-response-group.dstu.type';
 

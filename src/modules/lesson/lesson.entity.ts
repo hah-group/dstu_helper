@@ -22,7 +22,7 @@ export interface LessonArgs {
 }
 
 export class Lesson {
-  public readonly _id: string;
+  public readonly _id!: string;
   public readonly groupId: number;
   public readonly start: Date;
   public readonly end: Date;

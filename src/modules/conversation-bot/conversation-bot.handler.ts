@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { OnInvite } from '../bot/decorator/on-invite.decorator';
-import { InlineButtonMessage, InviteMessage, TextMessage } from '../bot/type/message.type';
+import { OnInvite } from '../../framework/bot/decorator/on-invite.decorator';
+import { InlineButtonMessage, InviteMessage, TextMessage } from '../../framework/bot/type/message.type';
 import {
   AT_ACTIVATION,
   banWordsExits,
@@ -21,10 +21,10 @@ import {
   ConversationBotCheckAdminButton,
   ConversationBotCheckAdminKeyboard,
 } from './conversation-bot-check-admin.keyboard';
-import { OnInlineButton } from '../bot/decorator/on-inline-button.decorator';
-import { VkService } from '../vk/vk.service';
-import { OnMessage } from '../bot/decorator/on-message.decorator';
-import { SocialSource } from '../bot/type/social.enum';
+import { OnInlineButton } from '../../framework/bot/decorator/on-inline-button.decorator';
+import { VkService } from '../../framework/vk/vk.service';
+import { OnMessage } from '../../framework/bot/decorator/on-message.decorator';
+import { SocialSource } from '../../framework/bot/type/social.enum';
 import { UserFactory } from '../user/user.factory';
 import { Conversation } from '../conversation/conversation.entity';
 import { BumpedGroupsResult, DstuService } from '../dstu/dstu.service';
@@ -33,7 +33,7 @@ import { StudyGroupService } from '../study-group/study-group.service';
 import { StudyGroup } from '../study-group/study-group.entity';
 import { CacheService } from '../cache/cache.service';
 import { DateParser } from '../util/date.parser';
-import { GroupNotFoundException } from '../bot-exception/exception/group-not-found.exception';
+import { GroupNotFoundException } from '../../framework/bot-exception/exception/group-not-found.exception';
 import { Time } from '../util/time';
 import { LanguageOrderDefinition } from '../util/definition/language-order.definition';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { OnMessage } from '../bot/decorator/on-message.decorator';
+import { OnMessage } from '../../framework/bot/decorator/on-message.decorator';
 import {
   PrivateMainMenuScheduleButton,
   PrivateMainMenuWhereLessonButton,
   PrivateMainMenuWhereNextLessonButton,
 } from './private-main-menu.keyboard';
-import { InlineButtonMessage, TextMessage } from '../bot/type/message.type';
+import { InlineButtonMessage, TextMessage } from '../../framework/bot/type/message.type';
 import { StudyGroupService } from '../study-group/study-group.service';
 import { TextProcessor } from '../util/text.processor';
 import { DateTime, Time } from '../util/time';
@@ -20,7 +20,7 @@ import {
   PrivateDaySchedulePreviousWeekButtonId,
   PrivateDayScheduleTodayButtonId,
 } from './private-day-schedule.keyboard';
-import { OnInlineButton } from '../bot/decorator/on-inline-button.decorator';
+import { OnInlineButton } from '../../framework/bot/decorator/on-inline-button.decorator';
 
 @Injectable()
 export class PrivateScheduleHandler {

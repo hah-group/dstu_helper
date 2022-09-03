@@ -1,9 +1,9 @@
 import Prisma, { Role } from '@prisma/client';
 import { ConversationUser } from './conversation-user.entity';
 import { User } from './user.entity';
-import { SocialSource } from '../bot/type/social.enum';
 import { UserStage } from './user-stage.enum';
 import { UserMenu } from './user-menu/user-menu.entity';
+import { SocialSource } from '../../framework/bot/type/social.enum';
 
 export class ConversationUserFactory {
   public static create(params: Prisma.ConversationUser & { User: Prisma.User }): ConversationUser {

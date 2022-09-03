@@ -1,8 +1,8 @@
 import { Logger, MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { VkModule } from './vk/vk.module';
-import { TelegramModule } from './telegram/telegram.module';
-import { BotModule } from './bot/bot.module';
+import { VkModule } from '../framework/vk/vk.module';
+import { TelegramModule } from '../framework/telegram/telegram.module';
+import { BotModule } from '../framework/bot/bot.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bull';
 import { PrismaModule } from './prisma/prisma.module';
@@ -18,8 +18,8 @@ import { SetupBotModule } from './setup-bot/setup-bot.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SystemNotificationModule } from './system-notification/system-notification.module';
 import { ConversationBotModule } from './conversation-bot/conversation-bot.module';
-import { BotExceptionModule } from './bot-exception/bot-exception.module';
-import { VkMiddleware } from './vk/vk.middleware';
+import { BotExceptionModule } from '../framework/bot-exception/bot-exception.module';
+import { VkMiddleware } from '../framework/vk/vk.middleware';
 
 @Module({
   imports: [

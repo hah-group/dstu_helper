@@ -12,7 +12,7 @@ import { StudyGroup } from '../study-group/study-group.entity';
 import { Lesson, LessonArgs } from '../lesson/lesson.entity';
 import { TeacherArgs } from '../teacher/teacher.entity';
 import { LessonFactory } from '../lesson/lesson.factory';
-import { GroupUpdateFailedException } from '../bot-exception/exception/group-update-failed.exception';
+import { GroupUpdateFailedException } from '../../framework/bot-exception/exception/group-update-failed.exception';
 import * as lodash from 'lodash';
 
 export interface BumpedGroupsResult {

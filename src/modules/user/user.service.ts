@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from './user.entity';
 import { UserFactory } from './user.factory';
-import { SocialSource } from '../bot/type/social.enum';
 import { SocialType } from '@prisma/client';
+import { SocialSource } from 'src/framework/bot/type/social.enum';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  public async get(id: number, socialType: SocialSource): Promise<User> {
+  public async get(id: number, socialType: SocialSource): Promise<User | undefined> {
     const record = await this.prismaService.user.findFirst({
       where: {
         id: id,

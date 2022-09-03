@@ -1,7 +1,7 @@
 import { Nullable } from '../util/nullable';
-import { SocialSource } from '../bot/type/social.enum';
 import { UserStage } from './user-stage.enum';
 import { UserMenu } from './user-menu/user-menu.entity';
+import { SocialSource } from 'src/framework/bot/type/social.enum';
 
 export interface UserArgs {
   id: number;

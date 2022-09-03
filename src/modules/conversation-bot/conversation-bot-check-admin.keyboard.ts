@@ -1,5 +1,5 @@
-import { KeyboardBuilder } from '../bot/keyboard/keyboard.builder';
-import { TextButton } from '../bot/keyboard/text.button';
+import { KeyboardBuilder } from '../../framework/bot/keyboard/keyboard.builder';
+import { TextButton } from '../../framework/bot/keyboard/text.button';
 import { TextProcessor } from '../util/text.processor';
 
 export const ConversationBotCheckAdminButton = 'conv_admin_check';
