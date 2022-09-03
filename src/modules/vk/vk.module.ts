@@ -7,6 +7,8 @@ import { VkProducer } from './job/vk.producer';
 import { VkConsumer } from './job/vk.consumer';
 import { UserModule } from '../user/user.module';
 import { BotExceptionModule } from '../bot-exception/bot-exception.module';
+import { VkNewService } from './vk-new.service';
+import { BotModule } from '../bot/bot.module';
 
 @Global()
 @Module({})
@@ -19,9 +21,10 @@ export class VkModule {
           provide: VK_OPTIONS,
           useValue: options,
         },
-        VkService,
+        VkNewService,
         VkProducer,
         VkConsumer,
+        VkService,
       ],
       exports: [VkService],
       imports: [
@@ -34,6 +37,7 @@ export class VkModule {
         }),
         UserModule,
         BotExceptionModule,
+        BotModule,
       ],
     };
   }

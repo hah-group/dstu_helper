@@ -7,6 +7,8 @@ import { TelegramProducer } from './job/telegram.producer';
 import { TelegramConsumer } from './job/telegram.consumer';
 import { UserModule } from '../user/user.module';
 import { BotExceptionModule } from '../bot-exception/bot-exception.module';
+import { TelegramNewService } from './telegram-new.service';
+import { BotModule } from '../bot/bot.module';
 
 @Global()
 @Module({})
@@ -20,6 +22,7 @@ export class TelegramModule {
           useValue: options,
         },
         TelegramService,
+        TelegramNewService,
         TelegramProducer,
         TelegramConsumer,
       ],
@@ -34,6 +37,7 @@ export class TelegramModule {
         }),
         UserModule,
         BotExceptionModule,
+        BotModule,
       ],
     };
   }

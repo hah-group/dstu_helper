@@ -64,9 +64,9 @@ export class VkService {
     if (process.env.USE_POLLING == 'true') {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      this.bot.startPolling((err) => {
+      /*this.bot.startPolling((err) => {
         this.log.warn(`Polling started (can be only dev env)`);
-      });
+      });*/
     }
   }
 

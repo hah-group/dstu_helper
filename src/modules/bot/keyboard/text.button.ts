@@ -23,7 +23,7 @@ export class TextButton extends KeyboardButton {
   public toTelegramObject(locale: string): any {
     return {
       text: this.localize(this.label, locale),
-      callback_data: this._id || this.label,
+      callback_data: this._id || this.localize(this.label, locale),
     };
   }
 }

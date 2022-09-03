@@ -31,7 +31,8 @@ export class TelegramService {
     private readonly userService: UserService,
     private readonly botExceptionHandler: BotExceptionHandler,
   ) {
-    this.bot = new TelegramBot(options.token, { polling: true });
+    this.bot = new TelegramBot(options.token, { polling: false });
+    //this.bot.startPolling();
     this.bot.on('message', (ctx) => this.onMessageEvent(ctx));
     this.bot.on('callback_query', (ctx) => this.onCallbackEvent(ctx));
   }
