@@ -3,7 +3,7 @@ import * as TelegramBot from 'node-telegram-bot-api';
 import { CallbackQuery as TelegramCallbackQuery, Message as TelegramMessage } from 'node-telegram-bot-api';
 import { TG_OPTIONS } from './constants';
 import { TelegramModuleOptions } from './telegram-module.options';
-import { Handler, OnInlineButtonMetadata, OnMessageMetadata } from '../bot/decorator/handler-metadata.type';
+import { BotHandler, OnInlineButtonMetadata, OnMessageMetadata } from '../bot/decorator/bot-handler.type';
 import { Message, TelegramInlineButtonMessage, TelegramTextMessage } from '../bot/type/message.type';
 import { EventType } from '../bot/type/metadata-type.enum';
 import { SocialSource } from '../bot/type/social.enum';
@@ -23,7 +23,7 @@ export class TelegramService {
   private readonly log = new Logger('Telegram');
 
   private readonly bot: TelegramBot;
-  private handlers: Set<Handler> = new Set<Handler>();
+  private handlers: Set<BotHandler> = new Set<BotHandler>();
 
   constructor(
     @Inject(TG_OPTIONS) options: TelegramModuleOptions,
@@ -33,11 +33,11 @@ export class TelegramService {
   ) {
     this.bot = new TelegramBot(options.token, { polling: false });
     //this.bot.startPolling();
-    this.bot.on('message', (ctx) => this.onMessageEvent(ctx));
-    this.bot.on('callback_query', (ctx) => this.onCallbackEvent(ctx));
+    /*this.bot.on('message', (ctx) => this.onMessageEvent(ctx));
+    this.bot.on('callback_query', (ctx) => this.onCallbackEvent(ctx));*/
   }
 
-  private static isValidCallbackHandler(metadata: OnInlineButtonMetadata, ctx: TelegramCallbackData): boolean {
+  /*private static isValidCallbackHandler(metadata: OnInlineButtonMetadata, ctx: TelegramCallbackData): boolean {
     const { id } = metadata;
     if (!ctx.data) return false;
     return id == ctx.data;
@@ -55,7 +55,7 @@ export class TelegramService {
     }
   }
 
-  public addHandler(handler: Handler) {
+  public addHandler(handler: BotHandler) {
     this.handlers.add(handler);
   }
 
@@ -96,7 +96,7 @@ export class TelegramService {
     target: string,
     locale: string,
   ): OnMessageEventItem | undefined {
-    if (typeof value === 'undefined') return target;
+    /!*if (typeof value === 'undefined') return target;
 
     let checkingValue: string | RegExp | undefined;
 
@@ -106,7 +106,8 @@ export class TelegramService {
     else checkingValue = <RegExp>value;
 
     const regex = new RegExp(checkingValue, 'gi');
-    return target.match(regex) ? value : undefined;
+    return target.match(regex) ? value : undefined;*!/
+    return;
   }
 
   private async getUserFromTelegram(ctx: TelegramMessage | TelegramCallbackQuery): Promise<User> {
@@ -152,7 +153,7 @@ export class TelegramService {
     this.handlers.forEach((handler) => this.executeCallbackHandler(handler, ctxData));
   }
 
-  private executeMessageHandler(handler: Handler, ctx: TelegramMessageData): void {
+  private executeMessageHandler(handler: BotHandler, ctx: TelegramMessageData): void {
     if (handler.type != EventType.ON_MESSAGE) return;
     if (handler.userStage && handler.userStage != ctx.user.stage) return;
     const checkResult = this.isValidMessageHandler(<OnMessageMetadata>handler, ctx);
@@ -179,7 +180,7 @@ export class TelegramService {
     return this.checkRegexLike(<OnMessageEventItem>event, ctx.text, ctx.user.locale);
   }
 
-  private executeCallbackHandler(handler: Handler, ctx: TelegramCallbackData): void {
+  private executeCallbackHandler(handler: BotHandler, ctx: TelegramCallbackData): void {
     if (handler.type != EventType.ON_INLINE_BUTTON) return;
     if (handler.userStage && handler.userStage != ctx.user.stage) return;
     if (!TelegramService.isValidCallbackHandler(<OnInlineButtonMetadata>handler, ctx)) return;
@@ -282,12 +283,12 @@ export class TelegramService {
   }
 
   private async executeHandler(
-    handler: Handler,
+    handler: BotHandler,
     data: Message,
     ctx: TelegramMessageData | TelegramCallbackData,
   ): Promise<void> {
     try {
-      await handler.callback(data);
+      //await handler.callback(data);
     } catch (e) {
       this.log.error(`Callback handler throw error`);
       this.log.error(e.stack);
@@ -307,5 +308,5 @@ export class TelegramService {
         });
       }
     }
-  }
+  }*/
 }

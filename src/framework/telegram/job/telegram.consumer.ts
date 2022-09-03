@@ -12,7 +12,7 @@ export class TelegramConsumer {
 
   constructor(private readonly telegramService: TelegramService) {}
 
-  @Process(MessageJobName.SEND)
+  /*@Process(MessageJobName.SEND)
   public async send(job: Job<TelegramJobSend>): Promise<TelegramMessage> {
     this.log.debug(`Execute send job to ${job.data.chatId}`);
     const { data } = job;
@@ -35,5 +35,5 @@ export class TelegramConsumer {
     this.log.debug(`Execute alert job`);
     const { data } = job;
     return this.telegramService.alertEvent(data.callbackId, data.text, data.force);
-  }
+  }*/
 }

@@ -70,7 +70,7 @@ export class ConversationBotHandler {
       if (conversationGroups.length < 1) continue;
 
       this.log.log(`Send bump notification for conversation ${conversation.id}`);
-      await this.vkService.sendMessageInQueue(conversation.id, TextProcessor.groupCourseBump(conversationGroups));
+      //await this.vkService.sendMessageInQueue(conversation.id, TextProcessor.groupCourseBump(conversationGroups));
 
       this.log.log('Delay 500ms');
       await delay(500);
@@ -112,7 +112,7 @@ export class ConversationBotHandler {
 
   @OnInlineButton(ConversationBotCheckAdminButton)
   public async onCheckAdmin(message: InlineButtonMessage): Promise<void> {
-    if (message.from != SocialSource.VK) return;
+    /*if (message.from != SocialSource.VK) return;
     const conversation = await this.conversationService.get(message.peerId);
 
     if (!conversation.isMember(message.user) || !conversation.isInviting(message.user)) {
@@ -141,7 +141,7 @@ export class ConversationBotHandler {
       await this.findGroup(message, conversation);
     } catch (e) {
       await message.alert(TextProcessor.buildSimpleText('CONVERSATION_ADMIN_CHECK_FAILED'));
-    }
+    }*/
   }
 
   public async findGroup(message: InlineButtonMessage, conversation: Conversation): Promise<void> {

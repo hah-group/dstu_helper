@@ -9,10 +9,10 @@ export class Variator {
     else if (lesson.tutor.match(/Болотова/)) v += this.randomInt(1, 10);
     else if (lesson.tutor.match(/Склярова/)) v += this.randomInt(20, 30);
 
-    if (lesson.type === RaspTypeMnemonic.Lecture) v -= this.randomInt(0, 7);
-    else if (lesson.type === RaspTypeMnemonic.Practical)
+    if (lesson.scope === RaspTypeMnemonic.Lecture) v -= this.randomInt(0, 7);
+    else if (lesson.scope === RaspTypeMnemonic.Practical)
       v += this.randomInt(0, 15);
-    else if (lesson.type === RaspTypeMnemonic.Laboratory)
+    else if (lesson.scope === RaspTypeMnemonic.Laboratory)
       v += this.randomInt(8, 20);
 
     return v;

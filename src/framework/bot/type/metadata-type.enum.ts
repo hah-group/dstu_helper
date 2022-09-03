@@ -13,13 +13,13 @@ export enum EventType {
     peer_id: 2000000001,
     text: '',
     conversation_message_id: 1925,
-    action: { type: 'chat_invite_user', member_id: -206609620 },
+    action: { scope: 'chat_invite_user', member_id: -206609620 },
     fwd_messages: [],
     important: false,
     random_id: 0,
     attachments: [],
     is_hidden: false,
-    type: 'message_new'
+    scope: 'message_new'
   },
 
  */

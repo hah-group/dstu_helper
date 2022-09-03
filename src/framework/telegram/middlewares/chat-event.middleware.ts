@@ -3,6 +3,7 @@ import { DeepPartial } from 'ts-essentials';
 import { BotContext, ChatUser } from '../../bot/type/bot-context.type';
 import { UserMiddleware } from './user.middleware';
 import { TelegramContext, TelegramMessage } from '../telegram-new.service';
+import { BotPayloadType } from '../../bot/type/bot-payload-type.enum';
 
 export class ChatEventMiddleware extends BaseMiddleware<TelegramContext> {
   public middleware(event: TelegramContext): DeepPartial<BotContext> {
@@ -20,7 +21,7 @@ export class ChatEventMiddleware extends BaseMiddleware<TelegramContext> {
 
       return {
         payload: {
-          type: 'chat_event',
+          type: BotPayloadType.CHAT_EVENT,
           eventType: ctx.new_chat_members ? 'invite' : 'kick',
           members: members,
         },

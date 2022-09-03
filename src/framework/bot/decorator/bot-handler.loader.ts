@@ -2,9 +2,8 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import { BotMetadataAccessor } from './bot-metadata.accessor';
-import { VkService } from '../../vk/vk.service';
-import { TelegramService } from '../../telegram/telegram.service';
-import { Handler } from './handler-metadata.type';
+import { BotHandler } from './bot-handler.type';
+import { BotService } from '../bot.service';
 
 @Injectable()
 export class BotHandlerLoader implements OnApplicationBootstrap /*, OnApplicationShutdown*/ {
@@ -12,18 +11,16 @@ export class BotHandlerLoader implements OnApplicationBootstrap /*, OnApplicatio
     private readonly discoveryService: DiscoveryService,
     private readonly metadataAccessor: BotMetadataAccessor,
     private readonly metadataScanner: MetadataScanner,
-    private readonly vkService: VkService,
-    private readonly telegramService: TelegramService,
+    private readonly botService: BotService,
   ) {}
 
-  onApplicationBootstrap() {
+  public onApplicationBootstrap() {
     this.loadEventListeners();
   }
 
-  loadEventListeners() {
+  private loadEventListeners() {
     const providers = this.discoveryService.getProviders();
-    const controllers = this.discoveryService.getControllers();
-    [...providers, ...controllers]
+    providers
       .filter((wrapper) => wrapper.isDependencyTreeStatic())
       .filter((wrapper) => wrapper.instance)
       .forEach((wrapper: InstanceWrapper) => {
@@ -42,19 +39,18 @@ export class BotHandlerLoader implements OnApplicationBootstrap /*, OnApplicatio
 
     const userStageMetadata = this.metadataAccessor.getBotUserAccessorDecorator(instance[methodKey]);
 
-    const data: Handler = {
+    const handler: BotHandler = {
       ...metadata,
       userStage: userStageMetadata,
-      callback: async (message) => {
+      callback: async (context) => {
         try {
-          await instance[methodKey].call(instance, message);
+          await instance[methodKey].call(instance, context);
         } catch (e) {
           throw e;
         }
       },
     };
 
-    this.vkService.addHandler(data);
-    this.telegramService.addHandler(data);
+    this.botService.registerHandler(handler);
   }
 }

@@ -11,7 +11,7 @@ export class VkConsumer {
 
   constructor(private readonly vkService: VkService) {}
 
-  @Process(MessageJobName.SEND)
+  /*@Process(MessageJobName.SEND)
   public async send(job: Job<VkJobSend>): Promise<number | undefined> {
     this.log.debug(`Execute send job`);
     const { data } = job;
@@ -39,5 +39,5 @@ export class VkConsumer {
     const { data } = job;
 
     return this.vkService.getApiUser(data.userId);
-  }
+  }*/
 }

@@ -8,7 +8,7 @@ export class ChatMiddleware extends BaseMiddleware<TelegramContext> {
   public static Parse(chat: TelegramChat): Chat {
     return {
       id: chat.id,
-      type: chat.type == 'private' ? 'private' : 'conversation',
+      scope: chat.type == 'private' ? 'private' : 'conversation',
     };
   }
 

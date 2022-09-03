@@ -33,7 +33,7 @@ export class PrivateScheduleHandler {
   }
 
   @OnEvent(InternalEvent.SETUP_PRIVATE_SUCCESS)
-  @OnMessage(PrivateMainMenuScheduleButton, 'private')
+  //@OnMessage(PrivateMainMenuScheduleButton, 'private')
   public async getSchedule(message: TextMessage): Promise<void> {
     message.user.menu.daySchedule.reset();
 
@@ -90,7 +90,7 @@ export class PrivateScheduleHandler {
     await this.userService.save(message.user);
   }
 
-  @OnMessage(PrivateMainMenuWhereLessonButton, 'private')
+  /*@OnMessage(PrivateMainMenuWhereLessonButton, 'private')
   public async currentLesson(message: TextMessage): Promise<void> {
     const group = await this.studyGroupService.getByUser(message.user);
     if (!group) throw new Error('Not found group');
@@ -102,7 +102,7 @@ export class PrivateScheduleHandler {
     const group = await this.studyGroupService.getByUser(message.user);
     if (!group) throw new Error('Not found group');
     await message.send(TextProcessor.short(group, false));
-  }
+  }*/
 
   private async sendDaySchedule(message: InlineButtonMessage, date: DateTime): Promise<void> {
     const group = await this.studyGroupService.getByUser(message.user);

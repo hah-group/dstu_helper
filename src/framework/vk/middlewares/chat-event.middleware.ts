@@ -1,6 +1,7 @@
 import { BaseMiddleware } from '../../bot/base.middleware';
 import { DeepPartial } from 'ts-essentials';
 import { BotContext, ChatUser } from '../../bot/type/bot-context.type';
+import { BotPayloadType } from '../../bot/type/bot-payload-type.enum';
 
 export class ChatEventMiddleware extends BaseMiddleware<VkBotContext> {
   public middleware(ctx: VkBotContext): DeepPartial<BotContext> {
@@ -14,7 +15,7 @@ export class ChatEventMiddleware extends BaseMiddleware<VkBotContext> {
 
       return {
         payload: {
-          type: 'chat_event',
+          type: BotPayloadType.CHAT_EVENT,
           eventType: ctx.message.action.type == 'chat_kick_user' ? 'kick' : 'invite',
           members: members,
         },

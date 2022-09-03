@@ -29,6 +29,18 @@ export class KeyboardBuilder {
     return this;
   }
 
+  public getInline(): boolean {
+    return this._inline;
+  }
+
+  public getOneTime(): boolean {
+    return this._oneTime;
+  }
+
+  public getKeys(): KeyboardButton[][] {
+    return this.keyboard;
+  }
+
   public toJSON(social: SocialSource, locale: string): string {
     switch (social) {
       case SocialSource.VK:

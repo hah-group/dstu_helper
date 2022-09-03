@@ -4,11 +4,11 @@ import { VK } from 'vk-io';
 import { VkModuleOptions } from './vk-module.options';
 import VkBot from 'node-vk-bot-api';
 import {
-  Handler,
+  BotHandler,
   OnInlineButtonMetadata,
   OnInviteMetadata,
   OnMessageMetadata,
-} from '../bot/decorator/handler-metadata.type';
+} from '../bot/decorator/bot-handler.type';
 import { VkMessageData, VkMessageEventData, VkMessageInviteData, VkMessageNewData } from './vk-message-data.type';
 import { VkEvent } from './vk-event.definition';
 import { EventType } from '../bot/type/metadata-type.enum';
@@ -33,9 +33,9 @@ export class VkService {
   public readonly bot: VkBot;
   private readonly log = new Logger('VK');
   private readonly vkApi: VK;
-  private handlers: Set<Handler> = new Set<Handler>();
+  private handlers: Set<BotHandler> = new Set<BotHandler>();
 
-  constructor(
+  /*constructor(
     @Inject(VK_OPTIONS) options: VkModuleOptions,
     private readonly vkProducer: VkProducer,
     private readonly userService: UserService,
@@ -64,9 +64,9 @@ export class VkService {
     if (process.env.USE_POLLING == 'true') {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      /*this.bot.startPolling((err) => {
+      /!*this.bot.startPolling((err) => {
         this.log.warn(`Polling started (can be only dev env)`);
-      });*/
+      });*!/
     }
   }
 
@@ -86,7 +86,7 @@ export class VkService {
     };
   }
 
-  public addHandler(handler: Handler) {
+  public addHandler(handler: BotHandler) {
     this.handlers.add(handler);
   }
 
@@ -259,7 +259,7 @@ export class VkService {
       };
   }
 
-  private processHandler(handler: Handler, ctx: VkMessageData): void {
+  private processHandler(handler: BotHandler, ctx: VkMessageData): void {
     if (handler.type != ctx.type) return;
     if (handler.userStage && handler.userStage != ctx.user.stage) return;
 
@@ -308,7 +308,7 @@ export class VkService {
     target: string,
     locale: string,
   ): OnMessageEventItem | undefined {
-    if (typeof value === 'undefined') return target;
+    /!*if (typeof value === 'undefined') return target;
 
     let checkingValue: string | RegExp | undefined;
 
@@ -318,7 +318,8 @@ export class VkService {
     else checkingValue = <RegExp>value;
 
     const regex = new RegExp(checkingValue, 'gi');
-    return target.match(regex) ? value : undefined;
+    return target.match(regex) ? value : undefined;*!/
+    return;
   }
 
   private isValidCallbackHandler(metadata: OnInlineButtonMetadata, ctx: VkMessageEventData): boolean {
@@ -447,7 +448,7 @@ export class VkService {
     });
   }
 
-  private async executeHandler(handler: Handler, data: any, ctx: VkMessageData): Promise<void> {
+  private async executeHandler(handler: BotHandler, data: any, ctx: VkMessageData): Promise<void> {
     try {
       await handler.callback(data);
     } catch (e) {
@@ -472,5 +473,5 @@ export class VkService {
         locale: ctx.user.locale,
       });
     }
-  }
+  }*/
 }

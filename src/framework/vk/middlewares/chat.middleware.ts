@@ -9,7 +9,7 @@ export class ChatMiddleware extends BaseMiddleware<VkBotContext> {
     return {
       chat: {
         id: ctx.message.peer_id,
-        type: ctx.message.peer_id >= CONVERSATION_START_ID ? 'conversation' : 'private',
+        scope: ctx.message.peer_id >= CONVERSATION_START_ID ? 'conversation' : 'private',
       },
     };
   }

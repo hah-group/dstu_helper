@@ -13,7 +13,7 @@ export class UserEntity extends DomainEntity {
   public lastName?: string;
 
   @Property()
-  public social: SocialSource;
+  public social: string;
 
   @Property()
   public locale: string;

@@ -29,10 +29,10 @@ export class SystemNotificationService implements OnApplicationBootstrap {
   public async onApplicationBootstrap(): Promise<void> {
     if (process.env.FLAVOUR != 'prod') return;
 
-    await this.telegramService.sendMessage(
+    /* await this.telegramService.sendMessage(
       parseInt(process.env.SYSTEM_NOTIFICATION_TG_USER),
       `Application deployed with version: <code>${process.env.npm_package_version}</code>`,
-    );
+    );*/
   }
 
   @OnEvent(InternalEvent.SYSTEM_NOTIFICATION)
@@ -66,6 +66,6 @@ ${
 <code>${SystemNotificationService.formatText(JSON.stringify(error.data, undefined, 2))}</code>`
     : ''
 }`;
-    await this.telegramService.sendMessage(parseInt(process.env.SYSTEM_NOTIFICATION_TG_USER), text, keyboard);
+    //await this.telegramService.sendMessage(parseInt(process.env.SYSTEM_NOTIFICATION_TG_USER), text, keyboard);
   }
 }

@@ -1,10 +1,15 @@
 import { SetMetadata } from '@nestjs/common';
 import { BOT_HANDLER } from './bot-metadata.accessor';
-import { OnInlineButtonMetadata } from './handler-metadata.type';
-import { EventType } from '../type/metadata-type.enum';
+import { DecoratorMetadata, HandlerMetadata, OnInlineButtonMetadata } from './bot-handler.type';
+import { BotPayloadType } from '../type/bot-payload-type.enum';
+import { HandlerTypeChecker } from '../checker/handler-type.checker';
 
-export const OnInlineButton = (id: string): MethodDecorator =>
-  SetMetadata(BOT_HANDLER, {
-    type: EventType.ON_INLINE_BUTTON,
+export const OnInlineButton = (id: string): MethodDecorator => {
+  const metadata: HandlerMetadata = {
+    type: BotPayloadType.INLINE_KEY,
     id: id,
-  } as OnInlineButtonMetadata);
+  };
+  return SetMetadata<string, DecoratorMetadata>(BOT_HANDLER, {
+    checkers: [new HandlerTypeChecker(metadata)],
+  });
+};

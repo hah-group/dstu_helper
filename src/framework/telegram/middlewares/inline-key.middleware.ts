@@ -2,6 +2,7 @@ import { BaseMiddleware } from '../../bot/base.middleware';
 import { DeepPartial } from 'ts-essentials';
 import { BotContext } from '../../bot/type/bot-context.type';
 import { TelegramContext } from '../telegram-new.service';
+import { BotPayloadType } from '../../bot/type/bot-payload-type.enum';
 
 export class InlineKeyMiddleware extends BaseMiddleware<TelegramContext> {
   public middleware(event: TelegramContext): DeepPartial<BotContext> {
@@ -9,7 +10,7 @@ export class InlineKeyMiddleware extends BaseMiddleware<TelegramContext> {
 
     return {
       payload: {
-        type: 'inline_key',
+        type: BotPayloadType.INLINE_KEY,
         key: event.ctx.data,
       },
     };

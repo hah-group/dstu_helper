@@ -1,3 +1,5 @@
+import { BotPayloadType } from './bot-payload-type.enum';
+
 export interface ChatUser {
   id: number;
   firstName?: string;
@@ -5,32 +7,36 @@ export interface ChatUser {
   nickname?: string;
 }
 
+export type ChatScope = 'private' | 'conversation';
+
 export interface Chat {
   id: number;
-  type: 'private' | 'conversation';
+  scope: ChatScope;
 }
+
+export type BotContextPayload = BotMessagePayload | BotChatEventPayload | BotInlineKeyPayload;
 
 export interface BotContext {
   provider: string;
   from: ChatUser;
   chat: Chat;
-  payload: BotMessagePayload | BotChatEventPayload | BotInlineKeyPayload;
+  payload: BotContextPayload;
 }
 
 export interface BotMessagePayload {
-  type: 'message';
+  type: BotPayloadType.MESSAGE;
   message: string;
 }
 
 export interface BotInlineKeyPayload {
-  type: 'inline_key';
+  type: BotPayloadType.INLINE_KEY;
   key: string;
 }
 
 export type BotChatEventPayload = BotChatParticipantEventPayload;
 
 export interface BotChatParticipantEventPayload {
-  type: 'chat_event';
+  type: BotPayloadType.CHAT_EVENT;
   eventType: 'invite' | 'kick';
   members: ChatUser[];
 }
