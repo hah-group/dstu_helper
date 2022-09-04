@@ -5,7 +5,7 @@ import { VkModuleOptions } from './vk-module.options';
 import VkBot from 'node-vk-bot-api';
 import { ChatMiddleware } from './middlewares/chat.middleware';
 import { MessageMiddleware } from './middlewares/message.middleware';
-import { MiddlewareExecutor } from '../bot/middleware.executor';
+import { MiddlewareExecutor } from '../bot/middleware/middleware.executor';
 import { BaseMiddleware } from '../bot/base.middleware';
 import { ProviderMiddleware } from '../bot/middleware/provider.middleware';
 import { UserMiddleware } from './middlewares/user.middleware';

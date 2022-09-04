@@ -1,4 +1,4 @@
-import { BaseMiddleware } from './base.middleware';
+import { BaseMiddleware } from '../base.middleware';
 import * as lodash from 'lodash';
 
 export class MiddlewareExecutor {

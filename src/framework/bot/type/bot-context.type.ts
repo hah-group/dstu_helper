@@ -16,12 +16,15 @@ export interface Chat {
 
 export type BotContextPayload = BotMessagePayload | BotChatEventPayload | BotInlineKeyPayload;
 
-export interface BotContext {
+export interface BotBaseContext {
   provider: string;
   from: ChatUser;
   chat: Chat;
-  payload: BotContextPayload;
 }
+
+export type BotContext = BotBaseContext & {
+  payload: BotContextPayload;
+};
 
 export interface BotMessagePayload {
   type: BotPayloadType.MESSAGE;

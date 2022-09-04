@@ -3,9 +3,10 @@ import { OnMessageEventType } from './on-message.decorator';
 import { BotContext, BotContextPayload, BotMessagePayload, ChatScope } from '../type/bot-context.type';
 import { BotPayloadType } from '../type/bot-payload-type.enum';
 import { Checker } from '../checker/checker.type';
+import { BotHandlerContext } from '../type/bot-message.type';
 
 export type BotHandler = DecoratorMetadata & {
-  callback: (message: BotContext) => Promise<void>;
+  callback: (message: BotHandlerContext) => Promise<void>;
   userStage?: UserStage;
 };
 

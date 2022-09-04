@@ -40,6 +40,8 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import * as lodash from 'lodash';
 import { InternalEvent } from '../util/internal-event.enum';
 import { delay } from '../util/delay';
+import { BotContext } from '../../framework/bot/type/bot-context.type';
+import { BotMessage } from '../../framework/bot/type/bot-message.type';
 
 @Injectable()
 export class ConversationBotHandler {
@@ -53,6 +55,11 @@ export class ConversationBotHandler {
     private readonly cacheService: CacheService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
+
+  @OnMessage(/test/gi)
+  public async test(ctx: BotMessage): Promise<void> {
+    await ctx.send('test');
+  }
 
   @OnEvent(InternalEvent.BROADCAST_BUMP_GROUP_COURSE_NOTIFICATION)
   public async broadcastGroupCourseBump(groups: BumpedGroupsResult[]): Promise<void> {

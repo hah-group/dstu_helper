@@ -6,7 +6,7 @@ import { TelegramModuleOptions } from './telegram-module.options';
 import { BaseMiddleware } from '../bot/base.middleware';
 import { UserMiddleware } from './middlewares/user.middleware';
 import { MessageMiddleware } from './middlewares/message.middleware';
-import { MiddlewareExecutor } from '../bot/middleware.executor';
+import { MiddlewareExecutor } from '../bot/middleware/middleware.executor';
 import { ProviderMiddleware } from '../bot/middleware/provider.middleware';
 import { ChatMiddleware } from './middlewares/chat.middleware';
 import { ChatEventMiddleware } from './middlewares/chat-event.middleware';
@@ -44,6 +44,11 @@ export class TelegramNewService {
       new MessageMiddleware(),
       new InlineKeyMiddleware(),
     ];
+
+    this.botService.on('send', async (ctx) => {
+      if (ctx.context.provider != 'telegram') return;
+      await this.bot.sendMessage(ctx.context.chat.id, ctx.action.message);
+    });
   }
 
   private async onMessageEvent(ctx: TelegramMessage): Promise<void> {
