@@ -1,5 +1,5 @@
 import { KeyboardButton } from './keyboard-button';
-import { ProcessedTextInstance } from '../../../modules/util/text.processor';
+import { ProcessedTextInstance } from '../../../old_modules/util/text.processor';
 
 export class TextButton extends KeyboardButton {
   constructor(label: ProcessedTextInstance, id?: string, payload?: any) {

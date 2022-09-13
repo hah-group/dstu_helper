@@ -1,4 +1,4 @@
-import { UserStage } from '../../../modules/user/user-stage.enum';
+import { UserStage } from '../../../old_modules/user/user-stage.enum';
 import { OnMessageEventType } from './on-message.decorator';
 import { BotContext, BotContextPayload, BotMessagePayload, ChatScope } from '../type/bot-context.type';
 import { BotPayloadType } from '../type/bot-payload-type.enum';

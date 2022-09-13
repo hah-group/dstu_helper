@@ -1,5 +1,5 @@
 import { EventType } from '../bot/type/metadata-type.enum';
-import { User } from '../../modules/user/user.entity';
+import { User } from '../../old_modules/user/user.entity';
 
 interface BaseVkMessageData {
   type: EventType;

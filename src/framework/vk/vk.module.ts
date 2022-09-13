@@ -5,7 +5,7 @@ import { VkService } from './vk.service';
 import { BullModule } from '@nestjs/bull';
 import { VkProducer } from './job/vk.producer';
 import { VkConsumer } from './job/vk.consumer';
-import { UserModule } from '../../modules/user/user.module';
+import { UserModule } from '../../old_modules/user/user.module';
 import { BotExceptionModule } from '../bot-exception/bot-exception.module';
 import { VkNewService } from './vk-new.service';
 import { BotModule } from '../bot/bot.module';

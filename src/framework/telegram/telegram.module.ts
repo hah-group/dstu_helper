@@ -5,7 +5,7 @@ import { TG_OPTIONS } from './constants';
 import { BullModule } from '@nestjs/bull';
 import { TelegramProducer } from './job/telegram.producer';
 import { TelegramConsumer } from './job/telegram.consumer';
-import { UserModule } from '../../modules/user/user.module';
+import { UserModule } from '../../old_modules/user/user.module';
 import { BotExceptionModule } from '../bot-exception/bot-exception.module';
 import { TelegramNewService } from './telegram-new.service';
 import { BotModule } from '../bot/bot.module';
@@ -21,12 +21,12 @@ export class TelegramModule {
           provide: TG_OPTIONS,
           useValue: options,
         },
-        TelegramService,
+        //TelegramService,
         TelegramNewService,
-        TelegramProducer,
-        TelegramConsumer,
+        //TelegramProducer,
+        // TelegramConsumer,
       ],
-      exports: [TelegramService],
+      //exports: [TelegramService],
       imports: [
         BullModule.registerQueue({
           name: 'telegram',
@@ -35,7 +35,7 @@ export class TelegramModule {
             duration: 1000,
           },
         }),
-        UserModule,
+        //UserModule,
         BotExceptionModule,
         BotModule,
       ],

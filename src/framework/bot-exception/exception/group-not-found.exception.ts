@@ -1,6 +1,6 @@
 import { BotException } from '../bot.exception';
 import { BotExceptionType } from './bot-exception-type.enum';
-import { User } from '../../../modules/user/user.entity';
+import { User } from '../../../old_modules/user/user.entity';
 
 export class GroupNotFoundException extends BotException {
   constructor(user: User) {

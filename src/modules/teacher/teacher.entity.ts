@@ -1,21 +1,21 @@
-export interface TeacherArgs {
-  id: number;
-  firstName?: string;
-  lastName: string;
-  middleName?: string;
-}
+import { DomainEntity } from '../../framework/database/domain.entity';
+import { Collection, Entity, OneToMany, Property } from '@mikro-orm/core';
+import { LessonEntity } from '../lesson/lesson.entity';
 
-export class Teacher {
-  public readonly id: number;
-  public readonly firstName: string;
-  public readonly lastName: string;
-  public readonly middleName: string;
+@Entity({ tableName: 'teacher' })
+export class TeacherEntity extends DomainEntity {
+  @Property()
+  public firstName?: string;
 
-  constructor(params: TeacherArgs) {
-    const { firstName, id, lastName, middleName } = params;
-    this.id = id;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.middleName = middleName;
-  }
+  @Property()
+  public lastName?: string;
+
+  @Property()
+  public middleName?: string;
+
+  @Property()
+  public degreeRaw?: string;
+
+  @OneToMany(() => LessonEntity, 'teacher')
+  public lessons = new Collection<LessonEntity>(this);
 }

@@ -1,7 +1,7 @@
 import { Injectable, Type } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { DecoratorMetadata, HandlerMetadata } from './bot-handler.type';
-import { UserStage } from '../../../modules/user/user-stage.enum';
+import { UserStage } from '../../../old_modules/user/user-stage.enum';
 
 export const BOT_HANDLER = 'BOT_HANDLER';
 export const BOT_USER_ACCESSOR = 'BOT_USER_ACCESSOR';

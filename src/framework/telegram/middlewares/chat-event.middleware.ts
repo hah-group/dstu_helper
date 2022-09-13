@@ -12,7 +12,7 @@ export class ChatEventMiddleware extends BaseMiddleware<TelegramContext> {
     const ctx: TelegramMessage = event.ctx;
 
     if (ctx.new_chat_members || ctx.left_chat_member) {
-      let members: ChatUser[] = [];
+      let members: Omit<ChatUser, 'user'>[] = [];
       if (ctx.new_chat_members) {
         members = ctx.new_chat_members.map((member) => UserMiddleware.Parse(member));
       } else {

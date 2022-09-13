@@ -13,6 +13,8 @@ import { ChatEventMiddleware } from './middlewares/chat-event.middleware';
 import { BotContext } from '../bot/type/bot-context.type';
 import { InlineKeyMiddleware } from './middlewares/inline-key.middleware';
 import { BotService } from '../bot/bot.service';
+import { BotIdMiddleware } from './middlewares/bot-id.middleware';
+import { UserEntity } from '../../modules/user/user.entity';
 
 @Injectable()
 export class VkNewService {
@@ -58,11 +60,24 @@ export class VkNewService {
       new ChatEventMiddleware(),
       new MessageMiddleware(),
       new InlineKeyMiddleware(),
+      new BotIdMiddleware(),
     ];
+
+    this.botService.on('getUserRequest', (ctx) => this.getUser(ctx));
   }
 
   public onEvent(ctx: VkBotContext): void {
     const newCtx: BotContext = MiddlewareExecutor.Execute(ctx, this.middlewares);
     this.botService.emit('event', newCtx);
+  }
+
+  public async getUser(ctx: BotContext): Promise<void> {
+    this.botService.emit(
+      'getUserResponse',
+      new UserEntity({
+        provider: ctx.provider,
+        externalId: ctx.from.id,
+      }),
+    );
   }
 }

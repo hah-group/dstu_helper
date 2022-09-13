@@ -7,6 +7,7 @@ import {
   BotMessagePayload,
 } from './bot-context.type';
 import { KeyboardBuilder } from '../keyboard/keyboard.builder';
+import { Text } from '../../text/text';
 
 export interface SendOptions {
   attachments?: any[];
@@ -16,19 +17,19 @@ export interface SendOptions {
 }
 
 export type BotSendCallback = {
-  send: (message: string, keyboard?: KeyboardBuilder, options?: SendOptions) => Promise<void>;
+  send: (message: Text, keyboard?: KeyboardBuilder, options?: SendOptions) => Promise<void>;
 };
 
 export type BotEditCallback = {
   edit: (
-    message: string,
+    message: Text,
     keyboard?: KeyboardBuilder,
     options?: Omit<SendOptions, 'forcePrivate' | 'ignorePlaceholder'>,
   ) => Promise<void>;
 };
 
 export type BotAlertCallback = {
-  alert: (message: string) => void;
+  alert: (message: Text) => void;
 };
 
 type BotPayload<T extends BotContextPayload> = { payload: T };

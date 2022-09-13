@@ -13,6 +13,8 @@ import { ChatEventMiddleware } from './middlewares/chat-event.middleware';
 import { BotContext } from '../bot/type/bot-context.type';
 import { InlineKeyMiddleware } from './middlewares/inline-key.middleware';
 import { BotService } from '../bot/bot.service';
+import { inspect } from 'util';
+import { BotIdMiddleware } from './middlewares/bot-id.middleware';
 
 export type TelegramMessage = TGMessage;
 export type TelegramCallbackQuery = CallbackQuery;
@@ -43,11 +45,13 @@ export class TelegramNewService {
       new UserMiddleware(),
       new MessageMiddleware(),
       new InlineKeyMiddleware(),
+      new BotIdMiddleware(),
     ];
 
     this.botService.on('send', async (ctx) => {
       if (ctx.context.provider != 'telegram') return;
-      await this.bot.sendMessage(ctx.context.chat.id, ctx.action.message);
+      const renderedMessage = ctx.action.message.render();
+      await this.bot.sendMessage(ctx.context.chat.id, renderedMessage);
     });
   }
 
@@ -57,6 +61,7 @@ export class TelegramNewService {
       ctx: ctx,
     };
     const newCtx: BotContext = MiddlewareExecutor.Execute(telegramCtx, this.middlewares);
+    //console.log(inspect(newCtx, false, 10, true));
     this.botService.emit('event', newCtx);
   }
 

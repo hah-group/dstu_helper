@@ -1,4 +1,4 @@
-import { User } from '../../modules/user/user.entity';
+import { User } from '../../old_modules/user/user.entity';
 
 export interface TelegramMessageData {
   text: string;

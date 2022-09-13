@@ -11,7 +11,7 @@ export class ChatEventMiddleware extends BaseMiddleware<VkBotContext> {
         ctx.message.action.type == 'chat_kick_user' ||
         ctx.message.action.type == 'chat_invite_user_by_link')
     ) {
-      const members: ChatUser[] = [{ id: parseInt(`${ctx.message.action.member_id}`) }];
+      const members: Omit<ChatUser, 'user'>[] = [{ id: parseInt(`${ctx.message.action.member_id}`) }];
 
       return {
         payload: {

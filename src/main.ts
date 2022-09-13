@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import * as i18n from 'i18n';
-import { AppModule } from './modules/app.module';
+import { AppModule } from './app.module';
 import * as path from 'path';
 
 async function bootstrap() {

@@ -16,13 +16,13 @@ import { VkInlineButtonMessage, VkInviteMessage, VkTextMessage } from '../bot/ty
 import { SocialSource } from '../bot/type/social.enum';
 import { VkProducer } from './job/vk.producer';
 import { KeyboardBuilder } from '../bot/keyboard/keyboard.builder';
-import { UserService } from '../../modules/user/user.service';
-import { User } from '../../modules/user/user.entity';
+import { UserService } from '../../old_modules/user/user.service';
+import { User } from '../../old_modules/user/user.entity';
 import { VkJobAlert, VkJobEdit } from './job/vk-job-data.type';
 import { BotException } from '../bot-exception/bot.exception';
 import { BotExceptionHandler } from '../bot-exception/bot-exception.handler';
 import { UnknownException } from '../bot-exception/exception/unknown.exception';
-import { ProcessedText, ProcessedTextInstance, TextProcessor } from '../../modules/util/text.processor';
+import { ProcessedText, ProcessedTextInstance, TextProcessor } from '../../old_modules/util/text.processor';
 import { OnMessageEventItem } from '../bot/decorator/on-message.decorator';
 import { VkConversationInfo } from './vk-conversation-info.type';
 
@@ -179,7 +179,7 @@ export class VkService {
     const user = await this.userService.get(userId, SocialSource.VK);
     if (!user) {
       this.log.log(`New user ${userId}`);
-      const job = await this.vkProducer.getUser({
+      const job = await this.vkProducer.injectUser({
         userId: userId,
       });
 
@@ -468,7 +468,7 @@ export class VkService {
             text: text,
           });
         },
-        social: SocialSource.VK,
+        provider: SocialSource.VK,
         user: `${ctx.user.id}`,
         locale: ctx.user.locale,
       });

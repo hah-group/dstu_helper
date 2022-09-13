@@ -5,7 +5,7 @@ import { User } from 'node-telegram-bot-api';
 import { TelegramContext } from '../telegram-new.service';
 
 export class UserMiddleware extends BaseMiddleware<TelegramContext> {
-  public static Parse(user: User): ChatUser {
+  public static Parse(user: User): Omit<ChatUser, 'user'> {
     return {
       id: user.id,
       firstName: user.first_name,

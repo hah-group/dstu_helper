@@ -4,6 +4,9 @@ import { BotContext } from './type/bot-context.type';
 import { BotHandler } from './decorator/bot-handler.type';
 import { BotHandlerContext } from './type/bot-message.type';
 import { BotAction, BotAlertAction, BotMessageAction } from './type/bot-action.type';
+import { UserRepository } from '../../modules/user/user.repository';
+import { UserEntity } from '../../modules/user/user.entity';
+import { UseRequestContext } from '@mikro-orm/core';
 
 export declare interface BotService {
   emit(event: 'event', ctx: BotContext): boolean;
@@ -12,19 +15,25 @@ export declare interface BotService {
   emit(event: 'edit', ctx: BotAction<BotMessageAction>): boolean;
   emit(event: 'alert', ctx: BotAction<BotAlertAction>): boolean;
 
+  emit(event: 'getUserRequest', ctx: BotContext): boolean;
+  emit(event: 'getUserResponse', ctx: UserEntity): boolean;
+
   on(event: 'event', listener: (ctx: BotContext) => void): this;
 
   on(event: 'send', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
   on(event: 'edit', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
   on(event: 'alert', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
+
+  on(event: 'getUserRequest', listener: (ctx: BotContext) => void): boolean;
+  on(event: 'getUserResponse', listener: (ctx: UserEntity) => void): boolean;
 }
 
 @Injectable()
 export class BotService extends EventEmitter {
-  constructor() {
+  constructor(private readonly userRepository: UserRepository) {
     super();
 
-    this.on('event', this.onEvent.bind(this));
+    this.on('event', async (ctx) => this.onEvent(ctx));
   }
 
   private handlers: Set<BotHandler> = new Set<BotHandler>();
@@ -33,14 +42,49 @@ export class BotService extends EventEmitter {
     this.handlers.add(handler);
   }
 
-  public onEvent(ctx: BotContext): void {
+  public async onEvent(ctx: BotContext): Promise<void> {
     for (const handler of this.handlers.values()) {
       const result = handler.checkers.every((checker) => checker.check(ctx.payload, ctx));
       if (result) {
-        handler.callback(this.buildContext(ctx)).then();
+        const newCtx = await this.injectUser(ctx);
+        await handler.callback(this.buildContext(newCtx));
         break;
       }
     }
+  }
+
+  public async injectUser(ctx: BotContext): Promise<BotContext> {
+    let user = await this.userRepository.findOne({
+      provider: ctx.provider,
+      externalId: ctx.from.id,
+    });
+
+    if (!user) {
+      if (ctx.provider == 'vk') {
+        user = await new Promise((resolve) => {
+          this.emit('getUserRequest', ctx);
+
+          const callback = (user) => {
+            resolve(user);
+            this.removeListener('getUserResponse', callback);
+          };
+          this.on('getUserResponse', callback);
+        });
+      } else {
+        user = new UserEntity({
+          provider: ctx.provider,
+          externalId: ctx.from.id,
+          firstName: ctx.from.firstName,
+          lastName: ctx.from.lastName,
+          nickname: ctx.from.nickname,
+        });
+      }
+
+      await this.userRepository.save(user);
+    }
+
+    ctx.from.user = user;
+    return ctx;
   }
 
   public buildContext(ctx: BotContext): BotHandlerContext {

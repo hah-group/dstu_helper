@@ -34,7 +34,7 @@ export class VkConsumer {
   }
 
   @Process('GET_USER')
-  public async getUser(job: Job<VkJobGetUser>): Promise<{ firstName: string; lastName: string } | undefined> {
+  public async injectUser(job: Job<VkJobGetUser>): Promise<{ firstName: string; lastName: string } | undefined> {
     this.log.debug(`Execute get user request job`);
     const { data } = job;
 

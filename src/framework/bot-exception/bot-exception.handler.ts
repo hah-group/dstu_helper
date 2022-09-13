@@ -2,8 +2,8 @@ import { BotException } from './bot.exception';
 import { SocialSource } from '../bot/type/social.enum';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { InternalEvent } from '../../modules/util/internal-event.enum';
-import { localization } from '../../modules/util/localization';
+import { InternalEvent } from '../../old_modules/util/internal-event.enum';
+import { localization } from '../../old_modules/util/localization';
 
 export interface BotExceptionHandlerParams {
   exception: BotException;

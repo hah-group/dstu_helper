@@ -1,51 +1,45 @@
-import { Nullable } from '../util/nullable';
-import { UserStage } from './user-stage.enum';
-import { UserMenu } from './user-menu/user-menu.entity';
-import { SocialSource } from 'src/framework/bot/type/social.enum';
+import { DomainEntity } from '../../framework/database/domain.entity';
+import { Collection, Entity, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { GroupEntity } from '../group/group.entity';
+import { ConversationEntity } from '../conversation/conversation.entity';
 
-export interface UserArgs {
-  id: number;
-  firstName: string;
-  lastName: string;
-  groupId: Nullable<number>;
-  socialType: SocialSource;
-  stage: UserStage;
-  menu: UserMenu;
-  locale: string;
+export interface UserCreateParams {
+  provider: string;
+  externalId: number;
+  firstName?: string;
+  lastName?: string;
+  nickname?: string;
 }
 
-export class User {
-  public readonly id: number;
-  public readonly firstName: string;
-  public readonly lastName?: string;
-  public readonly socialType: SocialSource;
-  public readonly menu: UserMenu;
-  public locale: string;
-  public groupId: Nullable<number>;
+@Entity({ tableName: 'user' })
+export class UserEntity extends DomainEntity {
+  @Property()
+  public firstName?: string;
 
-  constructor(params: UserArgs) {
-    const { firstName, groupId, id, lastName, socialType, stage, menu, locale } = params;
-    this.id = id;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.groupId = groupId;
-    this.socialType = socialType;
-    this._stage = stage;
-    this.menu = menu;
-    this.locale = locale;
-  }
+  @Property()
+  public lastName?: string;
 
-  private _stage: UserStage;
+  @Property()
+  public nickname?: string;
 
-  public get stage(): UserStage {
-    return this._stage;
-  }
+  @Property()
+  public provider: string;
 
-  public set stage(value) {
-    this._stage = value;
-  }
+  @Property()
+  public externalId: number;
 
-  public groupIsInitialized(): boolean {
-    return !!this.groupId;
+  @ManyToOne()
+  public group?: GroupEntity;
+
+  @ManyToMany()
+  public conversations = new Collection<ConversationEntity>(this);
+
+  constructor(params: UserCreateParams) {
+    super();
+    this.provider = params.provider;
+    this.externalId = params.externalId;
+    this.firstName = params.firstName;
+    this.lastName = params.lastName;
+    this.nickname = params.nickname;
   }
 }

@@ -1,5 +1,5 @@
 import { KeyboardButton } from './keyboard-button';
-import { ProcessedTextInstance } from '../../../modules/util/text.processor';
+import { ProcessedTextInstance } from '../../../old_modules/util/text.processor';
 
 export class LinkButton extends KeyboardButton {
   private readonly link: string;

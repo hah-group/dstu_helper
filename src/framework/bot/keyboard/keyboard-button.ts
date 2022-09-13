@@ -1,4 +1,4 @@
-import { ProcessedTextInstance, TextProcessor } from '../../../modules/util/text.processor';
+import { ProcessedTextInstance, TextProcessor } from '../../../old_modules/util/text.processor';
 
 type ButtonColor = 'primary' | 'secondary' | 'negative' | 'positive';
 
