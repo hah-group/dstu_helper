@@ -1,3 +1,4 @@
+/*
 import { Injectable } from '@nestjs/common';
 import { OnMessage } from '../../framework/bot/decorator/on-message.decorator';
 import { TextMessage } from '../../framework/bot/type/message.type';
@@ -29,7 +30,7 @@ export class SetupBotHandler {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  /*@OnMessage('/start', 'private')
+  /!*@OnMessage('/start', 'private')
   public async start(message: TextMessage): Promise<void> {
     await message.send(TextProcessor.buildSimpleText('SETUP_STEP_CHOOSE_LANGUAGE'), SetupBotLanguageKeyboard);
     message.user.stage = UserStage.INPUT_LANGUAGE;
@@ -88,5 +89,6 @@ export class SetupBotHandler {
 
     await message.send(TextProcessor.buildSimpleText('SETUP_STEP_SCHEDULE_READY'), PrivateMainMenuKeyboard, true);
     this.eventEmitter.emit(InternalEvent.SETUP_PRIVATE_SUCCESS, message);
-  }*/
+  }*!/
 }
+*/

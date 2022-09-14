@@ -1,3 +1,4 @@
+/*
 import { SubjectParsed } from './dstu-lesson.parser';
 import { LessonTypeDefinition } from './lesson-type.definition';
 
@@ -69,3 +70,4 @@ export const pretties: SubjectPrettierDef[] = [
     },
   },
 ];
+*/

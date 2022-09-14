@@ -1,3 +1,4 @@
+/*
 import { KeyboardBuilder } from '../../framework/bot/keyboard/keyboard.builder';
 import { TextButton } from '../../framework/bot/keyboard/text.button';
 import { TextProcessor } from '../util/text.processor';
@@ -9,3 +10,4 @@ export const ConversationBotCheckAdminKeyboard = new KeyboardBuilder()
     new TextButton(TextProcessor.buildSimpleText('CONVERSATION_CHECK_ADMIN_BUTTON'), ConversationBotCheckAdminButton),
   )
   .inline();
+*/

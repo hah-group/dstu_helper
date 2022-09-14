@@ -1,3 +1,4 @@
+/*
 import { Module } from '@nestjs/common';
 import { StudyGroupService } from './study-group.service';
 
@@ -6,3 +7,4 @@ import { StudyGroupService } from './study-group.service';
   exports: [StudyGroupService],
 })
 export class StudyGroupModule {}
+*/

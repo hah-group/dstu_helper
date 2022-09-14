@@ -1,4 +1,6 @@
-export const lessonOrderInterval = [
+import { LessonOrderInterval } from '../../../framework/util/lesson-order-interval.type';
+
+export const DSTULessonInterval: LessonOrderInterval[] = [
   {
     order: 1,
     start: '8:30:00',

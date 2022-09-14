@@ -35,7 +35,6 @@ export abstract class CoreRepository<E extends Record<string, any>> {
     return this.repository.findAll(data);
   }
 
-  @UseRequestContext()
   public queryBuilder(alias?: string): QueryBuilder<E> {
     return this.repository.qb(alias);
   }

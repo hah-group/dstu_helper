@@ -1,3 +1,4 @@
+/*
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StudyGroup } from './study-group.entity';
@@ -81,7 +82,7 @@ export class StudyGroupService {
       name: entity.name,
       id: entity.id,
       updateStatus: entity.updateStatus,
-      /*Lessons:
+      /!*Lessons:
         entity.lessons.length > 0
           ? entity.lessons.map((lesson) => {
               return {
@@ -119,7 +120,7 @@ export class StudyGroupService {
                 },
               };
             })
-          : undefined,*/
+          : undefined,*!/
       Users: {
         connect: entity.users.map((user) => ({ id: user.id })),
       },
@@ -155,3 +156,4 @@ export class StudyGroupService {
     return this.prismaService.$transaction(entities.map((group) => this.save(group)));
   }
 }
+*/

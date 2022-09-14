@@ -1,3 +1,4 @@
+/*
 import { Injectable } from '@nestjs/common';
 import { OnMessage } from '../../framework/bot/decorator/on-message.decorator';
 import {
@@ -90,7 +91,7 @@ export class PrivateScheduleHandler {
     await this.userService.save(message.user);
   }
 
-  /*@OnMessage(PrivateMainMenuWhereLessonButton, 'private')
+  /!*@OnMessage(PrivateMainMenuWhereLessonButton, 'private')
   public async currentLesson(message: TextMessage): Promise<void> {
     const group = await this.studyGroupService.getByUser(message.user);
     if (!group) throw new Error('Not found group');
@@ -102,7 +103,7 @@ export class PrivateScheduleHandler {
     const group = await this.studyGroupService.getByUser(message.user);
     if (!group) throw new Error('Not found group');
     await message.send(TextProcessor.short(group, false));
-  }*/
+  }*!/
 
   private async sendDaySchedule(message: InlineButtonMessage, date: DateTime): Promise<void> {
     const group = await this.studyGroupService.getByUser(message.user);
@@ -112,3 +113,4 @@ export class PrivateScheduleHandler {
     await message.edit(TextProcessor.lessons(group, date, true), undefined, PrivateDayScheduleKeyboard(date));
   }
 }
+*/

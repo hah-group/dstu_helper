@@ -4,7 +4,6 @@ import { CallbackQuery as TelegramCallbackQuery, Message as TelegramMessage } fr
 import { TG_OPTIONS } from './constants';
 import { TelegramModuleOptions } from './telegram-module.options';
 import { BotHandler, OnInlineButtonMetadata, OnMessageMetadata } from '../bot/decorator/bot-handler.type';
-import { Message, TelegramInlineButtonMessage, TelegramTextMessage } from '../bot/type/message.type';
 import { EventType } from '../bot/type/metadata-type.enum';
 import { SocialSource } from '../bot/type/social.enum';
 import { TelegramMessageData } from './telegram-message-data.type';
@@ -15,8 +14,6 @@ import { UserService } from 'src/old_modules/user/user.service';
 import { User } from '../../old_modules/user/user.entity';
 import { BotException } from '../bot-exception/bot.exception';
 import { BotExceptionHandler } from '../bot-exception/bot-exception.handler';
-import { ProcessedText, ProcessedTextInstance, TextProcessor } from '../../old_modules/util/text.processor';
-import { OnMessageEventItem } from '../bot/decorator/on-message.decorator';
 
 @Injectable()
 export class TelegramService {

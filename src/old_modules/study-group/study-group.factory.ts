@@ -1,3 +1,4 @@
+/*
 import { StudyGroup } from './study-group.entity';
 import Prisma from '@prisma/client';
 import { LessonFactory } from '../lesson/lesson.factory';
@@ -34,3 +35,4 @@ export class StudyGroupFactory {
     });
   }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 import { KeyboardBuilder } from '../../framework/bot/keyboard/keyboard.builder';
 import { TextButton } from '../../framework/bot/keyboard/text.button';
 import { TextProcessor } from '../util/text.processor';
@@ -13,3 +14,4 @@ export const PrivateMainMenuKeyboard: KeyboardBuilder = new KeyboardBuilder()
   .row()
   .add(new TextButton(PrivateMainMenuWhereLessonButton))
   .add(new TextButton(PrivateMainMenuWhereNextLessonButton));
+*/

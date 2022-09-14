@@ -1,3 +1,4 @@
+/*
 import { Module } from '@nestjs/common';
 import { SystemNotificationService } from './system-notification.service';
 import { TelegramModule } from '../../framework/telegram/telegram.module';
@@ -7,3 +8,4 @@ import { TelegramModule } from '../../framework/telegram/telegram.module';
   imports: [TelegramModule],
 })
 export class SystemNotificationModule {}
+*/

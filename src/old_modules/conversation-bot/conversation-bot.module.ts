@@ -1,3 +1,4 @@
+/*
 import { Module } from '@nestjs/common';
 import { ConversationBotHandler } from './conversation-bot.handler';
 import { ConversationModule } from '../conversation/conversation.module';
@@ -10,3 +11,4 @@ import { CacheModule } from '../cache/cache.module';
   imports: [ConversationModule, DstuModule, StudyGroupModule, CacheModule],
 })
 export class ConversationBotModule {}
+*/

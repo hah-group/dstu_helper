@@ -1,5 +1,6 @@
+/*
 export class Variator {
-  /*public static Calc(lesson: IRasp) {
+  /!*public static Calc(lesson: IRasp) {
     let v = this.randomInt(0, 20);
     if (lesson.tutor.match(/Баранов/)) v += this.randomInt(25, 45);
     else if (lesson.tutor.match(/Рябых/)) v += 1000;
@@ -21,5 +22,6 @@ export class Variator {
   private static randomInt(min: number, max: number): number {
     const rand = min - 0.5 + Math.random() * (max - min + 1);
     return Math.round(rand);
-  }*/
+  }*!/
 }
+*/

@@ -1,7 +1,6 @@
+/*
 import { Lesson } from '../lesson/lesson.entity';
 import * as moment from 'moment';
-import { DateTime, Time } from './time';
-import { StudyGroup } from '../study-group/study-group.entity';
 import { LessonGroupProcessor } from './lesson-group/lesson-group.processor';
 import {
   LessonGroupClassRoom,
@@ -12,10 +11,10 @@ import {
 } from './lesson-group/lesson-group.type';
 import * as lodash from 'lodash';
 import { i18nReplacements, localization } from './localization';
-import { TimeRelativeProcessor } from './time-relative.processor';
 import { DATE_REGEX_BODY, FULL_DATE_REGEX_BODY, MNEMONIC_REGEX_BODY } from './date.parser';
 import { Logger } from '@nestjs/common';
-import { BumpedGroupsResult } from '../dstu/dstu.service';
+import { StudyGroup } from '@prisma/client';
+import { DateTime } from '../../framework/util/time';
 
 const ANY_DATE = `${MNEMONIC_REGEX_BODY}|${DATE_REGEX_BODY}|${FULL_DATE_REGEX_BODY}`;
 
@@ -465,3 +464,4 @@ export class TextProcessor {
     }
   }
 }
+*/

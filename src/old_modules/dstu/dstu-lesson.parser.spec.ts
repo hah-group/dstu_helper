@@ -1,3 +1,4 @@
+/*
 import DstuLessonParser from './dstu-lesson.parser';
 import { LessonType } from '@prisma/client';
 
@@ -35,3 +36,4 @@ describe('Lesson parser', () => {
     });
   });
 });
+*/

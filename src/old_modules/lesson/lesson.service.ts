@@ -1,3 +1,4 @@
+/*
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/old_modules/prisma/prisma.service';
 import { Lesson } from './lesson.entity';
@@ -80,3 +81,4 @@ export class LessonService {
     }
   }
 }
+*/

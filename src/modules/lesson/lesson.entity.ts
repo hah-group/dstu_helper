@@ -1,11 +1,12 @@
-import { Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, Enum, ManyToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { LessonType } from './lesson-type.enum';
 import { TeacherEntity } from '../teacher/teacher.entity';
 import { GroupEntity } from '../group/group.entity';
-import { TimestampedEntity } from '../../framework/database/timestamped.entity';
+import { DomainEntity } from '../../framework/database/domain.entity';
 
 @Entity({ tableName: 'lesson' })
-export class LessonEntity extends TimestampedEntity {
+@Unique({ properties: ['group', 'start', 'subgroup', 'teacher'] })
+export class LessonEntity extends DomainEntity {
   @ManyToOne()
   public group!: GroupEntity;
   @Property()
@@ -30,9 +31,4 @@ export class LessonEntity extends TimestampedEntity {
   public classRoom?: string;
   @Property()
   public distance!: boolean;
-
-  @PrimaryKey()
-  public get id(): string {
-    return [this.start.toString(), this.subgroup || -1, this.teacher?.id || -1, this.group.id].join('_');
-  }
 }

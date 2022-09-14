@@ -1,3 +1,4 @@
+/*
 import { Module } from '@nestjs/common';
 import { LessonService } from './lesson.service';
 
@@ -6,3 +7,4 @@ import { LessonService } from './lesson.service';
   exports: [LessonService],
 })
 export class LessonModule {}
+*/

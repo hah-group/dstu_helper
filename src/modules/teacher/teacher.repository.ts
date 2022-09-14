@@ -8,4 +8,9 @@ export class TeacherRepository extends CoreRepository<TeacherEntity> {
   constructor(@InjectRepository(TeacherEntity) repository: EntityRepository<TeacherEntity>, orm: MikroORM) {
     super(repository, orm);
   }
+
+  public async upsertMany(entities: TeacherEntity[]): Promise<void> {
+    entities.forEach((entity) => delete entity.lessons);
+    await this.queryBuilder().insert(entities).onConflict('id').merge().execute();
+  }
 }

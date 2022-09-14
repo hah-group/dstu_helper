@@ -1,3 +1,4 @@
+/*
 import { Module } from '@nestjs/common';
 import { CacheService } from './cache.service';
 import { DstuModule } from '../dstu/dstu.module';
@@ -12,3 +13,4 @@ import { StudyGroupModule } from '../study-group/study-group.module';
   exports: [CacheService],
 })
 export class CacheModule {}
+*/

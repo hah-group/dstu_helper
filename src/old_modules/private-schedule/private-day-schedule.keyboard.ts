@@ -1,3 +1,4 @@
+/*
 import { KeyboardBuilder } from '../../framework/bot/keyboard/keyboard.builder';
 import { TextButton } from '../../framework/bot/keyboard/text.button';
 import { DateTime } from '../util/time';
@@ -20,3 +21,4 @@ export const PrivateDayScheduleKeyboard = (atDate: DateTime) => {
     .add(new TextButton(TextProcessor.atDateButton(atDate, 7), PrivateDayScheduleNextWeekButtonId))
     .inline();
 };
+*/

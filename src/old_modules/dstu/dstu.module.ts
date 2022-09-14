@@ -1,3 +1,4 @@
+/*
 import { Module } from '@nestjs/common';
 import { DstuService } from './dstu.service';
 import { BullModule } from '@nestjs/bull';
@@ -22,3 +23,4 @@ import { LessonModule } from '../lesson/lesson.module';
   exports: [DstuService],
 })
 export class DstuModule {}
+*/

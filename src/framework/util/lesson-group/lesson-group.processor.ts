@@ -1,3 +1,4 @@
+/*
 import { Lesson } from '../../lesson/lesson.entity';
 import * as lodash from 'lodash';
 import {
@@ -6,7 +7,6 @@ import {
   LessonGroupSingle,
   LessonGroupSingleManyClassRooms,
 } from './lesson-group.type';
-import { TextProcessor } from '../text.processor';
 
 export class LessonGroupProcessor {
   private readonly allLessons: Lesson[];
@@ -81,3 +81,4 @@ export class LessonGroupProcessor {
     };
   }
 }
+*/

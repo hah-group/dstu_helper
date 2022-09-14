@@ -9,22 +9,6 @@ import {
   OnInviteMetadata,
   OnMessageMetadata,
 } from '../bot/decorator/bot-handler.type';
-import { VkMessageData, VkMessageEventData, VkMessageInviteData, VkMessageNewData } from './vk-message-data.type';
-import { VkEvent } from './vk-event.definition';
-import { EventType } from '../bot/type/metadata-type.enum';
-import { VkInlineButtonMessage, VkInviteMessage, VkTextMessage } from '../bot/type/message.type';
-import { SocialSource } from '../bot/type/social.enum';
-import { VkProducer } from './job/vk.producer';
-import { KeyboardBuilder } from '../bot/keyboard/keyboard.builder';
-import { UserService } from '../../old_modules/user/user.service';
-import { User } from '../../old_modules/user/user.entity';
-import { VkJobAlert, VkJobEdit } from './job/vk-job-data.type';
-import { BotException } from '../bot-exception/bot.exception';
-import { BotExceptionHandler } from '../bot-exception/bot-exception.handler';
-import { UnknownException } from '../bot-exception/exception/unknown.exception';
-import { ProcessedText, ProcessedTextInstance, TextProcessor } from '../../old_modules/util/text.processor';
-import { OnMessageEventItem } from '../bot/decorator/on-message.decorator';
-import { VkConversationInfo } from './vk-conversation-info.type';
 
 const CONVERSATION_START_ID = 2000000000;
 

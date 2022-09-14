@@ -1,3 +1,4 @@
+/*
 import { Injectable, Logger } from '@nestjs/common';
 import { OnInvite } from '../../framework/bot/decorator/on-invite.decorator';
 import { InlineButtonMessage, InviteMessage, TextMessage } from '../../framework/bot/type/message.type';
@@ -120,7 +121,7 @@ export class ConversationBotHandler {
 
   @OnInlineButton(ConversationBotCheckAdminButton)
   public async onCheckAdmin(message: InlineButtonMessage): Promise<void> {
-    /*if (message.from != SocialSource.VK) return;
+    /!*if (message.from != SocialSource.VK) return;
     const conversation = await this.conversationService.get(message.peerId);
 
     if (!conversation.isMember(message.user) || !conversation.isInviting(message.user)) {
@@ -149,7 +150,7 @@ export class ConversationBotHandler {
       await this.findGroup(message, conversation);
     } catch (e) {
       await message.alert(TextProcessor.buildSimpleText('CONVERSATION_ADMIN_CHECK_FAILED'));
-    }*/
+    }*!/
   }
 
   public async findGroup(message: InlineButtonMessage, conversation: Conversation): Promise<void> {
@@ -372,3 +373,4 @@ export class ConversationBotHandler {
     }
   }
 }
+*/

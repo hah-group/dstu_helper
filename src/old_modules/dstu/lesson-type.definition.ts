@@ -1,3 +1,4 @@
+/*
 import { LessonType } from '@prisma/client';
 
 export const LessonTypeDefinition = {
@@ -10,3 +11,4 @@ export const LessonTypeDefinition = {
   зач: LessonType.EXAM_WITHOUT_MARK,
   зчО: LessonType.EXAM_WITHOUT_MARK,
 };
+*/

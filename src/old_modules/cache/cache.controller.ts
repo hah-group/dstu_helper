@@ -1,3 +1,4 @@
+/*
 import { Controller, Get, Logger } from '@nestjs/common';
 import { CacheService } from './cache.service';
 
@@ -18,3 +19,4 @@ export class CacheController {
     return this.cacheService.bumpGroupCourse();
   }
 }
+*/

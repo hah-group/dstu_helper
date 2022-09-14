@@ -1,3 +1,4 @@
+/*
 import { SocialSource } from './social.enum';
 import { KeyboardBuilder } from '../keyboard/keyboard.builder';
 import { EventType } from './metadata-type.enum';
@@ -63,3 +64,4 @@ export interface VkInviteMessage {
   peerId: number;
   send: (text: ProcessedText, keyboard?: KeyboardBuilder) => Promise<void>;
 }
+*/

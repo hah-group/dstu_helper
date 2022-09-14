@@ -181,6 +181,15 @@
       "schema": "public",
       "indexes": [
         {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "university_name_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
           "keyName": "university_pkey",
           "columnNames": [
             "id"
@@ -223,6 +232,25 @@
           "nullable": false,
           "length": 6,
           "mappedType": "datetime"
+        },
+        "last_update_at": {
+          "name": "last_update_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
         },
         "university_id": {
           "name": "university_id",
@@ -276,12 +304,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "created_at": {
           "name": "created_at",
@@ -424,6 +452,18 @@
       "name": "lesson",
       "schema": "public",
       "indexes": [
+        {
+          "keyName": "lesson_group_id_start_subgroup_teacher_id_unique",
+          "columnNames": [
+            "group_id",
+            "start",
+            "subgroup",
+            "teacher_id"
+          ],
+          "composite": true,
+          "primary": false,
+          "unique": true
+        },
         {
           "keyName": "lesson_pkey",
           "columnNames": [

@@ -1,3 +1,4 @@
+/*
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { InternalEvent } from '../util/internal-event.enum';
@@ -5,8 +6,8 @@ import { SocialSource } from '../../framework/bot/type/social.enum';
 import { TelegramService } from 'src/framework/telegram/telegram.service';
 import { KeyboardBuilder } from '../../framework/bot/keyboard/keyboard.builder';
 import { LinkButton } from '../../framework/bot/keyboard/link.button';
-import { Time } from '../util/time';
 import { BotException } from '../../framework/bot-exception/bot.exception';
+import { Time } from '../../framework/util/time';
 
 export interface SystemNotification {
   error: BotException;
@@ -29,10 +30,10 @@ export class SystemNotificationService implements OnApplicationBootstrap {
   public async onApplicationBootstrap(): Promise<void> {
     if (process.env.FLAVOUR != 'prod') return;
 
-    /* await this.telegramService.sendMessage(
+    /!* await this.telegramService.sendMessage(
       parseInt(process.env.SYSTEM_NOTIFICATION_TG_USER),
       `Application deployed with version: <code>${process.env.npm_package_version}</code>`,
-    );*/
+    );*!/
   }
 
   @OnEvent(InternalEvent.SYSTEM_NOTIFICATION)
@@ -69,3 +70,4 @@ ${
     //await this.telegramService.sendMessage(parseInt(process.env.SYSTEM_NOTIFICATION_TG_USER), text, keyboard);
   }
 }
+*/

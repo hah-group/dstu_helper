@@ -1,14 +1,14 @@
-import { ProcessedTextInstance, TextProcessor } from '../../../old_modules/util/text.processor';
+import { Text } from '../../text/text';
 
 type ButtonColor = 'primary' | 'secondary' | 'negative' | 'positive';
 
 export abstract class KeyboardButton {
-  protected label: ProcessedTextInstance;
+  protected label: Text;
   protected _id?: string;
   protected _payload?: any;
   protected _color?: ButtonColor;
 
-  protected constructor(label: ProcessedTextInstance, id?: string, payload?: any) {
+  protected constructor(label: Text, id?: string, payload?: any) {
     this.label = label;
     this._id = id;
     this._payload = payload;
@@ -28,12 +28,4 @@ export abstract class KeyboardButton {
     this._color = value;
     return this;
   }
-
-  public localize(processedText: ProcessedTextInstance, locale: string): string {
-    return TextProcessor.buildText([processedText], locale);
-  }
-
-  public abstract toVkObject(locale: string, inlineMode: boolean): any;
-
-  public abstract toTelegramObject(locale: string): any;
 }

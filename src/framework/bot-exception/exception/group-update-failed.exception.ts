@@ -1,3 +1,4 @@
+/*
 import { StudyGroup } from '../../../old_modules/study-group/study-group.entity';
 import { BotException } from '../bot.exception';
 import { BotExceptionType } from './bot-exception-type.enum';
@@ -21,3 +22,4 @@ export class GroupUpdateFailedException extends BotException {
     });
   }
 }
+*/

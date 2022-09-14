@@ -1,3 +1,4 @@
+/*
 import * as moment from 'moment';
 import { LessonTypeDefinition } from './lesson-type.definition';
 import { LessonType } from '@prisma/client';
@@ -104,7 +105,7 @@ export default class DstuLessonParser {
     }
   }
 
-  /* private static isCurrent(dateStart: Date, dateEnd: Date): boolean {
+  /!* private static isCurrent(dateStart: Date, dateEnd: Date): boolean {
     const currentDate = new Date().getTime() + 10800000;
     if (currentDate <= dateEnd.getTime() && currentDate >= dateStart.getTime())
       return true;
@@ -121,5 +122,6 @@ export default class DstuLessonParser {
     return (
       currentDate <= dateEnd.getTime() && currentDate >= dateStart.getTime()
     );
-  }*/
+  }*!/
 }
+*/

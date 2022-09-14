@@ -1,3 +1,4 @@
+/*
 import { LessonType } from '@prisma/client';
 import * as crypto from 'crypto';
 import { DateTime, Time } from 'src/old_modules/util/time';
@@ -93,3 +94,4 @@ export class Lesson {
     return this.order === TimeRelativeProcessor.next(Time.get());
   }
 }
+*/

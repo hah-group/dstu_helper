@@ -1,7 +1,7 @@
 import * as moment from 'moment';
-import { DateTime, Time } from './time';
 import { parseInt } from 'lodash';
 import { Logger } from '@nestjs/common';
+import { DateTime, Time } from 'src/framework/util/time';
 
 export const MNEMONIC_REGEX_BODY =
   '((?:поза *)*вчера|сегодня|завтра|(?:после *)*завтра|понедельник|пн|вторник|вт|среду|ср|четверг|чт|пятницу|пт|субботу|сб|воскресенье|вс)(?= |$)';

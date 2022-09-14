@@ -1,3 +1,4 @@
+/*
 import { Injectable, Logger } from '@nestjs/common';
 import { ApiResponseRaspDstuType, DstuRasp } from './api-response-rasp.dstu.type';
 import * as moment from 'moment';
@@ -186,7 +187,7 @@ export class DstuService {
 
     let prettyQuery = query;
     prettyQuery = query.toUpperCase();
-    prettyQuery = prettyQuery.replace(/[ \-]*/gi, '');
+    prettyQuery = prettyQuery.replace(/[ \-]*!/gi, '');
 
     try {
       const groups = await this.getGroups();
@@ -226,3 +227,4 @@ export class DstuService {
     return job.finished();
   }
 }
+*/

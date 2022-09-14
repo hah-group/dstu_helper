@@ -1,3 +1,4 @@
+/*
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Job, Queue } from 'bull';
@@ -19,3 +20,4 @@ export class DstuProducer {
     });
   }
 }
+*/

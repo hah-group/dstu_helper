@@ -7,5 +7,5 @@ export class DomainEntity extends TimestampedEntity {
   }
 
   @PrimaryKey()
-  public readonly id!: number;
+  public id!: number;
 }

@@ -1,3 +1,4 @@
+/*
 import { KeyboardBuilder } from '../../framework/bot/keyboard/keyboard.builder';
 import { TextButton } from '../../framework/bot/keyboard/text.button';
 import { TextProcessor } from '../util/text.processor';
@@ -9,3 +10,4 @@ export const SetupBotLanguageKeyboard = new KeyboardBuilder()
   .add(new TextButton(SetupBotLanguageEnglishButton))
   .add(new TextButton(SetupBotLanguageRussianButton))
   .oneTime();
+*/

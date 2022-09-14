@@ -1,3 +1,4 @@
+/*
 import { Logger, MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { VkModule } from '../framework/vk/vk.module';
@@ -67,3 +68,4 @@ export class AppModule {
     if (process.env.USE_POLLING == 'false') consumer.apply(VkMiddleware).forRoutes('bot/vk');
   }
 }
+*/

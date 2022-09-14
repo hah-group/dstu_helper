@@ -1,3 +1,4 @@
+/*
 import { Logger } from '@nestjs/common';
 import { Process, Processor } from '@nestjs/bull';
 import { DstuJobName } from './dstu-job-name.enum';
@@ -42,3 +43,4 @@ export class DstuConsumer {
     return data;
   }
 }
+*/

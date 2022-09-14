@@ -1,3 +1,4 @@
+/*
 import { Teacher } from '@prisma/client';
 import { Lesson, LessonArgs } from './lesson.entity';
 import { TeacherFactory } from '../teacher/teacher.factory';
@@ -11,3 +12,4 @@ export class LessonFactory {
     });
   }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 export type ApiResponseRaspDstuType = {
   data: {
     rasp: DstuRasp[];
@@ -7,6 +8,7 @@ export type ApiResponseRaspDstuType = {
         groupID: number;
       };
       selectedNumNed: number;
+      dateUploadingRasp: Date;
     };
   };
   state: number;
@@ -22,3 +24,4 @@ export type DstuRasp = {
   номерЗанятия: number;
   кодПреподавателя: number;
 };
+*/

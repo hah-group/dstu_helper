@@ -1,3 +1,4 @@
+/*
 import { Lesson } from 'src/old_modules/lesson/lesson.entity';
 import Prisma from '@prisma/client';
 import { User } from '../user/user.entity';
@@ -71,3 +72,4 @@ export class StudyGroup {
     else if (this.updateStatus == 'IN_PROGRESS') throw new GroupUpdateInProgressException(this);
   }
 }
+*/

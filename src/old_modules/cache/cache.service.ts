@@ -1,3 +1,4 @@
+/*
 import { Injectable, Logger } from '@nestjs/common';
 import { BumpedGroupsResult, DstuService } from '../dstu/dstu.service';
 import * as moment from 'moment';
@@ -55,7 +56,7 @@ export class CacheService {
     return groups;
   }
 
-  /*async findGroup(groupName: string): Promise<DstuApiGroupInfo | undefined> {
+  /!*async findGroup(groupName: string): Promise<DstuApiGroupInfo | undefined> {
     this.logger.log(`Find group ${groupName}`);
     const groups = await this.dstuService.getGroups();
     const result = groups.data.find((groupInfo) => groupInfo.name.match(`${groupName}`));
@@ -76,5 +77,6 @@ export class CacheService {
       `Schedule collected for the group ${group.name}. Received ${resultSchedule.Schedule.length} elements`,
     );
     return resultSchedule;
-  }*/
+  }*!/
 }
+*/

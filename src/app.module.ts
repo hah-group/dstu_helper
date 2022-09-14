@@ -8,6 +8,10 @@ import { TelegramModule } from './framework/telegram/telegram.module';
 import { DialogModule } from './modules/dialog/dialog.module';
 import { UserModule } from './modules/user/user.module';
 import { BullModule } from '@nestjs/bull';
+import { GroupModule } from './modules/group/group.module';
+import { LessonModule } from './modules/lesson/lesson.module';
+import { ScheduleModule } from './modules/schedule/schedule.module';
+import { TeacherModule } from './modules/teacher/teacher.module';
 
 @Module({
   imports: [
@@ -26,7 +30,11 @@ import { BullModule } from '@nestjs/bull';
       token: process.env.TG_BOT_TOKEN,
     }),
     DialogModule,
+    ScheduleModule,
     UserModule,
+    GroupModule,
+    LessonModule,
+    TeacherModule,
     /*BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST,
