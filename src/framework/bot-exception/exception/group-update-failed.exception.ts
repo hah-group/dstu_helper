@@ -8,7 +8,7 @@ export class GroupUpdateFailedException extends BotException {
     super({
       type: BotExceptionType.GROUP_UPDATE_FAILED,
       notifyScope: 'ALL',
-      message: `Schedule updating for group ${group.id} failed`,
+      text: `Schedule updating for group ${group.key} failed`,
       localizeMessage: {
         phrase: 'EXCEPTION_GROUP_UPDATE_FAILED',
         replacements: {
@@ -16,7 +16,7 @@ export class GroupUpdateFailedException extends BotException {
         },
       },
       data: {
-        group: group.id,
+        group: group.key,
         status: group.updateStatus,
       },
     });

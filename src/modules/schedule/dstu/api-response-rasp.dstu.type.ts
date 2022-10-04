@@ -22,4 +22,5 @@ export type DstuRasp = {
   аудитория: string;
   номерЗанятия: number;
   кодПреподавателя: number;
+  код: number;
 };

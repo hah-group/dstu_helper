@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { parseInt } from 'lodash';
 import { Logger } from '@nestjs/common';
-import { DateTime, Time } from 'src/framework/util/time';
+import { DateTime, Time } from '../time';
 
 export const MNEMONIC_REGEX_BODY =
   '((?:поза *)*вчера|сегодня|завтра|(?:после *)*завтра|понедельник|пн|вторник|вт|среду|ср|четверг|чт|пятницу|пт|субботу|сб|воскресенье|вс)(?= |$)';
@@ -13,6 +13,8 @@ const DATE_REGEX = new RegExp(DATE_REGEX_BODY, 'i');
 
 export const FULL_DATE_REGEX_BODY = '(\\d{1,2})[.\\/\\- ](\\d{1,2})(?:[.\\/\\- ](\\d{2,4}))?';
 const FULL_DATE_REGEX = new RegExp(FULL_DATE_REGEX_BODY, 'i');
+
+export const ANY_DATE = `${MNEMONIC_REGEX_BODY}|${DATE_REGEX_BODY}|${FULL_DATE_REGEX_BODY}`;
 
 export class DateParser {
   private static readonly log = new Logger('DateParser');
@@ -27,8 +29,11 @@ export class DateParser {
 
       return this.startOfDay(Time.get());
     } catch (e) {
-      this.log.error(`Date parsing error: ${message}`);
-      this.log.error(e.stack);
+      if (e instanceof Error) {
+        this.log.error(`Date parsing error: ${message}`);
+        this.log.error(e.stack);
+      }
+
       return this.startOfDay(currentDate);
     }
   }
@@ -98,15 +103,16 @@ export class DateParser {
 
     const currentHours = currentDate.hour();
 
-    if (mnemonic.match(/(после)/gi)) add += mnemonic.match(/(после)/gi).length;
-    if (mnemonic.match(/(поза)/gi)) add += mnemonic.match(/(поза)/gi).length * -1;
+    const afterMatch = mnemonic.match(/(после)/gi);
+    const beforeMatch = mnemonic.match(/(поза)/gi);
+    if (afterMatch) add += afterMatch.length;
+    if (beforeMatch) add += beforeMatch.length * -1;
 
     if (add == 0 && mnemonic.match(/(сегодня|завтра)/gi) && currentHours >= 0 && currentHours < 3) return 0;
     else if (add == 0 && mnemonic.match(/(вчера)/gi) && currentHours >= 0 && currentHours < 3) return -2;
 
     if (mnemonic.match(/(завтра)/gi)) add += 1;
     if (mnemonic.match(/(вчера)/gi)) add -= 1;
-
     return add;
   }
 

@@ -1,75 +1,95 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter } from 'events';
 import { BotContext } from './type/bot-context.type';
 import { BotHandler } from './decorator/bot-handler.type';
 import { BotHandlerContext } from './type/bot-message.type';
-import { BotAction, BotAlertAction, BotMessageAction } from './type/bot-action.type';
+import { BotAction, BotAlertAction, BotEditAction, BotMessageAction } from './type/bot-action.type';
 import { UserRepository } from '../../modules/user/user.repository';
 import { UserEntity } from '../../modules/user/user.entity';
-import { UseRequestContext } from '@mikro-orm/core';
+import { ConversationRepository } from '../../modules/conversation/conversation.repository';
 
 export declare interface BotService {
+  /*emit(event: 'send-request', ctx: BotAction<BotMessageAction>): boolean;
+  emit(event: 'edit-request', ctx: BotAction<BotMessageAction>): boolean;
+  emit(event: 'alert-request', ctx: BotAction<BotAlertAction>): boolean;
+
+  emit(event: 'send-response', messageId: number): boolean;
+
+  emit(event: 'get-user-request', ctx: BotContext): boolean;
+  emit(event: 'get-user-response', ctx: UserEntity): boolean;*/
+
   emit(event: 'event', ctx: BotContext): boolean;
 
-  emit(event: 'send', ctx: BotAction<BotMessageAction>): boolean;
-  emit(event: 'edit', ctx: BotAction<BotMessageAction>): boolean;
-  emit(event: 'alert', ctx: BotAction<BotAlertAction>): boolean;
+  /* on(event: 'send-request', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
+  on(event: 'edit-request', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
+  on(event: 'alert-request', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
 
-  emit(event: 'getUserRequest', ctx: BotContext): boolean;
-  emit(event: 'getUserResponse', ctx: UserEntity): boolean;
+  on(event: 'send-response', listener: (messageId: number) => void): boolean;
+
+  on(event: 'get-user-request', listener: (ctx: BotContext) => void): boolean;
+  on(event: 'get-user-response', listener: (ctx: UserEntity) => void): boolean;*/
 
   on(event: 'event', listener: (ctx: BotContext) => void): this;
+}
 
-  on(event: 'send', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
-  on(event: 'edit', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
-  on(event: 'alert', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
+export interface ProviderTransport {
+  send: (data: BotAction<BotMessageAction>) => Promise<number>;
+  edit: (data: BotAction<BotEditAction>) => Promise<void>;
+  alert: (data: BotAction<BotAlertAction>) => Promise<void>;
+  flush: (data: BotAction<null>) => Promise<void>;
 
-  on(event: 'getUserRequest', listener: (ctx: BotContext) => void): boolean;
-  on(event: 'getUserResponse', listener: (ctx: UserEntity) => void): boolean;
+  getUser?: (ctx: BotContext) => Promise<UserEntity>;
 }
 
 @Injectable()
 export class BotService extends EventEmitter {
-  constructor(private readonly userRepository: UserRepository) {
+  private readonly log = new Logger('BotService');
+
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly conversationRepository: ConversationRepository,
+  ) {
     super();
 
     this.on('event', async (ctx) => this.onEvent(ctx));
   }
 
   private handlers: Set<BotHandler> = new Set<BotHandler>();
+  private transports: Map<string, ProviderTransport> = new Map<string, ProviderTransport>();
 
   public registerHandler(handler: BotHandler): void {
     this.handlers.add(handler);
+  }
+
+  public registerProvider(provider: string, transport: ProviderTransport): void {
+    this.transports.set(provider, transport);
   }
 
   public async onEvent(ctx: BotContext): Promise<void> {
     for (const handler of this.handlers.values()) {
       const result = handler.checkers.every((checker) => checker.check(ctx.payload, ctx));
       if (result) {
-        const newCtx = await this.injectUser(ctx);
-        await handler.callback(this.buildContext(newCtx));
+        ctx.from.user = await this.getUser(ctx);
+        await handler.callback(this.buildContext(ctx));
         break;
       }
     }
   }
 
-  public async injectUser(ctx: BotContext): Promise<BotContext> {
-    let user = await this.userRepository.findOne({
-      provider: ctx.provider,
-      externalId: ctx.from.id,
-    });
+  public async getUser(ctx: BotContext): Promise<UserEntity> {
+    let user = await this.userRepository.findOne(
+      {
+        provider: ctx.provider,
+        externalId: ctx.from.id,
+      },
+      { populate: ['group'] },
+    );
 
     if (!user) {
       if (ctx.provider == 'vk') {
-        user = await new Promise((resolve) => {
-          this.emit('getUserRequest', ctx);
-
-          const callback = (user) => {
-            resolve(user);
-            this.removeListener('getUserResponse', callback);
-          };
-          this.on('getUserResponse', callback);
-        });
+        const transport = <ProviderTransport>this.transports.get(ctx.provider);
+        if (!transport.getUser) throw new Error('Unable to get user. Method not implemented');
+        user = await transport.getUser(ctx);
       } else {
         user = new UserEntity({
           provider: ctx.provider,
@@ -78,60 +98,80 @@ export class BotService extends EventEmitter {
           lastName: ctx.from.lastName,
           nickname: ctx.from.nickname,
         });
+        await this.userRepository.save(<UserEntity>user);
       }
-
-      await this.userRepository.save(user);
     }
 
-    ctx.from.user = user;
-    return ctx;
+    //TODO Fix crutch
+    const conversation = await this.conversationRepository.getById(ctx.chat.id, ctx.provider);
+    const addedConversation = await (<UserEntity>user).checkConversation(conversation || undefined);
+    if (addedConversation) {
+      this.log.log(`Add user (id: ${user?.id}) to conversation (id: ${conversation?.id})`);
+    }
+
+    const addedGroup = await (<UserEntity>user).checkGroup(conversation || undefined);
+    if (addedGroup) {
+      this.log.log(`Add user (id: ${user?.id}) to group (id: ${user?.group?.id})`);
+    }
+
+    if (addedConversation || addedGroup) await this.userRepository.save(<UserEntity>user);
+
+    return <UserEntity>user;
   }
 
-  public buildContext(ctx: BotContext): BotHandlerContext {
-    return {
+  public buildContext(ctx: Omit<BotContext, 'universityName'>): BotHandlerContext {
+    const fullCtx: BotContext = {
       ...ctx,
-      send: (message, keyboard, options) => this.send(ctx, { message, keyboard, options }),
-      edit: (message, keyboard, options) => this.edit(ctx, { message, keyboard, options }),
-      alert: (message) => this.alert(ctx, { message }),
+      universityName: 'DSTU', // TODO Add University abstraction
+    };
+
+    return {
+      ...fullCtx,
+      send: (message, keyboard, options) => this.send(fullCtx, { message, keyboard, options }),
+      edit: (message, keyboard) => this.edit(fullCtx, { message, keyboard }),
+      alert: (message) => this.alert(fullCtx, { message }),
+      flush: () => this.flush(fullCtx),
     };
   }
 
-  public send(ctx: BotContext, action: Omit<BotMessageAction, 'type'>): Promise<void> {
-    return new Promise((resolve) => {
-      this.emit('send', {
-        context: ctx,
-        action: {
-          type: 'message',
-          ...action,
-        },
-      });
-      resolve();
+  public send(ctx: BotContext, action: Omit<BotMessageAction, 'type'>): Promise<number> {
+    const transport = <ProviderTransport>this.transports.get(ctx.provider);
+    return transport.send({
+      context: ctx,
+      action: {
+        type: 'message',
+        ...action,
+      },
     });
   }
 
-  public edit(ctx: BotContext, action: Omit<BotMessageAction, 'type'>): Promise<void> {
-    return new Promise((resolve) => {
-      this.emit('edit', {
-        context: ctx,
-        action: {
-          type: 'message',
-          ...action,
-        },
-      });
-      resolve();
+  public edit(ctx: BotContext, action: Omit<BotEditAction, 'type'>): Promise<void> {
+    const transport = <ProviderTransport>this.transports.get(ctx.provider);
+    return transport.edit({
+      context: ctx,
+      action: {
+        type: 'edit',
+        ...action,
+      },
     });
   }
 
   public alert(ctx: BotContext, action: Omit<BotAlertAction, 'type'>): Promise<void> {
-    return new Promise((resolve) => {
-      this.emit('alert', {
-        context: ctx,
-        action: {
-          type: 'alert',
-          ...action,
-        },
-      });
-      resolve();
+    const transport = <ProviderTransport>this.transports.get(ctx.provider);
+    return transport.alert({
+      context: ctx,
+      action: {
+        type: 'alert',
+        ...action,
+      },
+    });
+  }
+
+  public flush(ctx: BotContext): Promise<void> {
+    const transport = <ProviderTransport>this.transports.get(ctx.provider);
+    return transport.flush({
+      context: ctx,
+      action: null,
     });
   }
 }

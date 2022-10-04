@@ -1,10 +1,9 @@
 import { Process, Processor } from '@nestjs/bull';
 import { MessageJobName } from '../../bot/type/message-job-name.enum';
-import { TelegramService } from '../telegram.service';
 import { TelegramJobAlert, TelegramJobEdit, TelegramJobSend } from './telegram-job-data.type';
-import { Message as TelegramMessage } from 'node-telegram-bot-api';
 import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
+import { TelegramService } from '../telegram.service';
 
 @Processor('telegram')
 export class TelegramConsumer {
@@ -12,15 +11,14 @@ export class TelegramConsumer {
 
   constructor(private readonly telegramService: TelegramService) {}
 
-  /*@Process(MessageJobName.SEND)
-  public async send(job: Job<TelegramJobSend>): Promise<TelegramMessage> {
-    this.log.debug(`Execute send job to ${job.data.chatId}`);
-    const { data } = job;
-    return this.telegramService.sendMessage(data.chatId, data.text, data.keyboard);
+  @Process(MessageJobName.SEND)
+  public async send(job: Job<TelegramJobSend>): Promise<number> {
+    const data = job.data;
+    return this.telegramService.sendMessage(data.chatId, data.message, data.options);
   }
 
   @Process(MessageJobName.EDIT)
-  public async edit(job: Job<TelegramJobEdit>): Promise<TelegramMessage | undefined> {
+  public async edit(job: Job<TelegramJobEdit>): Promise<void> {
     this.log.debug(`Execute edit job to ${job.data.chatId}`);
     const { data } = job;
     try {
@@ -34,6 +32,6 @@ export class TelegramConsumer {
   public async alert(job: Job<TelegramJobAlert>): Promise<void> {
     this.log.debug(`Execute alert job`);
     const { data } = job;
-    return this.telegramService.alertEvent(data.callbackId, data.text, data.force);
-  }*/
+    return this.telegramService.sendAlert(data.eventId, data.text);
+  }
 }

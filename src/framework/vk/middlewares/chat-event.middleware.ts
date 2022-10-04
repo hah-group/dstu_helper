@@ -4,7 +4,7 @@ import { BotContext, ChatUser } from '../../bot/type/bot-context.type';
 import { BotPayloadType } from '../../bot/type/bot-payload-type.enum';
 
 export class ChatEventMiddleware extends BaseMiddleware<VkBotContext> {
-  public middleware(ctx: VkBotContext): DeepPartial<BotContext> {
+  public middleware(ctx: VkBotContext): DeepPartial<BotContext> | undefined {
     if (
       ctx.message.action &&
       (ctx.message.action.type == 'chat_invite_user' ||

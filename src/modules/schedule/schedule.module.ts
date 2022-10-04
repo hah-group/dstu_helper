@@ -9,6 +9,7 @@ import { GroupModule } from '../group/group.module';
 import { LessonModule } from '../lesson/lesson.module';
 import { ScheduleService } from './schedule.service';
 import { TeacherModule } from '../teacher/teacher.module';
+import { UniversityModule } from '../university/university.module';
 
 @Module({
   imports: [
@@ -23,8 +24,10 @@ import { TeacherModule } from '../teacher/teacher.module';
     GroupModule,
     LessonModule,
     TeacherModule,
+    UniversityModule,
   ],
   providers: [ScheduleProviderBuilder, RequestProducer, RequestConsumer, ScheduleService],
   controllers: [ScheduleController],
+  exports: [ScheduleService],
 })
 export class ScheduleModule {}

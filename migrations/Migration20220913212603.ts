@@ -10,7 +10,7 @@ export class Migration20220913212603 extends Migration {
     this.addSql('alter table "user" alter column "group_id" drop not null;');
     this.addSql('alter table "user" drop column "social";');
     this.addSql('alter table "user" drop column "locale";');
-    this.addSql('alter table "user" add constraint "user_group_id_foreign" foreign key ("group_id") references "group" ("id") on update cascade on delete set null;');
+    this.addSql('alter table "user" add constraint "user_group_id_foreign" foreign key ("group_id") references "group" ("key") on update cascade on delete set null;');
   }
 
   async down(): Promise<void> {
@@ -22,7 +22,7 @@ export class Migration20220913212603 extends Migration {
     this.addSql('alter table "user" drop column "nickname";');
     this.addSql('alter table "user" drop column "external_id";');
     this.addSql('alter table "user" rename column "provider" to "social";');
-    this.addSql('alter table "user" add constraint "user_group_id_foreign" foreign key ("group_id") references "group" ("id") on update cascade;');
+    this.addSql('alter table "user" add constraint "user_group_id_foreign" foreign key ("group_id") references "group" ("key") on update cascade;');
   }
 
 }

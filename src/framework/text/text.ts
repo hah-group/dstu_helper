@@ -4,10 +4,14 @@ export class Text {
   constructor(private readonly template: HandlebarsTemplateDelegate, private readonly data?: any) {}
 
   public static Build(template: string, data?: any): Text {
-    return new Text(TextTemplates.get(template), data);
+    const templateDelegate = TextTemplates.get(template);
+    if (!templateDelegate) throw new Error(`Template "${template}" not found`);
+    return new Text(templateDelegate, data);
   }
 
   public render(): string {
-    return this.template(this.data);
+    let rendered = this.template(this.data);
+    rendered = rendered.replace(/^[ \t]*/gm, '');
+    return rendered.trimEnd();
   }
 }

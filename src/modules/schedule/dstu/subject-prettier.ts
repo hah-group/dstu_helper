@@ -1,10 +1,13 @@
 import { SubjectInfo } from './dstu-lesson.parser';
 import { LessonTypeDefinition } from './lesson-type.definition';
+import { LessonType } from '../../lesson/lesson-type.enum';
 
 interface SubjectPrettierDef {
   regex: RegExp;
   handler: (subject: string, match: RegExpMatchArray) => SubjectInfo;
 }
+
+const getLessonTypes = () => Object.keys(LessonTypeDefinition).join('|');
 
 export const pretties: SubjectPrettierDef[] = [
   {
@@ -13,27 +16,27 @@ export const pretties: SubjectPrettierDef[] = [
       //пр. Учебно-тренировочный модуль (Киберспорт) => пр. Киберспорт
       if (subject.match(/Учебно/gi))
         return {
-          type: LessonTypeDefinition[match[1]],
+          type: LessonType.PHYSICAL_EDUCATION,
           name: match[3] || match[2],
         };
       else {
         //пр. Физическая культура и спорт (основная группа) => пр. Физическая культура и спорт
         if (subject.match(/основная/gi))
           return {
-            type: LessonTypeDefinition[match[1]],
+            type: LessonType.PHYSICAL_EDUCATION,
             //ЕБАНЫЙ УЧЕБНЫЙ ОТДЕЛ ПИШИТЕ ОДИНАКОВО ДИСЦИПЛИНЫ. ЧТО ЭТО ТАКОЕ??: пр. Физическая культура и спорт: основная группа
             name: 'Физическая культура и спорт',
           };
         //пр. Физическая культура и спорт (Специальная медицинская группа) => пр. Общая физическая подготовка
         else if (subject.match(/медицинская/gi))
           return {
-            type: LessonTypeDefinition[match[1]],
+            type: LessonType.PHYSICAL_EDUCATION,
             //ЕБАНЫЙ УЧЕБНЫЙ ОТДЕЛ ПИШИТЕ ОДИНАКОВО ДИСЦИПЛИНЫ. ЧТО ЭТО ТАКОЕ??: пр. Физическая культура и спорт (Специальная медицинская группа)
             name: 'Физическая культура и спорт',
           };
         else
           return {
-            type: LessonTypeDefinition[match[1]],
+            type: LessonType.PHYSICAL_EDUCATION,
             name: match[3] || match[2],
           };
       }
@@ -50,7 +53,7 @@ export const pretties: SubjectPrettierDef[] = [
     },
   },
   {
-    regex: /(лек|лаб|пр|зач|экз)\.? история/gi,
+    regex: new RegExp(`(${getLessonTypes()}).*? история`, 'gi'),
     handler: (subject, match) => {
       // пр. История (история России, всеобщая история) => пр. История
       return {

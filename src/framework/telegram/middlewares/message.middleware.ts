@@ -1,11 +1,11 @@
 import { BaseMiddleware } from '../../bot/base.middleware';
 import { DeepPartial } from 'ts-essentials';
 import { BotContext } from '../../bot/type/bot-context.type';
-import { TelegramContext, TelegramMessage } from '../telegram-new.service';
+import { TelegramContext, TelegramMessage } from '../telegram.service';
 import { BotPayloadType } from '../../bot/type/bot-payload-type.enum';
 
 export class MessageMiddleware extends BaseMiddleware<TelegramContext> {
-  public middleware(event: TelegramContext): DeepPartial<BotContext> {
+  public middleware(event: TelegramContext): DeepPartial<BotContext> | undefined {
     if (event.type != 'message') return;
 
     const ctx: TelegramMessage = event.ctx;
@@ -13,7 +13,8 @@ export class MessageMiddleware extends BaseMiddleware<TelegramContext> {
       return {
         payload: {
           type: BotPayloadType.MESSAGE,
-          message: ctx.text,
+          text: ctx.text,
+          messageId: ctx.message_id,
         },
       };
   }

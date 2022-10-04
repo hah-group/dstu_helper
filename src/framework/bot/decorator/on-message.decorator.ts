@@ -8,9 +8,10 @@ import { MessageMatchChecker } from '../checker/message-match.checker';
 import { HandlerTypeChecker } from '../checker/handler-type.checker';
 
 export type OnMessageEventType = OnMessageEventItem | OnMessageEventItem[];
-export type OnMessageEventItem = string | RegExp | Text;
+export type OnMessageEventItem = string | RegExp | Text | OnMessageFunction;
+export type OnMessageFunction = (message: string) => boolean;
 
-export const OnMessage = (event?: OnMessageEventType, scope?: ChatScope): MethodDecorator => {
+export const OnMessage = (event: OnMessageEventType, scope?: ChatScope): MethodDecorator => {
   const metadata: HandlerMetadata = {
     type: BotPayloadType.MESSAGE,
     event: event,

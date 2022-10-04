@@ -11,37 +11,39 @@ import { Text } from '../../text/text';
 
 export interface SendOptions {
   attachments?: any[];
-  ignorePlaceholder?: boolean;
   forcePrivate?: boolean;
   reply?: boolean;
 }
 
 export type BotSendCallback = {
-  send: (message: Text, keyboard?: KeyboardBuilder, options?: SendOptions) => Promise<void>;
+  send: (message: Text, keyboard?: KeyboardBuilder, options?: SendOptions) => Promise<number>;
 };
 
 export type BotEditCallback = {
-  edit: (
-    message: Text,
-    keyboard?: KeyboardBuilder,
-    options?: Omit<SendOptions, 'forcePrivate' | 'ignorePlaceholder'>,
-  ) => Promise<void>;
+  edit: (message?: Text, keyboard?: KeyboardBuilder) => Promise<void>;
 };
 
 export type BotAlertCallback = {
-  alert: (message: Text) => void;
+  alert: (message: Text) => Promise<void>;
+};
+
+export type BotFlushCallback = {
+  flush: () => Promise<void>;
 };
 
 type BotPayload<T extends BotContextPayload> = { payload: T };
 
-export type BotHandlerContext = BotContext & BotSendCallback & BotEditCallback & BotAlertCallback;
+export type BotAnyMessage = BotBaseContext & BotSendCallback;
+
+export type BotHandlerContext = BotContext & BotSendCallback & BotEditCallback & BotAlertCallback & BotFlushCallback;
 
 export type BotMessage = BotBaseContext & BotPayload<BotMessagePayload> & BotSendCallback & BotEditCallback;
 
-export type BotChatEvent = BotBaseContext & BotPayload<BotChatEventPayload> & BotSendCallback & BotEditCallback;
+export type BotChatEvent = BotBaseContext & BotPayload<BotChatEventPayload> & BotSendCallback;
 
-export type BotInlineKeyEvent = BotBaseContext &
+export type BotInlineMessage = BotBaseContext &
   BotPayload<BotInlineKeyPayload> &
   BotSendCallback &
   BotEditCallback &
-  BotAlertCallback;
+  BotAlertCallback &
+  BotFlushCallback;

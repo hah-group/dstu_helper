@@ -37,11 +37,11 @@ export class BotHandlerLoader implements OnApplicationBootstrap /*, OnApplicatio
     const metadata = this.metadataAccessor.getBotHandlerDecorator(instance[methodKey]);
     if (!metadata) return;
 
-    const userStageMetadata = this.metadataAccessor.getBotUserAccessorDecorator(instance[methodKey]);
+    //const userStageMetadata = this.metadataAccessor.getBotUserAccessorDecorator(instance[methodKey]);
 
     const handler: BotHandler = {
       ...metadata,
-      userStage: userStageMetadata,
+      //userStage: userStageMetadata,
       callback: async (context) => {
         try {
           await instance[methodKey].call(instance, context);

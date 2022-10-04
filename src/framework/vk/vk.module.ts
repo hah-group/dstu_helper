@@ -1,13 +1,11 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { VK_OPTIONS } from './constants';
 import { VkModuleOptions } from './vk-module.options';
-import { VkService } from './vk.service';
 import { BullModule } from '@nestjs/bull';
 import { VkProducer } from './job/vk.producer';
 import { VkConsumer } from './job/vk.consumer';
-import { UserModule } from '../../old_modules/user/user.module';
 import { BotExceptionModule } from '../bot-exception/bot-exception.module';
-import { VkNewService } from './vk-new.service';
+import { VkService } from './vk.service';
 import { BotModule } from '../bot/bot.module';
 
 @Global()
@@ -21,12 +19,10 @@ export class VkModule {
           provide: VK_OPTIONS,
           useValue: options,
         },
-        VkNewService,
+        VkService,
         VkProducer,
         VkConsumer,
-        VkService,
       ],
-      exports: [VkService],
       imports: [
         BullModule.registerQueue({
           name: 'vk',
@@ -35,7 +31,6 @@ export class VkModule {
             duration: 1000,
           },
         }),
-        UserModule,
         BotExceptionModule,
         BotModule,
       ],

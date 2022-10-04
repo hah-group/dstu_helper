@@ -29,11 +29,15 @@ export class KeyboardBuilder {
     return this;
   }
 
-  public getInline(): boolean {
+  public isEmpty(): boolean {
+    return this.keyboard.length == 0;
+  }
+
+  public isInline(): boolean {
     return this._inline;
   }
 
-  public getOneTime(): boolean {
+  public isOneTime(): boolean {
     return this._oneTime;
   }
 

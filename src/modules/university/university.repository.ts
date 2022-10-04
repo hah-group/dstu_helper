@@ -8,4 +8,10 @@ export class UniversityRepository extends CoreRepository<UniversityEntity> {
   constructor(@InjectRepository(UniversityEntity) repository: EntityRepository<UniversityEntity>, orm: MikroORM) {
     super(repository, orm);
   }
+
+  public async getByName(name: string): Promise<UniversityEntity | null> {
+    return this.findOne({
+      name: name,
+    });
+  }
 }

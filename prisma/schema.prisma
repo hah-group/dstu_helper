@@ -11,7 +11,7 @@ generator client {
 }
 
 model User {
-  id                Int                @id
+  key                Int                @key
   socialType        SocialType
   firstName         String
   lastName          String?
@@ -19,12 +19,12 @@ model User {
   stage             String             @default("NOT_PRIVATE_STARTED")
   menu              Json?
   locale            String             @default("ru")
-  Group             StudyGroup?        @relation(fields: [groupId], references: [id])
+  Group             StudyGroup?        @relation(fields: [groupId], references: [key])
   ConversationUsers ConversationUser[]
 }
 
 model Conversation {
-  id                Int                @id
+  key                Int                @key
   title             String?
   settings          Json
   ConversationUsers ConversationUser[]
@@ -32,18 +32,18 @@ model Conversation {
 }
 
 model ConversationUser {
-  id             Int          @id @default(autoincrement())
+  key             Int          @key @default(autoincrement())
   userId         Int
   conversationId Int
   role           Role
-  User           User         @relation(fields: [userId], references: [id])
-  Conversation   Conversation @relation(fields: [conversationId], references: [id])
+  User           User         @relation(fields: [userId], references: [key])
+  Conversation   Conversation @relation(fields: [conversationId], references: [key])
 
   @@unique([userId, conversationId])
 }
 
 model StudyGroup {
-  id           Int          @id
+  key           Int          @key
   name         String       @unique
   updateStatus UpdateStatus @default(DONE)
   Lessons      Lesson[]
@@ -51,7 +51,7 @@ model StudyGroup {
 }
 
 model Lesson {
-  id         String     @id
+  key         String     @key
   groupId    Int
   start      DateTime   @db.Timestamp
   end        DateTime   @db.Timestamp
@@ -66,12 +66,12 @@ model Lesson {
   classRoom  String?
   distance   Boolean
   updateAt   DateTime   @default(now())
-  Group      StudyGroup @relation(fields: [groupId], references: [id])
-  Teacher    Teacher?   @relation(fields: [teacherId], references: [id])
+  Group      StudyGroup @relation(fields: [groupId], references: [key])
+  Teacher    Teacher?   @relation(fields: [teacherId], references: [key])
 }
 
 model Teacher {
-  id         Int      @id
+  key         Int      @key
   firstName  String?
   lastName   String
   middleName String?

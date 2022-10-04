@@ -23,6 +23,8 @@ export class DatabaseModule {
           forceUndefined: true,
 
           loadStrategy: LoadStrategy.JOINED,
+
+          debug: true,
         }),
       ],
       global: true,

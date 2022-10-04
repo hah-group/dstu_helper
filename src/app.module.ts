@@ -12,6 +12,11 @@ import { GroupModule } from './modules/group/group.module';
 import { LessonModule } from './modules/lesson/lesson.module';
 import { ScheduleModule } from './modules/schedule/schedule.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
+import { UniversityRepository } from './modules/university/university.repository';
+import { UniversityModule } from './modules/university/university.module';
+import { ConversationModule } from './modules/conversation/conversation.module';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
+import { SceneModule } from './framework/scene/scene.module';
 
 @Module({
   imports: [
@@ -22,12 +27,16 @@ import { TeacherModule } from './modules/teacher/teacher.module';
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT),
+        port: parseInt(process.env.REDIS_PORT || '6379'),
+      },
+      defaultJobOptions: {
+        removeOnComplete: true,
+        removeOnFail: true,
       },
     }),
     BotModule,
     TelegramModule.registerAsync({
-      token: process.env.TG_BOT_TOKEN,
+      token: process.env.TG_BOT_TOKEN || '',
     }),
     DialogModule,
     ScheduleModule,
@@ -35,34 +44,16 @@ import { TeacherModule } from './modules/teacher/teacher.module';
     GroupModule,
     LessonModule,
     TeacherModule,
-    /*BullModule.forRoot({
-      redis: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT),
-      },
-    }),
+    UniversityModule,
+    ConversationModule,
+    SceneModule,
+    /*
     VkModule.registerAsync({
       token: process.env.BOT_TOKEN,
       groupId: parseInt(process.env.GROUP_ID),
       confirmation: process.env.CONFIRMATION,
     }),
-    TelegramModule.registerAsync({
-      token: process.env.TG_BOT_TOKEN,
-    }),
-    BotModule,
-    PrismaModule,
-    StudyGroupModule,
-    CacheModule,
-    DstuModule,
-    ConversationModule,
-    UserModule,
-    LessonModule,
-    TeacherModule,
-    PrivateScheduleModule,
-    SetupBotModule,
-    SystemNotificationModule,
-    ConversationBotModule,
-    BotExceptionModule,*/
+   */
   ],
 })
 export class AppModule {

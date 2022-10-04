@@ -20,13 +20,14 @@ export type BotContextPayload = BotMessagePayload | BotChatEventPayload | BotInl
 
 export interface BotBaseContext {
   provider: string;
+  universityName: string;
   botId: number;
   from: ChatUser;
   chat: Chat;
 }
 
-export type BotExtendedContext<T> = BotContext & {
-  metadata: T;
+export type BotExtendedContext<T = any> = BotContext & {
+  metadata?: T;
 };
 
 export type BotContext = BotBaseContext & {
@@ -35,12 +36,14 @@ export type BotContext = BotBaseContext & {
 
 export interface BotMessagePayload {
   type: BotPayloadType.MESSAGE;
-  message: string;
+  text: string;
+  messageId: number;
 }
 
 export interface BotInlineKeyPayload {
   type: BotPayloadType.INLINE_KEY;
   key: string;
+  messageId: number;
 }
 
 export type BotChatEventPayload = BotChatParticipantEventPayload;

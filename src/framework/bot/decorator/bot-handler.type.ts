@@ -1,4 +1,3 @@
-import { UserStage } from '../../../old_modules/user/user-stage.enum';
 import { OnMessageEventType } from './on-message.decorator';
 import { BotContext, BotContextPayload, BotMessagePayload, ChatScope } from '../type/bot-context.type';
 import { BotPayloadType } from '../type/bot-payload-type.enum';
@@ -7,7 +6,7 @@ import { BotHandlerContext } from '../type/bot-message.type';
 
 export type BotHandler = DecoratorMetadata & {
   callback: (message: BotHandlerContext) => Promise<void>;
-  userStage?: UserStage;
+  //userStage?: UserStage;
 };
 
 export type HandlerMetadata = OnMessageMetadata | OnInlineButtonMetadata | OnInviteMetadata;
@@ -18,7 +17,7 @@ export interface DecoratorMetadata {
 
 export interface OnMessageMetadata {
   type: BotPayloadType.MESSAGE;
-  event?: OnMessageEventType;
+  event: OnMessageEventType;
   scope?: ChatScope;
 }
 

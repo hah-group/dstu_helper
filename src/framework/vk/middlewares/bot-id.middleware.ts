@@ -5,7 +5,7 @@ import { BotContext } from '../../bot/type/bot-context.type';
 export class BotIdMiddleware extends BaseMiddleware<VkBotContext> {
   public middleware(): DeepPartial<BotContext> {
     return {
-      botId: parseInt(process.env.VK_BOT_ID),
+      botId: parseInt(process.env.VK_BOT_ID || '0'),
     };
   }
 }

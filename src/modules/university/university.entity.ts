@@ -1,5 +1,5 @@
 import { DomainEntity } from '../../framework/database/domain.entity';
-import { Entity, OneToOne, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
 import { GroupEntity } from '../group/group.entity';
 import { ScheduleProviderName } from '../schedule/schedule-provider-name.type';
 
@@ -7,8 +7,8 @@ import { ScheduleProviderName } from '../schedule/schedule-provider-name.type';
 export class UniversityEntity extends DomainEntity {
   @Property()
   @Unique()
-  public name: ScheduleProviderName;
+  public name!: ScheduleProviderName;
 
-  @OneToOne(() => GroupEntity, (group) => group.university)
-  public group: GroupEntity;
+  @OneToMany(() => GroupEntity, 'university')
+  public group = new Collection<GroupEntity>(this);
 }

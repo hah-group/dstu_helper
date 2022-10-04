@@ -2,14 +2,13 @@ import { Process, Processor } from '@nestjs/bull';
 import { MessageJobName } from '../../bot/type/message-job-name.enum';
 import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
-import { VkService } from '../vk.service';
 import { VkJobAlert, VkJobEdit, VkJobGetUser, VkJobSend } from './vk-job-data.type';
 
 @Processor('vk')
 export class VkConsumer {
   private readonly log = new Logger('VKQueue');
 
-  constructor(private readonly vkService: VkService) {}
+  //constructor(private readonly vkService: VkService) {}
 
   /*@Process(MessageJobName.SEND)
   public async send(job: Job<VkJobSend>): Promise<number | undefined> {

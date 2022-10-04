@@ -1,31 +1,22 @@
 import { Text } from '../../text/text';
 
-type ButtonColor = 'primary' | 'secondary' | 'negative' | 'positive';
+export type KeyboardPayload = Record<string, any> & {
+  text: string;
+  id?: string;
+};
 
 export abstract class KeyboardButton {
   protected label: Text;
   protected _id?: string;
-  protected _payload?: any;
-  protected _color?: ButtonColor;
 
-  protected constructor(label: Text, id?: string, payload?: any) {
+  protected constructor(label: Text, id?: string) {
     this.label = label;
     this._id = id;
-    this._payload = payload;
   }
 
-  public id(value: string): KeyboardButton {
-    this._id = value;
-    return this;
+  public get id(): string {
+    return this._id || this.label.render();
   }
 
-  public payload(value: any): KeyboardButton {
-    this._payload = value;
-    return this;
-  }
-
-  public color(value: ButtonColor): KeyboardButton {
-    this._color = value;
-    return this;
-  }
+  public abstract getPayload(): KeyboardPayload;
 }

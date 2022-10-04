@@ -5,10 +5,10 @@ export enum EventType {
 }
 
 /*
- message: {
+ text: {
     date: 1640812387,
     from_id: 152879324,
-    id: 0,
+    key: 0,
     out: 0,
     peer_id: 2000000001,
     text: '',

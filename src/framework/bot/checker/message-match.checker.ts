@@ -17,12 +17,18 @@ export class MessageMatchChecker extends Checker<BotMessagePayload> {
     else targets = this.metadata.event;
 
     for (const target of targets) {
-      let checkingValue: RegExp | undefined;
-      if (typeof target == 'string') checkingValue = new RegExp(target, 'gi');
-      else if (target instanceof RegExp) checkingValue = target;
+      if (typeof target == 'function') {
+        if (target(payload.text)) return true;
+      } else {
+        let checkingValue: RegExp | undefined;
+        if (typeof target == 'string') checkingValue = new RegExp(target, 'gi');
+        else if (target instanceof RegExp) checkingValue = target;
 
-      const result = checkingValue && !!payload.message.match(checkingValue);
-      if (result) return true;
+        const result = checkingValue && !!payload.text.match(checkingValue);
+        if (result) return true;
+      }
     }
+
+    return false;
   }
 }

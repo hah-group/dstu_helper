@@ -29,9 +29,13 @@ export default class DSTULessonParser {
     if (isBracketsExist) regex = this.withBracketsRegex();
     else regex = this.withoutBracketsRegex();
 
+    /*console.log(subject);
+    console.log(regex);*/
     const match = subject.match(regex);
+    /*console.log(match);
+    console.log('===============================\n\n');*/
 
-    if (match && match.length > 3) {
+    if (match && match.length > 2) {
       const pretty = this.subjectPrettier(subject, match);
       const result: SubjectInfo = {
         type: LessonTypeDefinition[match[1]],
@@ -68,6 +72,7 @@ export default class DSTULessonParser {
     clearText = str(clearText).capitalize().s;
     clearText = clearText.replace(/(?<word>[а-я,.])(?<dig>\d+)/g, '$<word> $<dig> ');
     clearText = clearText.replace(/( {2})/g, ' ');
+    clearText = clearText.replace(/[^а-я \d,.]/gi, '');
     clearText = clearText.trim();
     return {
       classRoom: str(clearText).capitalize().s,
@@ -121,6 +126,6 @@ export default class DSTULessonParser {
 
   private static withBracketsRegex(): RegExp {
     const keys = this.getLessonTypes();
-    return new RegExp(`(${keys})\\.? ([а-яa-z\\-. ,:\\/\\d]+?) ?\\((.*?)\\)`);
+    return new RegExp(`(${keys})\\.? ([а-яa-z\\-. ,:\\/\\d]+?) ?\\((.*?)\\)`, 'i');
   }
 }

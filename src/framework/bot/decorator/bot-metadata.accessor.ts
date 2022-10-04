@@ -1,7 +1,6 @@
 import { Injectable, Type } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { DecoratorMetadata, HandlerMetadata } from './bot-handler.type';
-import { UserStage } from '../../../old_modules/user/user-stage.enum';
 
 export const BOT_HANDLER = 'BOT_HANDLER';
 export const BOT_USER_ACCESSOR = 'BOT_USER_ACCESSOR';
@@ -14,7 +13,7 @@ export class BotMetadataAccessor {
     return this.reflector.get(BOT_HANDLER, target);
   }
 
-  public getBotUserAccessorDecorator(target: Type<unknown>): UserStage | undefined {
+  /*public getBotUserAccessorDecorator(target: Type<unknown>): UserStage | undefined {
     return this.reflector.get(BOT_USER_ACCESSOR, target);
-  }
+  }*/
 }

@@ -1,0 +1,14 @@
+{{#isEmpty schedule}}
+  Пар на {{relativeDate atDate strict=strictDate }} – нет 🥳
+
+  {{#unlessEq group.status 'READY'}}
+    ❗️ Расписание обновляется, возможно некоторые пары появятся позже
+  {{/unlessEq}}
+{{else}}
+  Пары {{ group.name }} на {{relativeDate atDate strict=strictDate }}
+
+  {{#each schedule}}
+    {{> lesson data=this }}
+
+  {{/each}}
+{{/isEmpty}}

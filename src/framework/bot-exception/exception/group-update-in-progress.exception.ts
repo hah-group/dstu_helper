@@ -8,7 +8,7 @@ export class GroupUpdateInProgressException extends BotException {
     super({
       type: BotExceptionType.GROUP_UPDATE_IN_PROGRESS,
       notifyScope: 'USER',
-      message: `Schedule updating for group ${group.id} in progress`,
+      text: `Schedule updating for group ${group.key} in progress`,
       localizeMessage: {
         phrase: 'EXCEPTION_GROUP_UPDATE_IN_PROGRESS',
         replacements: {

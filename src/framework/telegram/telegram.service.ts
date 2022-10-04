@@ -1,309 +1,240 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
-import { CallbackQuery as TelegramCallbackQuery, Message as TelegramMessage } from 'node-telegram-bot-api';
+import {
+  CallbackQuery,
+  EditMessageReplyMarkupOptions,
+  EditMessageTextOptions,
+  InlineKeyboardMarkup,
+  Message as TGMessage,
+  ReplyKeyboardMarkup,
+  ReplyKeyboardRemove,
+  SendMessageOptions,
+} from 'node-telegram-bot-api';
 import { TG_OPTIONS } from './constants';
 import { TelegramModuleOptions } from './telegram-module.options';
-import { BotHandler, OnInlineButtonMetadata, OnMessageMetadata } from '../bot/decorator/bot-handler.type';
-import { EventType } from '../bot/type/metadata-type.enum';
-import { SocialSource } from '../bot/type/social.enum';
-import { TelegramMessageData } from './telegram-message-data.type';
+import { BaseMiddleware } from '../bot/base.middleware';
+import { UserMiddleware } from './middlewares/user.middleware';
+import { MessageMiddleware } from './middlewares/message.middleware';
+import { MiddlewareExecutor } from '../bot/middleware/middleware.executor';
+import { ProviderMiddleware } from '../bot/middleware/provider.middleware';
+import { ChatMiddleware } from './middlewares/chat.middleware';
+import { ChatEventMiddleware } from './middlewares/chat-event.middleware';
+import { BotExtendedContext } from '../bot/type/bot-context.type';
+import { InlineKeyMiddleware } from './middlewares/inline-key.middleware';
+import { BotService } from '../bot/bot.service';
+import { BotIdMiddleware } from './middlewares/bot-id.middleware';
+import { BotAction, BotAlertAction, BotEditAction, BotMessageAction } from '../bot/type/bot-action.type';
 import { TelegramProducer } from './job/telegram.producer';
-import { KeyboardBuilder } from '../bot/keyboard/keyboard.builder';
-import { TelegramCallbackData } from './telegram-callback-data.type';
-import { UserService } from 'src/old_modules/user/user.service';
-import { User } from '../../old_modules/user/user.entity';
-import { BotException } from '../bot-exception/bot.exception';
-import { BotExceptionHandler } from '../bot-exception/bot-exception.handler';
+import { TelegramKeyboardBuilder } from './telegram-keyboard.builder';
+import { BotPayloadType } from '../bot/type/bot-payload-type.enum';
+import { TelegramJobSend } from './job/telegram-job-data.type';
+import { inspect } from 'util';
+
+export type TelegramMessage = TGMessage;
+export type TelegramCallbackQuery = CallbackQuery;
+
+export type TelegramKeyboard = TelegramInlineKeyboard | TelegramReplyKeyboard | TelegramRemoveKeyboard;
+export type TelegramInlineKeyboard = InlineKeyboardMarkup;
+export type TelegramReplyKeyboard = ReplyKeyboardMarkup;
+export type TelegramRemoveKeyboard = ReplyKeyboardRemove;
+
+export type TelegramContext =
+  | {
+      type: 'message';
+      ctx: TelegramMessage;
+    }
+  | {
+      type: 'callback_query';
+      ctx: CallbackQuery;
+    };
+
+export interface TelegramContextMetadata {
+  lastMessageId?: number;
+  eventId?: string;
+}
+
+export type TelegramSendOptions = SendMessageOptions;
+export type TelegramEditMessageOptions = EditMessageTextOptions;
+export type TelegramEditKeyboardOptions = EditMessageReplyMarkupOptions;
 
 @Injectable()
 export class TelegramService {
-  private readonly log = new Logger('Telegram');
-
   private readonly bot: TelegramBot;
-  private handlers: Set<BotHandler> = new Set<BotHandler>();
+  private readonly middlewares: BaseMiddleware[];
+  private readonly providerName = 'telegram';
 
   constructor(
     @Inject(TG_OPTIONS) options: TelegramModuleOptions,
+    private readonly botService: BotService,
     private readonly telegramProducer: TelegramProducer,
-    private readonly userService: UserService,
-    private readonly botExceptionHandler: BotExceptionHandler,
   ) {
-    this.bot = new TelegramBot(options.token, { polling: false });
-    //this.bot.startPolling();
-    /*this.bot.on('message', (ctx) => this.onMessageEvent(ctx));
-    this.bot.on('callback_query', (ctx) => this.onCallbackEvent(ctx));*/
+    this.bot = new TelegramBot(options.token, { polling: true });
+    this.bot.on('message', (ctx) => this.onMessageEvent(ctx));
+    this.bot.on('callback_query', (ctx) => this.onCallbackEvent(ctx));
+    this.middlewares = [
+      new ProviderMiddleware(this.providerName),
+      new ChatMiddleware(),
+      new ChatEventMiddleware(),
+      new UserMiddleware(),
+      new MessageMiddleware(),
+      new InlineKeyMiddleware(),
+      new BotIdMiddleware(),
+    ];
+
+    this.botService.registerProvider(this.providerName, {
+      send: (ctx) => this.onSend(ctx),
+      edit: (ctx) => this.onEdit(ctx),
+      alert: (ctx) => this.onAlert(ctx),
+      flush: (ctx) => this.onFlush(ctx),
+    });
+
+    /*this.botService.on('send', async (ctx) => {
+      if (ctx.context.provider != 'telegram') return;
+      await this.onSend(ctx);
+
+      /!*const renderedMessage = ctx.action.text.render();
+      await this.bot.sendMessage(ctx.context.chat.key, renderedMessage);*!/
+    });*/
   }
 
-  /*private static isValidCallbackHandler(metadata: OnInlineButtonMetadata, ctx: TelegramCallbackData): boolean {
-    const { id } = metadata;
-    if (!ctx.data) return false;
-    return id == ctx.data;
-  }
-
-  public async sendMessage(chatId: number, text: string, keyboard?: string): Promise<TelegramMessage> {
-    try {
-      return this.bot.sendMessage(chatId, text, {
-        reply_markup: keyboard ? JSON.parse(keyboard) : undefined,
-        parse_mode: 'HTML',
-      });
-    } catch (e) {
-      this.log.error(`Send message to ${chatId} failed`);
-      this.log.error(e.stack);
-    }
-  }
-
-  public addHandler(handler: BotHandler) {
-    this.handlers.add(handler);
+  public async sendMessage(chatId: number, message: string, options: TelegramSendOptions): Promise<number> {
+    const sentMessage = await this.bot.sendMessage(chatId, message, options);
+    return sentMessage.message_id;
   }
 
   public async editMessage(
     chatId: number,
     messageId: number,
-    text: string,
-    keyboard?: string,
-  ): Promise<TelegramMessage | undefined> {
+    text?: string,
+    keyboard?: TelegramKeyboard,
+  ): Promise<void> {
     try {
-      const result = await this.bot.editMessageText(text, {
-        chat_id: chatId,
-        message_id: messageId,
-        reply_markup: keyboard ? JSON.parse(keyboard) : undefined,
-      });
-
-      if (typeof result !== 'boolean') return result;
+      if (text) {
+        await this.bot.editMessageText(text, {
+          chat_id: chatId,
+          message_id: messageId,
+          reply_markup: keyboard ? <InlineKeyboardMarkup>keyboard : undefined,
+        });
+      } else if (keyboard) {
+        await this.bot.editMessageReplyMarkup(<InlineKeyboardMarkup>keyboard, {
+          chat_id: chatId,
+          message_id: messageId,
+        });
+      }
     } catch (e) {
-      this.log.error(`Edit message ${chatId}:${messageId} failed`);
-      this.log.error(e.stack);
+      if (text) await this.sendMessage(chatId, text, { reply_markup: keyboard });
     }
   }
 
-  public async alertEvent(callbackId: string, text: string, force: boolean): Promise<void> {
-    try {
-      await this.bot.answerCallbackQuery(callbackId, {
-        text: text,
-        show_alert: force,
-      });
-    } catch (e) {
-      this.log.error(`Alert event is failed`);
-      this.log.error(e.stack);
-    }
-  }
-
-  private checkRegexLike(
-    value: OnMessageEventItem | undefined,
-    target: string,
-    locale: string,
-  ): OnMessageEventItem | undefined {
-    /!*if (typeof value === 'undefined') return target;
-
-    let checkingValue: string | RegExp | undefined;
-
-    if (<ProcessedTextInstance>value && (<ProcessedTextInstance>value).phrase)
-      checkingValue = TextProcessor.buildText([<ProcessedTextInstance>value], locale);
-    else if (typeof value === 'string') checkingValue = value;
-    else checkingValue = <RegExp>value;
-
-    const regex = new RegExp(checkingValue, 'gi');
-    return target.match(regex) ? value : undefined;*!/
-    return;
-  }
-
-  private async getUserFromTelegram(ctx: TelegramMessage | TelegramCallbackQuery): Promise<User> {
-    const user = await this.userService.get(ctx.from.id, SocialSource.TELEGRAM);
-    if (!user) {
-      return await this.userService.createNew(
-        ctx.from.id,
-        ctx.from.first_name,
-        ctx.from.last_name,
-        SocialSource.TELEGRAM,
-      );
-    }
-    return user;
+  public async sendAlert(eventId: string, text: string): Promise<void> {
+    await this.bot.answerCallbackQuery(eventId, {
+      text: text,
+      show_alert: true,
+    });
   }
 
   private async onMessageEvent(ctx: TelegramMessage): Promise<void> {
-    this.log.debug(`New message from ${ctx.from.id}`);
-
-    const user = await this.getUserFromTelegram(ctx);
-    const ctxData: TelegramMessageData = {
-      text: ctx.text,
-      user: user,
-      username: ctx.from.username,
+    const telegramCtx: TelegramContext = {
+      type: 'message',
+      ctx: ctx,
     };
-
-    this.sendCallback(ctxData, TextProcessor.buildSimpleText('PRIVATE_MESSAGES_NOT_AVAILABLE'), undefined, true).then();
-    return;
-    //this.handlers.forEach((handler) => this.executeMessageHandler(handler, ctxData));
+    const newCtx: BotExtendedContext<TelegramContextMetadata> = MiddlewareExecutor.Execute(
+      telegramCtx,
+      this.middlewares,
+    );
+    newCtx.metadata = {};
+    //console.log(inspect(telegramCtx, false, 10, true));
+    this.botService.emit('event', newCtx);
   }
 
   private async onCallbackEvent(ctx: TelegramCallbackQuery): Promise<void> {
-    this.log.debug(`New callback event from ${ctx.from.id}`);
-
-    const user = await this.getUserFromTelegram(ctx);
-    const ctxData: TelegramCallbackData = {
-      user: user,
-      data: ctx.data,
-      callbackId: ctx.id,
-      text: ctx.message?.text,
-      messageId: ctx.message?.message_id,
-      username: ctx.from.username,
+    const telegramCtx: TelegramContext = {
+      type: 'callback_query',
+      ctx: ctx,
     };
-    this.handlers.forEach((handler) => this.executeCallbackHandler(handler, ctxData));
-  }
-
-  private executeMessageHandler(handler: BotHandler, ctx: TelegramMessageData): void {
-    if (handler.type != EventType.ON_MESSAGE) return;
-    if (handler.userStage && handler.userStage != ctx.user.stage) return;
-    const checkResult = this.isValidMessageHandler(<OnMessageMetadata>handler, ctx);
-    if (!checkResult) return;
-
-    const data: Message = this.buildTextMessage(ctx, checkResult);
-    this.executeHandler(handler, data, ctx).then();
-  }
-
-  private isValidMessageHandler(metadata: OnMessageMetadata, ctx: TelegramMessageData): OnMessageEventItem | undefined {
-    const { event, scope } = metadata;
-
-    if (scope) {
-      if (scope == 'conversation') return;
-    }
-
-    if (Array.isArray(event)) {
-      for (const value of event) {
-        const checkResult = this.checkRegexLike(value, ctx.text, ctx.user.locale);
-        if (checkResult) return checkResult;
-      }
-    }
-
-    return this.checkRegexLike(<OnMessageEventItem>event, ctx.text, ctx.user.locale);
-  }
-
-  private executeCallbackHandler(handler: BotHandler, ctx: TelegramCallbackData): void {
-    if (handler.type != EventType.ON_INLINE_BUTTON) return;
-    if (handler.userStage && handler.userStage != ctx.user.stage) return;
-    if (!TelegramService.isValidCallbackHandler(<OnInlineButtonMetadata>handler, ctx)) return;
-
-    const data: Message = this.buildCallbackMessage(ctx);
-    this.executeHandler(handler, data, ctx).then();
-  }
-
-  private buildTextMessage(ctx: TelegramMessageData, value: OnMessageEventItem): TelegramTextMessage {
-    return {
-      text: ctx.text,
-      user: ctx.user,
-      from: SocialSource.TELEGRAM,
-      type: EventType.ON_MESSAGE,
-      send: (text, keyboard?, forceNew?) => this.sendCallback(ctx, text, keyboard, forceNew),
-      placeholder: (text) => this.placeholderCallback(ctx, text),
-      valueHandled: value,
+    const newCtx: BotExtendedContext<TelegramContextMetadata> = MiddlewareExecutor.Execute(
+      telegramCtx,
+      this.middlewares,
+    );
+    newCtx.metadata = {
+      eventId: ctx.id,
     };
+    //console.log(inspect(telegramCtx, false, 10, true));
+    this.botService.emit('event', newCtx);
   }
 
-  private buildCallbackMessage(ctx: TelegramCallbackData): TelegramInlineButtonMessage {
-    return {
-      user: ctx.user,
-      from: SocialSource.TELEGRAM,
-      type: EventType.ON_INLINE_BUTTON,
-      edit: (text, alertText?, keyboard?) => this.editCallback(ctx, text, alertText, keyboard),
-      alert: (text, force = false) => this.alertCallback(ctx, text, force),
-      send: (text, keyboard?) => this.sendCallback(ctx, text, keyboard, true),
-    };
-  }
+  public async onSend(ctx: BotAction<BotMessageAction, TelegramContextMetadata>): Promise<number> {
+    const options: TelegramJobSend['options'] = {};
 
-  private async sendCallback(
-    ctx: TelegramMessageData | TelegramCallbackData,
-    text: ProcessedText,
-    keyboard?: KeyboardBuilder,
-    forceNew = false,
-  ): Promise<void> {
-    const message = TextProcessor.buildText(text, ctx.user.locale);
-    const keyboardString = keyboard?.toJSON(SocialSource.TELEGRAM, ctx.user.locale);
+    const message = ctx.action.message.render();
+    const keyboard = ctx.action.keyboard && TelegramKeyboardBuilder.Build(ctx.action.keyboard);
+    if (keyboard) options.reply_markup = keyboard;
 
-    if (ctx.lastMessageId && !forceNew) {
-      const job = await this.telegramProducer.edit({
-        chatId: ctx.user.id,
-        messageId: ctx.lastMessageId,
-        text: message,
-        keyboard: keyboardString,
-      });
+    if (ctx.action.options?.reply && ctx.context.payload.type == BotPayloadType.MESSAGE)
+      options.reply_to_message_id = ctx.context.payload.messageId;
 
-      const result = await job.finished();
-      if (result) ctx.lastMessageId = result.message_id;
-    } else {
-      await this.telegramProducer.send({
-        chatId: ctx.user.id,
-        text: message,
-        keyboard: keyboardString,
-      });
-    }
-  }
+    let chatId = ctx.context.chat.id;
+    if (ctx.action.options?.forcePrivate) chatId = ctx.context.from.id;
 
-  private async editCallback(
-    ctx: TelegramCallbackData,
-    text: ProcessedText,
-    alertText?: ProcessedTextInstance,
-    keyboard?: KeyboardBuilder,
-  ): Promise<void> {
-    const message = TextProcessor.buildText(text, ctx.user.locale);
-    const keyboardString = keyboard?.toJSON(SocialSource.TELEGRAM, ctx.user.locale);
-
-    if (ctx.messageId) {
-      const job = await this.telegramProducer.edit({
-        chatId: ctx.user.id,
-        messageId: ctx.messageId,
-        text: message,
-        keyboard: keyboardString,
-      });
-      await this.alertCallback(ctx, alertText);
-
-      const result = await job.finished();
-      if (result) ctx.lastMessageId = result.message_id;
-    }
-  }
-
-  private async placeholderCallback(ctx: TelegramMessageData, text: ProcessedText): Promise<void> {
-    const message = TextProcessor.buildText(text, ctx.user.locale);
     const job = await this.telegramProducer.send({
-      chatId: ctx.user.id,
-      text: message,
+      chatId: chatId,
+      message: message,
+      options: options,
     });
-    const result = await job.finished();
-    ctx.lastMessageId = result.message_id;
+
+    const messageId = await job.finished();
+    ctx.context.metadata = {
+      ...ctx.context.metadata,
+      lastMessageId: messageId,
+    };
+
+    return messageId;
   }
 
-  private async alertCallback(ctx: TelegramCallbackData, text?: ProcessedTextInstance, force?: boolean): Promise<void> {
-    const message = TextProcessor.buildText([text], ctx.user.locale);
+  public async onEdit(ctx: BotAction<BotEditAction, TelegramContextMetadata>): Promise<void> {
+    if (!ctx.context.metadata?.eventId) return;
+    if (ctx.context.payload.type != BotPayloadType.MESSAGE && ctx.context.payload.type != BotPayloadType.INLINE_KEY)
+      return;
+
+    const keyboardBuilder = ctx.action.keyboard?.inline();
+    let keyboard;
+    if (keyboardBuilder) keyboard = TelegramKeyboardBuilder.Build(keyboardBuilder);
+
+    let message;
+    if (ctx.action.message) message = ctx.action.message.render();
+
+    await Promise.all([
+      this.telegramProducer.edit({
+        chatId: ctx.context.chat.id,
+        messageId: ctx.context.payload.messageId,
+        text: message,
+        keyboard: keyboard,
+      }),
+      this.telegramProducer.alert({
+        eventId: ctx.context.metadata.eventId,
+        text: '',
+        show: false,
+      }),
+    ]);
+  }
+
+  public async onAlert(ctx: BotAction<BotAlertAction, TelegramContextMetadata>): Promise<void> {
+    if (!ctx.context.metadata?.eventId) return;
+
     await this.telegramProducer.alert({
-      callbackId: ctx.callbackId,
-      text: text ? message : undefined,
-      force: force,
+      eventId: ctx.context.metadata.eventId,
+      text: ctx.action.message.render(),
+      show: true,
     });
   }
 
-  private async executeHandler(
-    handler: BotHandler,
-    data: Message,
-    ctx: TelegramMessageData | TelegramCallbackData,
-  ): Promise<void> {
-    try {
-      //await handler.callback(data);
-    } catch (e) {
-      this.log.error(`Callback handler throw error`);
-      this.log.error(e.stack);
+  public async onFlush(ctx: BotAction<null, TelegramContextMetadata>): Promise<void> {
+    if (!ctx.context.metadata?.eventId) return;
 
-      if (e instanceof BotException) {
-        await this.botExceptionHandler.handle({
-          exception: e,
-          sendCallback: async (text: string) => {
-            await this.telegramProducer.send({
-              chatId: ctx.user.id,
-              text,
-            });
-          },
-          provider: SocialSource.TELEGRAM,
-          user: ctx.username,
-          locale: ctx.user.locale,
-        });
-      }
-    }
-  }*/
+    await this.telegramProducer.alert({
+      eventId: ctx.context.metadata.eventId,
+      text: '',
+      show: false,
+    });
+  }
 }

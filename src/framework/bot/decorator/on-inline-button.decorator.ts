@@ -3,13 +3,15 @@ import { BOT_HANDLER } from './bot-metadata.accessor';
 import { DecoratorMetadata, HandlerMetadata, OnInlineButtonMetadata } from './bot-handler.type';
 import { BotPayloadType } from '../type/bot-payload-type.enum';
 import { HandlerTypeChecker } from '../checker/handler-type.checker';
+import { KeyboardButton } from '../keyboard/keyboard-button';
+import { InlineButtonChecker } from '../checker/inline-button.checker';
 
-export const OnInlineButton = (id: string): MethodDecorator => {
+export const OnInlineButton = (button: KeyboardButton): MethodDecorator => {
   const metadata: HandlerMetadata = {
     type: BotPayloadType.INLINE_KEY,
-    id: id,
+    id: button.id,
   };
   return SetMetadata<string, DecoratorMetadata>(BOT_HANDLER, {
-    checkers: [new HandlerTypeChecker(metadata)],
+    checkers: [new HandlerTypeChecker(metadata), new InlineButtonChecker(metadata)],
   });
 };

@@ -1,0 +1,29 @@
+{{#*inline "SINGLE"}}
+  📌 {{data.order}} пара ({{time data.info.start}} - {{time data.info.end}})
+  {{lessonType data.info.type}}: {{data.info.name}}
+  {{#if info.corpus}}🏢 Аудитория:{{else}}🏢{{/if}} {{getDestination data.info}}
+{{/inline}}
+{{#*inline "SINGLE_DIFFERENT_CLASS_ROOMS"}}
+  📌 {{data.order}} пара ({{time data.info.start}} - {{time data.info.end}})
+  {{lessonType data.info.type}}: {{data.info.name}}
+  🏢 Аудитории: {{#each data.destinations}}{{renderDestination this}}{{#unless @last}}, {{/unless}}{{/each}}
+{{/inline}}
+{{#*inline "MULTIPLY"}}
+  📌 {{data.order}} пара ({{time data.info.[0].start}} - {{time data.info.[0].end}})
+  ❗️Несколько пар в одно время
+  {{#each data.info}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}
+{{/inline}}
+{{#*inline "SINGLE_LESSON_MANY_ORDERS"}}
+  {{#and (is (first data.orders) 1) (is (last data.orders) 7)}}
+    📌 Весь день ({{time data.start}} - {{time data.end}})
+  {{else}}
+    📌 {{first data.orders}}-{{last data.orders}} пара ({{time data.start}} - {{time data.end}})
+  {{/and}}
+  {{lessonType data.info.type}}: {{data.info.name}}
+  {{#if data.info.corpus}}
+    🏢 Аудитория: {{getDestination data.info}}
+  {{else}}
+    🏢 {{getDestination data.info}}
+  {{/if}}
+{{/inline}}
+{{> (lookup data 'type')}}

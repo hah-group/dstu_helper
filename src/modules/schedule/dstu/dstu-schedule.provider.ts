@@ -21,7 +21,7 @@ export class DSTUScheduleProvider extends ScheduleProvider {
   public async getSchedule(group: GroupEntity): Promise<ProviderSchedule | null> {
     const response: ApiResponseRaspDstuType = await this.sendRequest(
       'GET',
-      `https://edu.donstu.ru/api/Rasp?idGroup=${group.id}`,
+      `https://edu.donstu.ru/api/Rasp?idGroup=${group.externalId}`,
     );
     if (response.state < 0) throw new Error('DSTU Server return failed status');
 
@@ -31,9 +31,10 @@ export class DSTUScheduleProvider extends ScheduleProvider {
       lessons: [],
       teachers: [],
       lastUpdatedAt: moment(response.data.info.dateUploadingRasp),
+      withErrors: false,
     };
 
-    if (moment(group.lastUpdateAt).isSameOrAfter(result.lastUpdatedAt, 'day')) return null;
+    if (group.lastUpdateAt && moment(group.lastUpdateAt).isSameOrAfter(result.lastUpdatedAt, 'day')) return null;
 
     const rawData: DstuRasp[] = response.data.rasp;
     const teachers: Map<number, TeacherEntity> = new Map<number, TeacherEntity>();
@@ -46,12 +47,14 @@ export class DSTUScheduleProvider extends ScheduleProvider {
         this.log.error(`Subject parse error: ${rasp['дисциплина']}`);
         this.log.error(`Subject object:`);
         this.log.error(subject);
-        this.log.warn(`Skip schedule item ${group.id}:${rasp['код']}`);
+        this.log.warn(`Skip schedule item ${group.externalId}:${rasp['код']}`);
+        result.withErrors = true;
         continue;
       }
       if (!destination) {
         this.log.error(`Destination parse error: ${rasp['аудитория']}`);
-        this.log.warn(`Skip schedule item ${group.id}:${rasp['код']}`);
+        this.log.warn(`Skip schedule item ${group.externalId}:${rasp['код']}`);
+        result.withErrors = true;
         continue;
       }
 
@@ -62,7 +65,7 @@ export class DSTUScheduleProvider extends ScheduleProvider {
       lesson.order = rasp['номерЗанятия'];
       lesson.type = subject.type;
       lesson.name = subject.name;
-      lesson.subgroup = subject.subgroup;
+      lesson.subgroup = subject.subgroup || -1;
       lesson.subsection = subject.subsection;
       lesson.corpus = destination.corpus;
       lesson.classRoom = destination.classRoom;
@@ -70,7 +73,7 @@ export class DSTUScheduleProvider extends ScheduleProvider {
 
       const teacherId = rasp['кодПреподавателя'];
       let teacher = teachers.get(teacherId);
-      if (!teacher) {
+      if (!teacher && teacherData) {
         teacher = new TeacherEntity();
         teacher.id = rasp['кодПреподавателя'];
         teacher.firstName = teacherData.firstName;
@@ -79,9 +82,16 @@ export class DSTUScheduleProvider extends ScheduleProvider {
         teacher.degreeRaw = teacherData.degreeRaw;
         teachers.set(teacher.id, teacher);
         result.teachers.push(teacher);
+      } else if (!teacherData) {
+        teacher = new TeacherEntity();
+        teacher.id = -1;
+        teacher.firstName = 'Преподаватель';
+        teacher.lastName = 'Неизвестный';
+        teachers.set(teacher.id, teacher);
+        result.teachers.push(teacher);
       }
 
-      lesson.teacher = teacher;
+      lesson.teacher = <TeacherEntity>teacher;
 
       result.lessons.push(lesson);
     }
@@ -101,7 +111,7 @@ export class DSTUScheduleProvider extends ScheduleProvider {
     });
     this.log.log(`Group found result: ${!!result}`);
 
-    return result;
+    return result || null;
   }
 
   public async bumpGroupCourse(group: GroupEntity): Promise<GroupEntity> {
@@ -116,9 +126,9 @@ export class DSTUScheduleProvider extends ScheduleProvider {
     const newGroupName = group.name.replace(/([а-я]+)\d(\d)/i, `$1${course}$2`);
     const info = groupsInfoMap[newGroupName];
 
-    this.log.log(`Group transition success (${group.name}|${group.id} -> ${info.name}|${info.id})`);
+    this.log.log(`Group transition success (${group.name}|${group.externalId} -> ${info.name}|${info.id})`);
     group.name = info.name;
-    group.id = info.id;
+    group.externalId = info.id;
 
     return group;
   }

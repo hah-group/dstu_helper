@@ -1,11 +1,19 @@
-import { KeyboardButton } from './keyboard-button';
+import { KeyboardButton, KeyboardPayload } from './keyboard-button';
 import { Text } from '../../text/text';
 
 export class LinkButton extends KeyboardButton {
   private readonly link: string;
 
-  constructor(label: Text, link: string, id?: string, payload?: any) {
-    super(label, id, payload);
+  constructor(label: Text, link: string, id?: string) {
+    super(label, id);
     this.link = link;
+  }
+
+  public getPayload(): KeyboardPayload {
+    return {
+      text: this.label.render(),
+      id: this._id,
+      link: this.link,
+    };
   }
 }

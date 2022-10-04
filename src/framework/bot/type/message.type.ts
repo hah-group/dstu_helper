@@ -4,7 +4,7 @@ import { KeyboardBuilder } from '../keyboard/keyboard.builder';
 import { EventType } from './metadata-type.enum';
 import { User } from '../../../old_modules/user/user.entity';
 import { ProcessedText, ProcessedTextInstance } from '../../../old_modules/util/text.processor';
-import { OnMessageEventItem } from '../decorator/on-message.decorator';
+import { OnMessageEventItem } from '../decorator/on-text.decorator';
 
 export type TextMessage = VkTextMessage | TelegramTextMessage;
 export type InlineButtonMessage = TelegramInlineButtonMessage | VkInlineButtonMessage;

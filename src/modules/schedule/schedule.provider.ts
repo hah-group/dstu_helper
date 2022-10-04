@@ -8,6 +8,7 @@ export interface ProviderSchedule {
   lessons: LessonEntity[];
   teachers: TeacherEntity[];
   lastUpdatedAt: Moment;
+  withErrors: boolean;
 }
 
 export interface ProviderGroup {
