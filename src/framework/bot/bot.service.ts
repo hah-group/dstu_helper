@@ -98,8 +98,8 @@ export class BotService extends EventEmitter {
           lastName: ctx.from.lastName,
           nickname: ctx.from.nickname,
         });
-        await this.userRepository.save(<UserEntity>user);
       }
+      await this.userRepository.save(<UserEntity>user);
     }
 
     //TODO Fix crutch

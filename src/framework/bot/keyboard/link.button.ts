@@ -5,7 +5,7 @@ export class LinkButton extends KeyboardButton {
   private readonly link: string;
 
   constructor(label: Text, link: string, id?: string) {
-    super(label, id);
+    super('open_link', label, id);
     this.link = link;
   }
 

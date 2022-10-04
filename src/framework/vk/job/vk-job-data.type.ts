@@ -1,34 +1,33 @@
 import { MessageJobName } from '../../bot/type/message-job-name.enum';
+import { TelegramKeyboard, TelegramSendOptions } from '../../telegram/telegram.service';
+import { KeyboardBuilder } from '../../bot/keyboard/keyboard.builder';
 
 export type VkJobData = VkJobSend | VkJobEdit | VkJobAlert | VkJobGetUser;
 
 export interface VkJobSend {
   type: MessageJobName.SEND;
-  peerId: number;
-  text: string;
-  keyboard?: string;
+  chatId: number;
+  message: string;
+  keyboard?: any;
 }
 
 export interface VkJobEdit {
   type: MessageJobName.EDIT;
-  peerId: number;
-  fromId: number;
-  messageId: number;
-  isConversation: boolean;
   text: string;
-  keyboard?: string;
-  eventId?: string;
+  keyboard?: any;
+  chatId: number;
+  messageId: number;
 }
 
 export interface VkJobAlert {
   type: MessageJobName.ALERT;
-  peerId: number;
-  eventId: string;
+  chatId: number;
   fromId: number;
-  text?: string;
+  eventId: string;
+  text: string;
 }
 
 export interface VkJobGetUser {
-  type: 'GET_USER';
+  type: MessageJobName.GET_USER;
   userId: number;
 }

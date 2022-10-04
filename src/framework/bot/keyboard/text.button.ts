@@ -3,7 +3,7 @@ import { Text } from '../../text/text';
 
 export class TextButton extends KeyboardButton {
   constructor(label: Text, id?: string) {
-    super(label, id);
+    super('text', label, id);
   }
 
   public getPayload(): KeyboardPayload {

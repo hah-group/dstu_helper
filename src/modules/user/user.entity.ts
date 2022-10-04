@@ -40,6 +40,8 @@ export class UserEntity extends DomainEntity {
   @Property({ type: UserPropertiesType, nullable: true })
   public properties!: UserProperties;
 
+  public readonly isNew: boolean = false;
+
   constructor(params: UserCreateParams) {
     super();
     this.provider = params.provider;
@@ -47,6 +49,7 @@ export class UserEntity extends DomainEntity {
     this.firstName = params.firstName;
     this.lastName = params.lastName;
     this.nickname = params.nickname;
+    this.isNew = true;
   }
 
   public async checkConversation(conversation?: ConversationEntity): Promise<boolean> {

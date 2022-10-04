@@ -36,8 +36,8 @@ export class VkProducer {
 
   public async getUser(data: Omit<VkJobGetUser, 'type'>): Promise<Job<VkJobData>> {
     this.log.debug(`Add get user request to queue`);
-    return this.queue.add('GET_USER', {
-      type: 'GET_USER',
+    return this.queue.add(MessageJobName.GET_USER, {
+      type: MessageJobName.GET_USER,
       ...data,
     });
   }

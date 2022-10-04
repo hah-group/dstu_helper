@@ -17,6 +17,7 @@ import { UniversityModule } from './modules/university/university.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { SceneModule } from './framework/scene/scene.module';
+import { VkModule } from './framework/vk/vk.module';
 
 @Module({
   imports: [
@@ -37,6 +38,10 @@ import { SceneModule } from './framework/scene/scene.module';
     BotModule,
     TelegramModule.registerAsync({
       token: process.env.TG_BOT_TOKEN || '',
+    }),
+    VkModule.registerAsync({
+      token: process.env.VK_BOT_TOKEN || '',
+      groupId: parseInt(process.env.VK_BOT_ID || '1'),
     }),
     DialogModule,
     ScheduleModule,

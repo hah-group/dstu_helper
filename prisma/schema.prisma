@@ -33,13 +33,13 @@ model Conversation {
 
 model ConversationUser {
   key             Int          @key @default(autoincrement())
-  userId         Int
+  fromId         Int
   conversationId Int
   role           Role
-  User           User         @relation(fields: [userId], references: [key])
+  User           User         @relation(fields: [fromId], references: [key])
   Conversation   Conversation @relation(fields: [conversationId], references: [key])
 
-  @@unique([userId, conversationId])
+  @@unique([fromId, conversationId])
 }
 
 model StudyGroup {

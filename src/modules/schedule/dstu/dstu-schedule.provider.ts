@@ -118,7 +118,7 @@ export class DSTUScheduleProvider extends ScheduleProvider {
     const groupsInfo = await this.getGroups();
     const groupsInfoMap = lodash.keyBy(groupsInfo, (groupInfo) => groupInfo.name);
 
-    const match = group.name.match(/[а-я]+(\d)\d/i);
+    const match = group.name.match(/[а-яa-z]+(\d)\d/i);
     if (!match || !lodash.isNumber(parseInt(match[1])))
       throw new Error(`Unable to bump group course, course not found (${group.name})`);
 
@@ -141,7 +141,10 @@ export class DSTUScheduleProvider extends ScheduleProvider {
       dateString = `${Time.get().subtract(1, 'y').format('YYYY')}-${Time.get().format('YYYY')}`;
     }
 
-    const response = await this.sendRequest('GET', `https://edu.donstu.ru/api/raspGrouplist?year${dateString}`);
+    const response = await this.sendRequest(
+      'GET',
+      `https://edu.donstu.ru/api/raspGrouplist?year${dateString}&t=${Date.now()}`,
+    );
 
     if (response.state !== 1) throw new Error('Response return error');
     return response.data;

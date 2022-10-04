@@ -14,7 +14,7 @@ import { SceneParams, SceneService } from 'src/framework/scene/scene.service';
 import { ChangeGroupConfirmButton, ChangeGroupConfirmKeyboard } from './keyboard/change-group-confirm.keyboard';
 
 //TODO Add abstraction for different university
-const GROUP_CHANGE_REGEX = /^\/группа ([а-я]+[ \-,.]*\d{2})/i;
+const GROUP_CHANGE_REGEX = /^\/группа ([a-zа-я\d\- ]*)/i;
 
 @Injectable()
 export class ConversationSetupHandler {
@@ -46,7 +46,7 @@ export class ConversationSetupHandler {
     }
   }
 
-  @OnMessage(/^\/группа *$/i, 'conversation')
+  @OnMessage(/^\/группа[\n ]*$/im, 'conversation')
   public async onIncorrectChangeGroup(message: BotMessage): Promise<void> {
     await message.send(Text.Build('change-group-incorrect'));
   }

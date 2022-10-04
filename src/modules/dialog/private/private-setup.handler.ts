@@ -28,7 +28,7 @@ import { OnInlineButton } from '../../../framework/bot/decorator/on-inline-butto
 import * as moment from 'moment';
 import { ScheduleService } from 'src/modules/schedule/schedule.service';
 
-const MY_GROUP_CHANGE_REGEX = /^\/моя группа ([а-я]+[ \-,.]*\d{2})/i;
+const MY_GROUP_CHANGE_REGEX = /^\/моя группа ([a-zа-я\d- ]*)/i;
 
 @Injectable()
 export class PrivateSetupHandler {
@@ -38,7 +38,7 @@ export class PrivateSetupHandler {
     private readonly scheduleService: ScheduleService,
   ) {}
 
-  @OnMessage(['/start', 'старт', '/старт', 'start'], 'private')
+  @OnMessage(['/start', 'старт', '/старт', 'start', 'Начало', 'Начать'], 'private')
   public async onStart(message: BotMessage): Promise<void> {
     const isGroupExist = !!message.from.user.group;
     let keyboard: KeyboardBuilder | undefined;
@@ -52,7 +52,7 @@ export class PrivateSetupHandler {
     );
   }
 
-  @OnMessage(/^\/моя группа/i)
+  @OnMessage(/^\/моя группа[\n ]*$/im)
   public async onIncorrectChangeGroup(message: BotMessage): Promise<void> {
     await message.send(Text.Build('change-private-group-incorrect'));
   }
