@@ -29,9 +29,13 @@ export class ScheduleBuilder {
     });
   }
 
-  public async buildWhere(query: string, group: GroupEntity): Promise<Text> {
+  public async buildWhere(now: boolean, group: GroupEntity): Promise<Text>;
+  public async buildWhere(query: string, group: GroupEntity): Promise<Text>;
+  public async buildWhere(query: string | boolean, group: GroupEntity): Promise<Text> {
     const currentTime = Time.get();
-    const isNow = !!query.match(WHERE_AUDIENCE);
+    let isNow;
+    if (typeof query == 'string') isNow = !!query.match(WHERE_AUDIENCE);
+    else isNow = query;
 
     const lessons = await group.getLessonsAtDate(currentTime);
     const lessonGroups = new LessonGroupProcessor(lessons);

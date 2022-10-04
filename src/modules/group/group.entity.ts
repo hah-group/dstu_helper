@@ -35,7 +35,7 @@ export class GroupEntity extends DomainEntity {
   public conversations = new Collection<ConversationEntity>(this);
 
   public async getLessonsAtDate(atDate: DateTime): Promise<LessonEntity[]> {
-    //await this.init();
+    if (!this.isInitialized()) await this.init();
     //if (!this.lessons.isInitialized()) await this.lessons.init();
 
     return this.lessons.matching({ filters: { atDateFilter: { date: atDate } } });

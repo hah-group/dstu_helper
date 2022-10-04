@@ -3,7 +3,12 @@ import { OnMessage } from '../../../framework/bot/decorator/on-message.decorator
 import { BotInlineMessage, BotMessage } from '../../../framework/bot/type/bot-message.type';
 import { Text } from '../../../framework/text/text';
 import { KeyboardBuilder } from '../../../framework/bot/keyboard/keyboard.builder';
-import { MainMenuKeyboard, ScheduleButton } from './keyboard/main-menu.keyboard';
+import {
+  MainMenuKeyboard,
+  ScheduleButton,
+  WhereAudienceButton,
+  WhereNextAudienceButton,
+} from './keyboard/main-menu.keyboard';
 import { OnButton } from '../../../framework/bot/decorator/on-button.decorator';
 import { GroupEntity } from '../../group/group.entity';
 import { ConversationRepository } from '../../conversation/conversation.repository';
@@ -21,10 +26,17 @@ import {
 import { UserRepository } from '../../user/user.repository';
 import { OnInlineButton } from '../../../framework/bot/decorator/on-inline-button.decorator';
 import * as moment from 'moment';
+import { ScheduleService } from 'src/modules/schedule/schedule.service';
+
+const MY_GROUP_CHANGE_REGEX = /^\/моя группа ([а-я]+[ \-,.]*\d{2})/i;
 
 @Injectable()
 export class PrivateSetupHandler {
-  constructor(private readonly scheduleBuilder: ScheduleBuilder, private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly scheduleBuilder: ScheduleBuilder,
+    private readonly userRepository: UserRepository,
+    private readonly scheduleService: ScheduleService,
+  ) {}
 
   @OnMessage(['/start', 'старт', '/старт', 'start'], 'private')
   public async onStart(message: BotMessage): Promise<void> {
@@ -40,9 +52,67 @@ export class PrivateSetupHandler {
     );
   }
 
+  @OnMessage(/^\/моя группа/i)
+  public async onIncorrectChangeGroup(message: BotMessage): Promise<void> {
+    await message.send(Text.Build('change-private-group-incorrect'));
+  }
+
+  @OnMessage(MY_GROUP_CHANGE_REGEX)
+  public async onChangeGroup(message: BotMessage): Promise<void> {
+    const match = message.payload.text.match(MY_GROUP_CHANGE_REGEX);
+    if (!match || !match[1]) {
+      await message.send(Text.Build('change-group-searching', { state: 'failed' }));
+      return;
+    }
+
+    await message.send(Text.Build('change-group-searching', { state: 'loading' }), new KeyboardBuilder());
+    const group = await this.scheduleService.findGroup(match[1], message.universityName);
+
+    if (!group) {
+      await message.send(Text.Build('change-group-searching', { state: 'failed' }));
+    } else {
+      message.from.user.group = group;
+      await this.userRepository.save(message.from.user);
+
+      await message.send(Text.Build('schedule-loading', { state: 'loading' }));
+      await this.scheduleService.updateSchedule(group.university.name, group.externalId);
+
+      let keyboard;
+      if (message.chat.scope == 'private') keyboard = MainMenuKeyboard;
+
+      await message.send(Text.Build('schedule-loading', { state: 'done' }), keyboard);
+
+      if (message.chat.scope == 'private') await this.onSchedule(message);
+    }
+  }
+
   @OnButton(ScheduleButton, 'private')
   public async onSchedule(message: BotMessage): Promise<void> {
     await this.onToday(message, false);
+  }
+
+  @OnButton(WhereAudienceButton, 'private')
+  public async onWhereAudience(message: BotMessage): Promise<void> {
+    const group = message.from.user.group;
+    if (!group) {
+      await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
+      return;
+    }
+
+    const text = await this.scheduleBuilder.buildWhere(true, group);
+    await message.send(text);
+  }
+
+  @OnButton(WhereNextAudienceButton, 'private')
+  public async onWhereNextAudience(message: BotMessage): Promise<void> {
+    const group = message.from.user.group;
+    if (!group) {
+      await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
+      return;
+    }
+
+    const text = await this.scheduleBuilder.buildWhere(false, group);
+    await message.send(text);
   }
 
   @OnInlineButton(TodayButton())

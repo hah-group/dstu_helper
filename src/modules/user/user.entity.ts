@@ -62,7 +62,7 @@ export class UserEntity extends DomainEntity {
 
   public async checkGroup(conversation?: ConversationEntity): Promise<boolean> {
     if (!conversation || !conversation.defaultGroup) return false;
-    if (this.group && this.group.id == conversation.defaultGroup.id) return false;
+    if (this.group) return false;
 
     this.group = conversation.defaultGroup;
     return true;
