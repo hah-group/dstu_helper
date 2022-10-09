@@ -1,5 +1,5 @@
 import { DomainEntity } from '../../framework/database/domain.entity';
-import { Collection, Entity, JsonType, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { GroupEntity } from '../group/group.entity';
 import { ConversationEntity } from '../conversation/conversation.entity';
 import { UserPropertiesType } from './user-properties/user-properties.type';

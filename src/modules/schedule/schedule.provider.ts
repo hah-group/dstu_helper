@@ -20,6 +20,8 @@ export abstract class ScheduleProvider {
   protected constructor(protected readonly producer: RequestProducer, public readonly name: string) {}
 
   public abstract getSchedule(group: GroupEntity): Promise<ProviderSchedule | null>;
+
   public abstract findGroup(query: string): Promise<ProviderGroup | null>;
+
   public abstract bumpGroupCourse(group: GroupEntity): Promise<GroupEntity>;
 }

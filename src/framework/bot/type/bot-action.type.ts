@@ -1,6 +1,6 @@
 import { KeyboardBuilder } from '../keyboard/keyboard.builder';
 import { SendOptions } from './bot-message.type';
-import { BotContext, BotExtendedContext } from './bot-context.type';
+import { BotExtendedContext } from './bot-context.type';
 import { Text } from '../../text/text';
 
 export type BotAction<T, E = any> = {

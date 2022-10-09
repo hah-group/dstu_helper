@@ -1,8 +1,6 @@
-import { DEFAULT_REDIS_NAMESPACE, InjectRedis } from '@liaoliaots/nestjs-redis';
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
-import { BotMessage } from '../../framework/bot/type/bot-message.type';
-import { BotBaseContext } from '../bot/type/bot-context.type';
 
 export const SceneRedisNamespace = 'scene';
 

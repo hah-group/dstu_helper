@@ -12,12 +12,7 @@ import { LessonGroupProcessor } from '../../../framework/util/lesson-group/lesso
 import { NEXT_AUDIENCE, WHERE_AUDIENCE } from './activation/where-audience.activation';
 import { GroupEntity } from '../../group/group.entity';
 import { Time } from 'src/framework/util/time';
-import { TimeRelativeProcessor } from '../../../framework/util/time-relative.processor';
-import { LessonGroupResult } from '../../../framework/util/lesson-group/lesson-group.type';
-import { nearestUp } from '../../../framework/util/nearest-up';
-import { LanguageOrderDefinition, LanguageOrderKey } from '../../../framework/util/language-order-definition';
 import { ORDER_LESSON_ACTIVATION } from './activation/order.activation';
-import { OrderDefinition } from './activation/definition/order-definition';
 import { ORDER_LAST_LESSON_ACTIVATION } from './activation/order-last.activation';
 import { ORDER_FIRST_LESSON_ACTIVATION } from './activation/order-first.activation';
 import { ScheduleBuilder } from './schedule.builder';

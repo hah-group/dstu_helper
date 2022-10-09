@@ -12,10 +12,8 @@ import { GroupModule } from './modules/group/group.module';
 import { LessonModule } from './modules/lesson/lesson.module';
 import { ScheduleModule } from './modules/schedule/schedule.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
-import { UniversityRepository } from './modules/university/university.repository';
 import { UniversityModule } from './modules/university/university.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
-import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { SceneModule } from './framework/scene/scene.module';
 import { VkModule } from './framework/vk/vk.module';
 

@@ -95,8 +95,6 @@ export class VkService {
     newCtx.metadata = {
       eventId: (<any>ctx.message).event_id,
     };
-    console.log(ctx);
-    console.log(newCtx);
 
     this.botService.emit('event', newCtx);
   }

@@ -2,9 +2,7 @@ import * as moment from 'moment';
 import { LessonTypeDefinition } from './lesson-type.definition';
 import { pretties } from './subject-prettier';
 import * as str from 'string';
-import { keys } from 'lodash';
 import { LessonType } from '../../lesson/lesson-type.enum';
-import { TeacherEntity } from '../../teacher/teacher.entity';
 
 export interface SubjectInfo {
   type: LessonType;

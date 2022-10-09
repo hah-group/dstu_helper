@@ -1,7 +1,6 @@
 import { Checker } from './checker.type';
 import { BotPayloadType } from '../type/bot-payload-type.enum';
-import { BotContext, BotInlineKeyPayload, BotMessagePayload } from '../type/bot-context.type';
-import { OnMessageEventItem } from '../decorator/on-message.decorator';
+import { BotContext, BotInlineKeyPayload } from '../type/bot-context.type';
 import { HandlerMetadata } from '../decorator/bot-handler.type';
 
 export class InlineButtonChecker extends Checker<BotInlineKeyPayload> {

@@ -1,9 +1,8 @@
 import * as Handlebars from 'handlebars';
 import { BaseHelper } from './base.helper';
 import * as moment from 'moment';
-import { DateTime, Time } from '../../util/time';
-import { WeekdayGenDefinition, WeekdayNumbers, WeekdayShortDefinition } from '../weekday.definition';
-import { MonthGenDefinition, MonthNumbers } from '../month.definition';
+import { DateTime } from '../../util/time';
+import { WeekdayNumbers, WeekdayShortDefinition } from '../weekday.definition';
 import * as str from 'string';
 import * as lodash from 'lodash';
 

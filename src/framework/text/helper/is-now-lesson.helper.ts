@@ -1,7 +1,6 @@
 import * as Handlebars from 'handlebars';
 import { BaseHelper } from './base.helper';
-import * as moment from 'moment';
-import { DateTime, Time } from '../../util/time';
+import { Time } from '../../util/time';
 import { LessonEntity } from '../../../modules/lesson/lesson.entity';
 import { TimeRelativeProcessor } from '../../util/time-relative.processor';
 

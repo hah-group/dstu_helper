@@ -23,6 +23,16 @@ export class RelativeDateHelper extends BaseHelper {
     });
   }
 
+  public getAbsolute(date: DateTime, currentDate: DateTime): string {
+    const stringBuilder: string[] = [];
+    stringBuilder.push(`${date.date()}`);
+    stringBuilder.push(` ${MonthGenDefinition[<MonthNumbers>date.month()]}`);
+    if (date.year() - currentDate.year() !== 0) stringBuilder.push(` ${date.year()}`);
+    stringBuilder.push(`, ${str(WeekdayGenDefinition[<WeekdayNumbers>date.isoWeekday()]).capitalize()}`);
+
+    return stringBuilder.join('');
+  }
+
   private getRelative(diff: number): string | undefined {
     if (diff >= -2 && diff <= 1) {
       switch (diff) {
@@ -36,15 +46,5 @@ export class RelativeDateHelper extends BaseHelper {
           return 'позавчера';
       }
     }
-  }
-
-  public getAbsolute(date: DateTime, currentDate: DateTime): string {
-    const stringBuilder: string[] = [];
-    stringBuilder.push(`${date.date()}`);
-    stringBuilder.push(` ${MonthGenDefinition[<MonthNumbers>date.month()]}`);
-    if (date.year() - currentDate.year() !== 0) stringBuilder.push(` ${date.year()}`);
-    stringBuilder.push(`, ${str(WeekdayGenDefinition[<WeekdayNumbers>date.isoWeekday()]).capitalize()}`);
-
-    return stringBuilder.join('');
   }
 }

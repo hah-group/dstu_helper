@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LessonRepository } from './lesson.repository';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { UserEntity } from '../user/user.entity';
 import { LessonEntity } from './lesson.entity';
 
 @Module({

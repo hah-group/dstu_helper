@@ -1,5 +1,4 @@
 import { LessonEntity } from 'src/modules/lesson/lesson.entity';
-import { DateTime } from '../time';
 
 export type LessonGroupResult =
   | LessonGroupSingle

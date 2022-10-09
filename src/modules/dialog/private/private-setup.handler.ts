@@ -11,16 +11,15 @@ import {
 } from './keyboard/main-menu.keyboard';
 import { OnButton } from '../../../framework/bot/decorator/on-button.decorator';
 import { GroupEntity } from '../../group/group.entity';
-import { ConversationRepository } from '../../conversation/conversation.repository';
 import { ScheduleBuilder } from '../schedule-text-query/schedule.builder';
 import { DateTime, Time } from 'src/framework/util/time';
 import {
+  CurrentDateButton,
   NextDayButton,
   NextWeekButton,
   PrevDayButton,
   PrevWeekButton,
   ScheduleKeyboard,
-  CurrentDateButton,
   TodayButton,
 } from './keyboard/schedule.keyboard';
 import { UserRepository } from '../../user/user.repository';

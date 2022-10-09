@@ -6,15 +6,16 @@ export type KeyboardPayload = Record<string, any> & {
 };
 
 export abstract class KeyboardButton {
-  protected label: Text;
-  protected _id?: string;
   public readonly type: string;
+  protected label: Text;
 
   protected constructor(type: string, label: Text, id?: string) {
     this.label = label;
     this._id = id;
     this.type = type;
   }
+
+  protected _id?: string;
 
   public get id(): string {
     return this._id || this.label.render();

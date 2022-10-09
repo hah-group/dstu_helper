@@ -1,6 +1,6 @@
 import { Checker } from './checker.type';
 import { BotPayloadType } from '../type/bot-payload-type.enum';
-import { BotContext, BotContextPayload, BotMessagePayload } from '../type/bot-context.type';
+import { BotContext, BotContextPayload } from '../type/bot-context.type';
 import { HandlerMetadata } from '../decorator/bot-handler.type';
 
 export class ChatScopeChecker extends Checker {

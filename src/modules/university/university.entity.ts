@@ -1,5 +1,5 @@
 import { DomainEntity } from '../../framework/database/domain.entity';
-import { Collection, Entity, OneToMany, OneToOne, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { GroupEntity } from '../group/group.entity';
 import { ScheduleProviderName } from '../schedule/schedule-provider-name.type';
 

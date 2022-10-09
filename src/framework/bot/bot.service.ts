@@ -44,6 +44,8 @@ export interface ProviderTransport {
 @Injectable()
 export class BotService extends EventEmitter {
   private readonly log = new Logger('BotService');
+  private handlers: Set<BotHandler> = new Set<BotHandler>();
+  private transports: Map<string, ProviderTransport> = new Map<string, ProviderTransport>();
 
   constructor(
     private readonly userRepository: UserRepository,
@@ -53,9 +55,6 @@ export class BotService extends EventEmitter {
 
     this.on('event', async (ctx) => this.onEvent(ctx));
   }
-
-  private handlers: Set<BotHandler> = new Set<BotHandler>();
-  private transports: Map<string, ProviderTransport> = new Map<string, ProviderTransport>();
 
   public registerHandler(handler: BotHandler): void {
     this.handlers.add(handler);

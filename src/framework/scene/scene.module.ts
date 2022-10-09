@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { SceneRedisNamespace, SceneService } from './scene.service';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 

@@ -1,4 +1,4 @@
-import { Type, Platform, EntityProperty } from '@mikro-orm/core';
+import { EntityProperty, Platform, Type } from '@mikro-orm/core';
 import { UserProperties } from './user-properties';
 
 export class UserPropertiesType extends Type<UserProperties | undefined, Record<string, any>> {

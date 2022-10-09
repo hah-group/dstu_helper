@@ -1,6 +1,6 @@
 import { SetMetadata } from '@nestjs/common';
 import { BOT_HANDLER } from './bot-metadata.accessor';
-import { DecoratorMetadata, HandlerMetadata, OnInlineButtonMetadata } from './bot-handler.type';
+import { DecoratorMetadata, HandlerMetadata } from './bot-handler.type';
 import { BotPayloadType } from '../type/bot-payload-type.enum';
 import { HandlerTypeChecker } from '../checker/handler-type.checker';
 import { KeyboardButton } from '../keyboard/keyboard-button';

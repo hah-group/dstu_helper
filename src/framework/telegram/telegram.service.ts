@@ -28,7 +28,6 @@ import { TelegramProducer } from './job/telegram.producer';
 import { TelegramKeyboardBuilder } from './telegram-keyboard.builder';
 import { BotPayloadType } from '../bot/type/bot-payload-type.enum';
 import { TelegramJobSend } from './job/telegram-job-data.type';
-import { inspect } from 'util';
 
 export type TelegramMessage = TGMessage;
 export type TelegramCallbackQuery = CallbackQuery;
@@ -133,36 +132,6 @@ export class TelegramService {
     });
   }
 
-  private async onMessageEvent(ctx: TelegramMessage): Promise<void> {
-    const telegramCtx: TelegramContext = {
-      type: 'message',
-      ctx: ctx,
-    };
-    const newCtx: BotExtendedContext<TelegramContextMetadata> = MiddlewareExecutor.Execute(
-      telegramCtx,
-      this.middlewares,
-    );
-    newCtx.metadata = {};
-    //console.log(inspect(telegramCtx, false, 10, true));
-    this.botService.emit('event', newCtx);
-  }
-
-  private async onCallbackEvent(ctx: TelegramCallbackQuery): Promise<void> {
-    const telegramCtx: TelegramContext = {
-      type: 'callback_query',
-      ctx: ctx,
-    };
-    const newCtx: BotExtendedContext<TelegramContextMetadata> = MiddlewareExecutor.Execute(
-      telegramCtx,
-      this.middlewares,
-    );
-    newCtx.metadata = {
-      eventId: ctx.id,
-    };
-    //console.log(inspect(telegramCtx, false, 10, true));
-    this.botService.emit('event', newCtx);
-  }
-
   public async onSend(ctx: BotAction<BotMessageAction, TelegramContextMetadata>): Promise<number> {
     const options: TelegramJobSend['options'] = {};
 
@@ -236,5 +205,35 @@ export class TelegramService {
       text: '',
       show: false,
     });
+  }
+
+  private async onMessageEvent(ctx: TelegramMessage): Promise<void> {
+    const telegramCtx: TelegramContext = {
+      type: 'message',
+      ctx: ctx,
+    };
+    const newCtx: BotExtendedContext<TelegramContextMetadata> = MiddlewareExecutor.Execute(
+      telegramCtx,
+      this.middlewares,
+    );
+    newCtx.metadata = {};
+    //console.log(inspect(telegramCtx, false, 10, true));
+    this.botService.emit('event', newCtx);
+  }
+
+  private async onCallbackEvent(ctx: TelegramCallbackQuery): Promise<void> {
+    const telegramCtx: TelegramContext = {
+      type: 'callback_query',
+      ctx: ctx,
+    };
+    const newCtx: BotExtendedContext<TelegramContextMetadata> = MiddlewareExecutor.Execute(
+      telegramCtx,
+      this.middlewares,
+    );
+    newCtx.metadata = {
+      eventId: ctx.id,
+    };
+    //console.log(inspect(telegramCtx, false, 10, true));
+    this.botService.emit('event', newCtx);
   }
 }

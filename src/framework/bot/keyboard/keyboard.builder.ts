@@ -1,5 +1,4 @@
 import { KeyboardButton } from './keyboard-button';
-import { SocialSource } from '../type/social.enum';
 
 export class KeyboardBuilder {
   private keyboard: KeyboardButton[][] = [];

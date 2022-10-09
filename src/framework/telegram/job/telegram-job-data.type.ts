@@ -1,6 +1,5 @@
 import { MessageJobName } from '../../bot/type/message-job-name.enum';
-import { BotAction, BotMessageAction } from '../../bot/type/bot-action.type';
-import { TelegramEditMessageOptions, TelegramKeyboard, TelegramSendOptions } from '../telegram.service';
+import { TelegramKeyboard, TelegramSendOptions } from '../telegram.service';
 
 export type TelegramJobData = TelegramJobSend | TelegramJobEdit | TelegramJobAlert;
 

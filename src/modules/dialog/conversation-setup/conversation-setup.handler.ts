@@ -8,7 +8,6 @@ import { GroupEntity } from '../../group/group.entity';
 import { ConversationRepository } from '../../conversation/conversation.repository';
 import { ConversationEntity } from '../../conversation/conversation.entity';
 import { KeyboardBuilder } from '../../../framework/bot/keyboard/keyboard.builder';
-import { TextButton } from '../../../framework/bot/keyboard/text.button';
 import { OnInlineButton } from '../../../framework/bot/decorator/on-inline-button.decorator';
 import { SceneParams, SceneService } from 'src/framework/scene/scene.service';
 import { ChangeGroupConfirmButton, ChangeGroupConfirmKeyboard } from './keyboard/change-group-confirm.keyboard';

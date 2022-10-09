@@ -13,6 +13,7 @@ import { GroupStatus } from '../group/group-status.enum';
 @Injectable()
 export class ScheduleService {
   private readonly log = new Logger('ScheduleService');
+
   constructor(
     private readonly scheduleProviderBuilder: ScheduleProviderBuilder,
     private readonly groupRepository: GroupRepository,

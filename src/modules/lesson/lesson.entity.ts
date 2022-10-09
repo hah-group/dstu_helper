@@ -1,11 +1,10 @@
-import { Entity, Enum, Filter, ManyToOne, PrimaryKey, Property, Unique } from '@mikro-orm/core';
+import { Entity, Enum, Filter, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { LessonType } from './lesson-type.enum';
 import { TeacherEntity } from '../teacher/teacher.entity';
 import { GroupEntity } from '../group/group.entity';
 import { DomainEntity } from '../../framework/database/domain.entity';
 import { DateTime } from '../../framework/util/time';
 import * as moment from 'moment';
-import { TimeRelativeProcessor } from '../../framework/util/time-relative.processor';
 
 @Entity({ tableName: 'lesson' })
 @Unique({ properties: ['group', 'start', 'subgroup', 'teacher'] })

@@ -1,5 +1,5 @@
 import { DomainEntity } from '../../framework/database/domain.entity';
-import { Cascade, Collection, Entity, OneToMany, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, OneToMany, Property } from '@mikro-orm/core';
 import { LessonEntity } from '../lesson/lesson.entity';
 
 @Entity({ tableName: 'teacher' })

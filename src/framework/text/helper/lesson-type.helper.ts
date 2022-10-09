@@ -1,6 +1,5 @@
 import * as Handlebars from 'handlebars';
 import { BaseHelper } from './base.helper';
-import { LessonEntity } from '../../../modules/lesson/lesson.entity';
 import { LessonType } from '../../../modules/lesson/lesson-type.enum';
 
 export class LessonTypeHelper extends BaseHelper {

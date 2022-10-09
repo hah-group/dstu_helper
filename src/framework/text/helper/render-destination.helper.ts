@@ -1,6 +1,5 @@
 import * as Handlebars from 'handlebars';
 import { BaseHelper } from './base.helper';
-import { LessonEntity } from '../../../modules/lesson/lesson.entity';
 
 export class RenderDestinationHelper extends BaseHelper {
   public register(): void {
