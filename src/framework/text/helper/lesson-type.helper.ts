@@ -7,17 +7,17 @@ export class LessonTypeHelper extends BaseHelper {
     Handlebars.registerHelper('lessonType', (a: LessonType, opts) => {
       switch (a) {
         case LessonType.LECTURE:
-          return '📔 Лекция';
+          return '📔 Лекция:';
         case LessonType.PRACTICAL:
-          return '📕 Практика';
+          return '📕 Практика:';
         case LessonType.LABORATORY:
-          return '🔬 Лабораторная';
+          return '🔬 Лабораторная:';
         case LessonType.EXAMINATION:
-          return '📝 Экзамен';
+          return '📝 Экзамен:';
         case LessonType.EXAM_WITHOUT_MARK:
-          return '📝 Зачет';
+          return '📝 Зачет:';
         case LessonType.PHYSICAL_EDUCATION:
-          return '🏃‍ Физра';
+          return '🏃‍';
       }
     });
   }
