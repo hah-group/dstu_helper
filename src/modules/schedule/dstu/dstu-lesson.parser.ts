@@ -20,6 +20,9 @@ export interface TeacherInfo {
 
 export default class DSTULessonParser {
   public static subjectParse(subject: string): SubjectInfo | undefined {
+    subject = subject.replace(/""(.*?)""/, '($1)');
+    subject = subject.replace('"', '');
+
     let regex;
     const isBracketsExist = subject.indexOf('(') > -1;
     if (isBracketsExist && subject.indexOf(')') < 0) subject += ')';
@@ -36,7 +39,7 @@ export default class DSTULessonParser {
     if (match && match.length > 2) {
       const pretty = this.subjectPrettier(subject, match);
       const result: SubjectInfo = {
-        type: LessonTypeDefinition[match[1]],
+        type: LessonTypeDefinition[match[1].toLowerCase()],
         name: str(match[2]).capitalize().s,
       };
 

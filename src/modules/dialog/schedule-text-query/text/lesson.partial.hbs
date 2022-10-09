@@ -1,7 +1,8 @@
 {{#*inline "SINGLE"}}
   📌 {{data.order}} пара ({{time data.info.start}} - {{time data.info.end}}) {{#unless short}}{{isNowLesson
     data.info}}{{/unless}}
-  {{lessonType data.info.type}}: {{data.info.name}}
+  {{lessonType data.info.type}}: {{data.info.name}}{{#if data.info.subsection}}
+    📐 Секция: {{data.info.subsection}}{{/if}}
   {{#if data.info.corpus}}🏢 Аудитория:{{else}}🏢{{/if}} {{getDestination data.info}}
 {{/inline}}
 {{#*inline "SINGLE_DIFFERENT_CLASS_ROOMS"}}

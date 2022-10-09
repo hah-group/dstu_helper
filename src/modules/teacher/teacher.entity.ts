@@ -18,4 +18,8 @@ export class TeacherEntity extends DomainEntity {
 
   @OneToMany(() => LessonEntity, 'teacher')
   public lessons = new Collection<LessonEntity>(this);
+
+  public isEquals(entity: TeacherEntity): boolean {
+    return entity.id == this.id;
+  }
 }

@@ -24,7 +24,7 @@ export class ScheduleService {
 
   public async updateSchedule(providerName?: string, groupId?: number): Promise<any> {
     const providers = this.getProviders(providerName);
-    this.log.log(`Update schedule for providers ${providers.length}`);
+    this.log.log(`Update schedule for providers: [${providers.map((provider) => provider.name).join(', ')}]`);
 
     const startTime = Date.now();
     for (const provider of providers) {
@@ -34,7 +34,7 @@ export class ScheduleService {
         providerGroup.status = GroupStatus.IN_PROGRESS;
         await this.groupRepository.save(providerGroup);
 
-        this.log.log(`Update schedule for group ${providerGroup.name}`);
+        this.log.log(`Update schedule for group: ${providerGroup.name}`);
         const scheduleStartTime = Date.now();
         try {
           const schedule = await provider.getSchedule(providerGroup);
@@ -45,16 +45,30 @@ export class ScheduleService {
           }
 
           this.log.log(`Collected ${schedule.lessons.length} lessons, saving`);
+          if (schedule.withErrors) {
+            providerGroup.status = GroupStatus.WITH_ERRORS;
+            providerGroup.lastUpdateAt = undefined;
+          } else {
+            providerGroup.status = GroupStatus.READY;
+            providerGroup.lastUpdateAt = schedule.lastUpdatedAt.toDate();
+          }
 
-          if (schedule.withErrors) providerGroup.status = GroupStatus.WITH_ERRORS;
-          else providerGroup.status = GroupStatus.READY;
-          providerGroup.lastUpdateAt = schedule.lastUpdatedAt.toDate();
+          if (!providerGroup.lessons.isInitialized()) await providerGroup.lessons.init();
+          const currentLessons = providerGroup.lessons.getItems();
+          const deleted = lodash.differenceWith(currentLessons, schedule.lessons, (a, b) => a.isEquals(b));
+          if (deleted.length > 0) {
+            this.log.log(`Found ${deleted.length} lessons for delete, deleting`);
+            await this.lessonRepository.deleteMany(deleted);
+          }
 
           await this.teacherRepository.upsertMany(schedule.teachers);
           await this.lessonRepository.upsertMany(schedule.lessons);
           this.log.log(`Schedule updated (${(Date.now() - scheduleStartTime) / 1000} s)`);
         } catch (e) {
+          this.log.error(`Updating schedule for group: ${providerGroup.name}, end with errors`);
+          console.error(e);
           providerGroup.status = GroupStatus.WITH_ERRORS;
+          providerGroup.lastUpdateAt = undefined;
         } finally {
           await this.groupRepository.save(providerGroup);
         }
@@ -66,15 +80,15 @@ export class ScheduleService {
 
   public async findGroup(query: string, providerName: string): Promise<GroupEntity | null> {
     const [provider] = this.getProviders(providerName);
-    this.log.log(`Finding group by query: ${query} (${provider.name})`);
+    this.log.log(`[${provider.name}] Finding group by query: ${query}`);
 
     const groupInfo = await provider.findGroup(query);
     if (groupInfo) {
-      this.log.log(`Found group: ${groupInfo.id} (${provider.name})`);
+      this.log.log(`[${provider.name}] Found group: ${groupInfo.id}`);
       let group = await this.groupRepository.getById(provider.name, groupInfo.id);
       if (group) return group;
 
-      this.log.log(`Create new group: ${groupInfo.id} (${provider.name})`);
+      this.log.log(`[${provider.name}] Create new group: ${groupInfo.id} - ${groupInfo.name}`);
       const university = <UniversityEntity>await this.universityRepository.getByName(providerName);
       group = new GroupEntity();
       group.university = university;
@@ -85,7 +99,7 @@ export class ScheduleService {
       return group;
     }
 
-    this.log.log(`Group not found by query: ${query} (${provider.name})`);
+    this.log.log(`[${provider.name}] Group not found by query: ${query})`);
 
     return null;
   }

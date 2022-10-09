@@ -24,7 +24,7 @@ export class DatabaseModule {
 
           loadStrategy: LoadStrategy.JOINED,
 
-          debug: true,
+          //debug: true,
         }),
       ],
       global: true,

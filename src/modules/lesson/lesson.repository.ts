@@ -17,4 +17,13 @@ export class LessonRepository extends CoreRepository<LessonEntity> {
       .merge()
       .execute();
   }
+
+  @UseRequestContext()
+  public async deleteMany(entities: LessonEntity[]): Promise<void> {
+    await this.queryBuilder()
+      .delete({
+        id: entities.map((entity) => entity.id),
+      })
+      .execute();
+  }
 }

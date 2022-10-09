@@ -53,4 +53,14 @@ export class LessonEntity extends DomainEntity {
     if (this.classRoom && this.corpus) return `${this.corpus}-${this.classRoom}`;
     if (this.classRoom) return this.classRoom;
   }
+
+  public isEquals(entity: LessonEntity): boolean {
+    const checks = [
+      entity.group.isEquals(this.group),
+      entity.start.getTime() == this.start.getTime(),
+      entity.subgroup == this.subgroup,
+      entity.teacher.isEquals(this.teacher),
+    ];
+    return checks.every((check) => check);
+  }
 }

@@ -66,7 +66,7 @@ export class LessonGroupProcessor {
   }
 
   private tryGroupSingle(lessons: LessonEntity[]): LessonGroupSingle | undefined {
-    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => lesson.name);
+    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => [lesson.name]);
     const groupedByClassRoom = lodash.uniqBy(lessons, (lesson) => lesson.getDestination());
 
     if (gropedBySubjects.length == 1 && groupedByClassRoom.length == 1) {
