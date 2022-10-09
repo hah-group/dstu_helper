@@ -19,11 +19,15 @@ import { VkProducer } from './job/vk.producer';
 import { BotAction, BotAlertAction, BotEditAction, BotMessageAction } from '../bot/type/bot-action.type';
 import { BotPayloadType } from '../bot/type/bot-payload-type.enum';
 import { VkKeyboardBuilder } from './vk-keyboard.builder';
-import { inspect } from 'util';
 
 export interface VkContextMetadata {
   lastMessageId?: number;
   eventId?: string;
+}
+
+export interface VKEditEventParams {
+  fromId: number;
+  eventId: string;
 }
 
 @Injectable()
@@ -36,7 +40,7 @@ export class VkService {
   private readonly providerName = 'vk';
 
   constructor(
-    @Inject(VK_OPTIONS) options: VkModuleOptions,
+    @Inject(VK_OPTIONS) private readonly options: VkModuleOptions,
     private readonly botService: BotService,
     private readonly vkProducer: VkProducer,
   ) {
@@ -61,7 +65,7 @@ export class VkService {
     });
 
     this.bot.startPolling((err) => {
-      console.log(err);
+      if (err) console.log(err);
       return {};
     });
 
@@ -91,6 +95,8 @@ export class VkService {
     newCtx.metadata = {
       eventId: (<any>ctx.message).event_id,
     };
+    console.log(ctx);
+    console.log(newCtx);
 
     this.botService.emit('event', newCtx);
   }
@@ -118,18 +124,27 @@ export class VkService {
 
   public async sendMessage(chatId: number, message: string, keyboard?: any): Promise<number> {
     try {
-      const response = await this.bot.sendMessage(chatId, message, undefined, <VkBotKeyboard>{
-        toJSON: () => JSON.stringify(keyboard),
+      return await this.vkApi.api.messages.send({
+        random_id: Date.now(),
+        peer_id: chatId,
+        keyboard: keyboard ? JSON.stringify(keyboard) : undefined,
+        message: message,
       });
-      return response.message_id || response.conversation_message_id;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return -1;
     }
   }
 
-  public async editMessage(chatId: number, messageId: number, message: string, keyboard?: any): Promise<void> {
+  public async editMessage(
+    chatId: number,
+    messageId: number,
+    message: string,
+    keyboard?: any,
+    eventParams?: VKEditEventParams,
+  ): Promise<void> {
     try {
+      if (messageId == 0) throw new Error('Message id is null');
       await this.bot.execute('messages.edit', {
         peer_id: chatId,
         conversation_message_id: messageId,
@@ -137,20 +152,33 @@ export class VkService {
         message: message,
       });
     } catch (e) {
-      console.log(e);
+      console.error(e);
+      if (eventParams)
+        await this.sendAlert(
+          chatId,
+          eventParams.fromId,
+          eventParams.eventId,
+          '😢 Не смог изменить старое сообщение, отправил новое',
+        );
       await this.sendMessage(chatId, message, keyboard);
     }
   }
 
   public async sendAlert(chatId: number, fromId: number, eventId: string, text: string): Promise<void> {
-    await this.bot.execute('messages.sendMessageEventAnswer', {
-      peer_id: chatId,
-      user_id: fromId,
-      event_id: eventId,
-      event_data: {
-        text: text,
-      },
-    });
+    try {
+      const response = await this.bot.execute('messages.sendMessageEventAnswer', {
+        peer_id: chatId,
+        user_id: fromId,
+        event_id: eventId,
+        event_data: JSON.stringify({
+          type: 'show_snackbar',
+          text: text,
+        }),
+      });
+      console.log(response);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   private async onGetUser(ctx: BotContext): Promise<UserEntity> {
@@ -209,6 +237,10 @@ export class VkService {
         messageId: ctx.context.payload.messageId,
         text: message,
         keyboard: keyboard,
+        eventParams: {
+          eventId: ctx.context.metadata.eventId,
+          fromId: ctx.context.from.id,
+        },
       });
     }
   }

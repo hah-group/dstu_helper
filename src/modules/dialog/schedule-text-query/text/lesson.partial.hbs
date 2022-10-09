@@ -1,15 +1,15 @@
 {{#*inline "SINGLE"}}
-  📌 {{data.order}} пара ({{time data.info.start}} - {{time data.info.end}})
+  📌 {{data.order}} пара ({{time data.info.start}} - {{time data.info.end}}) {{#unless short}}{{isNowLesson data.info}}{{/unless}}
   {{lessonType data.info.type}}: {{data.info.name}}
   {{#if data.info.corpus}}🏢 Аудитория:{{else}}🏢{{/if}} {{getDestination data.info}}
 {{/inline}}
 {{#*inline "SINGLE_DIFFERENT_CLASS_ROOMS"}}
-  📌 {{data.order}} пара ({{time data.info.start}} - {{time data.info.end}})
+  📌 {{data.order}} пара ({{time data.info.start}} - {{time data.info.end}}) {{#unless short}}{{isNowLesson data.info}}{{/unless}}
   {{lessonType data.info.type}}: {{data.info.name}}
   🏢 Аудитории: {{#each data.destinations}}{{renderDestination this}}{{#unless @last}}, {{/unless}}{{/each}}
 {{/inline}}
 {{#*inline "MULTIPLY"}}
-  📌 {{data.order}} пара ({{time data.info.[0].start}} - {{time data.info.[0].end}})
+  📌 {{data.order}} пара ({{time data.info.[0].start}} - {{time data.info.[0].end}}) {{#unless short}}{{isNowLesson data.info}}{{/unless}}
   ❗️Несколько пар в одно время
   {{#each data.info}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}
 {{/inline}}

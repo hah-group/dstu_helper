@@ -1,7 +1,7 @@
 {{#if target}}
   {{capitalize (relativeDate atDate)}} тебе к {{order}} паре:
 
-  {{> lesson data=target }}
+  {{> lesson data=target short=true }}
 {{else}}
   {{capitalize (relativeDate atDate)}} нет пар 🥳
 

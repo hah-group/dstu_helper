@@ -1,6 +1,7 @@
 import { MessageJobName } from '../../bot/type/message-job-name.enum';
 import { TelegramKeyboard, TelegramSendOptions } from '../../telegram/telegram.service';
 import { KeyboardBuilder } from '../../bot/keyboard/keyboard.builder';
+import { VKEditEventParams } from '../vk.service';
 
 export type VkJobData = VkJobSend | VkJobEdit | VkJobAlert | VkJobGetUser;
 
@@ -17,6 +18,7 @@ export interface VkJobEdit {
   keyboard?: any;
   chatId: number;
   messageId: number;
+  eventParams?: VKEditEventParams;
 }
 
 export interface VkJobAlert {

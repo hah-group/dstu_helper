@@ -5,6 +5,7 @@ import { GroupEntity } from '../group/group.entity';
 import { DomainEntity } from '../../framework/database/domain.entity';
 import { DateTime } from '../../framework/util/time';
 import * as moment from 'moment';
+import { TimeRelativeProcessor } from '../../framework/util/time-relative.processor';
 
 @Entity({ tableName: 'lesson' })
 @Unique({ properties: ['group', 'start', 'subgroup', 'teacher'] })

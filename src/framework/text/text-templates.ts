@@ -4,7 +4,6 @@ import * as path from 'path';
 import { Logger, Type } from '@nestjs/common';
 import { glob } from 'glob';
 import { BaseHelper } from './helper/base.helper';
-import { EqualsHelper } from './helper/equals.helper';
 import { TimeHelper } from './helper/time.helper';
 import { LessonDestinationHelper } from './helper/lesson-destination.helper';
 import * as basicHelpers from 'handlebars-helpers';
@@ -12,6 +11,7 @@ import { LessonTypeHelper } from './helper/lesson-type.helper';
 import { RenderDestinationHelper } from './helper/render-destination.helper';
 import { RelativeDateHelper } from './helper/relative-date.helper';
 import { DateButtonHelper } from './helper/date-button.helper';
+import { IsNowLessonHelper } from './helper/is-now-lesson.helper';
 
 const helpers: Type<BaseHelper>[] = [
   TimeHelper,
@@ -20,6 +20,7 @@ const helpers: Type<BaseHelper>[] = [
   RenderDestinationHelper,
   RelativeDateHelper,
   DateButtonHelper,
+  IsNowLessonHelper,
 ];
 const log = new Logger('TextTemplate');
 

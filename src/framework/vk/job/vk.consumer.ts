@@ -16,14 +16,14 @@ export class VkConsumer {
   public async send(job: Job<VkJobSend>): Promise<number | undefined> {
     this.log.debug(`Execute send job`);
     const { data } = job;
-    return this.vkService.sendMessage(data.chatId, data.message, data.keyboard);
+    return await this.vkService.sendMessage(data.chatId, data.message, data.keyboard);
   }
 
   @Process(MessageJobName.EDIT)
   public async edit(job: Job<VkJobEdit>): Promise<void> {
     this.log.debug(`Execute edit job`);
     const { data } = job;
-    await this.vkService.editMessage(data.chatId, data.messageId, data.text, data.keyboard);
+    await this.vkService.editMessage(data.chatId, data.messageId, data.text, data.keyboard, data.eventParams);
   }
 
   @Process(MessageJobName.ALERT)

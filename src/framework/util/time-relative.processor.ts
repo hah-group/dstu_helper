@@ -39,6 +39,7 @@ export class TimeRelativeProcessor {
   }
 
   private static parseTime(date: string): DateTime {
-    return moment(date, 'HH:mm:ss');
+    const [hours, minutes, seconds] = date.split(':');
+    return Time.get().hours(parseInt(hours)).minutes(parseInt(minutes)).seconds(parseInt(seconds));
   }
 }

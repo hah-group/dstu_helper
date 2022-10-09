@@ -66,17 +66,18 @@ export class ConversationSetupHandler {
     });
 
     if (!muteWarning) {
-      const messageId = await message.send(Text.Build('change-group-warning'), ChangeGroupConfirmKeyboard);
+      await message.send(Text.Build('change-group-warning'), ChangeGroupConfirmKeyboard);
       await this.sceneService.set(
         {
           provider: message.provider,
-          userId: message.from.id,
           chatId: message.chat.id,
-          messageId: messageId,
+          name: 'CHANGE_GROUP_WARNING',
         },
         {
           groupName: match[1],
+          userId: message.from.id,
         },
+        180, //3 minutes
       );
     } else return this.changeGroup(message, match[1]);
   }
@@ -85,16 +86,18 @@ export class ConversationSetupHandler {
   public async onChangeGroupConfirm(message: BotInlineMessage): Promise<void> {
     const sceneParams: SceneParams = {
       provider: message.provider,
-      userId: message.from.id,
       chatId: message.chat.id,
-      messageId: message.payload.messageId,
+      name: 'CHANGE_GROUP_WARNING',
     };
     const sceneValue = await this.sceneService.get(sceneParams);
     if (!sceneValue) {
-      await message.alert(Text.Build('change-group-invalid-user'));
+      await message.alert(Text.Build('change-group-timeout'));
       return;
+    } else if (sceneValue.userId != message.from.id) {
+      await message.alert(Text.Build('change-group-invalid-user'));
     }
-    await message.edit(undefined, new KeyboardBuilder());
+    await this.sceneService.remove(sceneParams);
+    await message.edit(Text.Build('change-group-warning'), new KeyboardBuilder());
 
     //TODO Add types for scene value
     return this.changeGroup(message, sceneValue.groupName, sceneParams);
