@@ -64,7 +64,10 @@ export class ConversationSetupHandler {
       name: 'MUTE_CHANGE_GROUP_WARNING',
     });
 
-    if (!muteWarning) {
+    const conversation = await this.conversationRepository.getById(message.chat.id, message.provider);
+    if (!conversation) throw new Error('Conversation not found');
+
+    if (!muteWarning && conversation.defaultGroup) {
       await message.send(Text.Build('change-group-warning'), ChangeGroupConfirmKeyboard);
       await this.sceneService.set(
         {
