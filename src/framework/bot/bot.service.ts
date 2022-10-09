@@ -7,27 +7,10 @@ import { BotAction, BotAlertAction, BotEditAction, BotMessageAction } from './ty
 import { UserRepository } from '../../modules/user/user.repository';
 import { UserEntity } from '../../modules/user/user.entity';
 import { ConversationRepository } from '../../modules/conversation/conversation.repository';
+import { Text } from '../text/text';
 
 export declare interface BotService {
-  /*emit(event: 'send-request', ctx: BotAction<BotMessageAction>): boolean;
-  emit(event: 'edit-request', ctx: BotAction<BotMessageAction>): boolean;
-  emit(event: 'alert-request', ctx: BotAction<BotAlertAction>): boolean;
-
-  emit(event: 'send-response', messageId: number): boolean;
-
-  emit(event: 'get-user-request', ctx: BotContext): boolean;
-  emit(event: 'get-user-response', ctx: UserEntity): boolean;*/
-
   emit(event: 'event', ctx: BotContext): boolean;
-
-  /* on(event: 'send-request', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
-  on(event: 'edit-request', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
-  on(event: 'alert-request', listener: (ctx: BotAction<BotMessageAction>) => void): boolean;
-
-  on(event: 'send-response', listener: (messageId: number) => void): boolean;
-
-  on(event: 'get-user-request', listener: (ctx: BotContext) => void): boolean;
-  on(event: 'get-user-response', listener: (ctx: UserEntity) => void): boolean;*/
 
   on(event: 'event', listener: (ctx: BotContext) => void): this;
 }
@@ -69,7 +52,13 @@ export class BotService extends EventEmitter {
       const result = handler.checkers.every((checker) => checker.check(ctx.payload, ctx));
       if (result) {
         ctx.from.user = await this.getUser(ctx);
-        await handler.callback(this.buildContext(ctx));
+        const context = this.buildContext(ctx);
+        try {
+          await handler.callback(context);
+        } catch (e) {
+          console.error(e);
+          await context.send(Text.Build('unexpected-error'));
+        }
         break;
       }
     }
