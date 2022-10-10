@@ -33,9 +33,3 @@ jobs:
           push: true
           tags: registry.mtdl.ru/dstu_helper_app:${{ env.RELEASE_VERSION }}
 
-      - name: Invoke deployment hook
-        uses: distributhor/workflow-webhook@v2
-        env:
-          webhook_url: ${{ secrets.WEBHOOK_URL }}
-          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
-
