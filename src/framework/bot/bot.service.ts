@@ -3,11 +3,18 @@ import { EventEmitter } from 'events';
 import { BotContext } from './type/bot-context.type';
 import { BotHandler } from './decorator/bot-handler.type';
 import { BotHandlerContext } from './type/bot-message.type';
-import { BotAction, BotAlertAction, BotEditAction, BotMessageAction } from './type/bot-action.type';
+import { BotAction, BotAlertAction, BotBroadcastAction, BotEditAction, BotMessageAction } from './type/bot-action.type';
 import { UserRepository } from '../../modules/user/user.repository';
 import { UserEntity } from '../../modules/user/user.entity';
 import { ConversationRepository } from '../../modules/conversation/conversation.repository';
 import { Text } from '../text/text';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
+export interface BotBroadcastEvent {
+  provider: string;
+  targetIds: number[];
+  message: Text;
+}
 
 export declare interface BotService {
   emit(event: 'event', ctx: BotContext): boolean;
@@ -22,6 +29,7 @@ export interface ProviderTransport {
   flush: (data: BotAction<null>) => Promise<void>;
 
   getUser?: (ctx: BotContext) => Promise<UserEntity>;
+  broadcast: (data: BotBroadcastAction) => Promise<void>;
 }
 
 @Injectable()
@@ -33,10 +41,12 @@ export class BotService extends EventEmitter {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly conversationRepository: ConversationRepository,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super();
 
     this.on('event', async (ctx) => this.onEvent(ctx));
+    this.eventEmitter.on('broadcast', (data: BotBroadcastEvent) => this.onBroadcast(data));
   }
 
   public registerHandler(handler: BotHandler): void {
@@ -45,6 +55,17 @@ export class BotService extends EventEmitter {
 
   public registerProvider(provider: string, transport: ProviderTransport): void {
     this.transports.set(provider, transport);
+  }
+
+  public async onBroadcast(data: BotBroadcastEvent): Promise<void> {
+    const transport = this.transports.get(data.provider);
+    if (!transport) return;
+
+    await transport.broadcast({
+      type: 'broadcast',
+      targetIds: data.targetIds,
+      message: data.message,
+    });
   }
 
   public async onEvent(ctx: BotContext): Promise<void> {

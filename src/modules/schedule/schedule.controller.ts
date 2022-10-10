@@ -11,7 +11,7 @@ export class ScheduleController {
     await this.scheduleService.updateSchedule(provider, groupId ? parseInt(groupId) : undefined);
   }
 
-  @Cron('0 4 23 * * *')
+  @Cron('0 0 4 * * *')
   public async cache(): Promise<void> {
     await this.scheduleService.updateSchedule();
   }

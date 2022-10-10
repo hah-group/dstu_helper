@@ -16,9 +16,16 @@ import { BotService } from '../bot/bot.service';
 import { BotIdMiddleware } from './middlewares/bot-id.middleware';
 import { UserEntity } from '../../modules/user/user.entity';
 import { VkProducer } from './job/vk.producer';
-import { BotAction, BotAlertAction, BotEditAction, BotMessageAction } from '../bot/type/bot-action.type';
+import {
+  BotAction,
+  BotAlertAction,
+  BotBroadcastAction,
+  BotEditAction,
+  BotMessageAction,
+} from '../bot/type/bot-action.type';
 import { BotPayloadType } from '../bot/type/bot-payload-type.enum';
 import { VkKeyboardBuilder } from './vk-keyboard.builder';
+import { delay } from '../util/delay';
 
 export interface VkContextMetadata {
   lastMessageId?: number;
@@ -85,6 +92,7 @@ export class VkService {
       alert: (ctx) => this.onAlert(ctx),
       flush: () => Promise.resolve(),
       getUser: (ctx) => this.onGetUser(ctx),
+      broadcast: (ctx) => this.onBroadcast(ctx),
     });
 
     //this.botService.on('get-user-request', (ctx) => this.getUser(ctx));
@@ -252,5 +260,32 @@ export class VkService {
       fromId: ctx.context.from.id,
       text: ctx.action.message.render(),
     });
+  }
+
+  private async onBroadcast(ctx: BotBroadcastAction): Promise<void> {
+    const startTime = Date.now();
+    this.log.log(`Start broadcasting for ${ctx.targetIds.length} targets`);
+
+    let i = 0;
+    for (const targetId of ctx.targetIds) {
+      this.log.log(`Send message to targetId: ${targetId}`);
+
+      const job = await this.vkProducer.send({
+        chatId: targetId,
+        message: ctx.message.render(),
+      });
+      const messageId = await job.finished();
+      i += 1;
+
+      if (messageId > -1 || i != ctx.targetIds.length) {
+        this.log.log(`Message success sent to targetId: ${targetId}. Delay 10 seconds`);
+        await delay(10000);
+      } else {
+        this.log.log(`Message sent failed for targetId: ${targetId}. Delay 30 seconds`);
+        await delay(30000);
+      }
+    }
+
+    this.log.log(`Broadcasting for ${ctx.targetIds.length} targets is ended (${(Date.now() - startTime) / 1000} s)`);
   }
 }

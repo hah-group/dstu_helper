@@ -24,7 +24,7 @@ export class DatabaseModule {
 
           loadStrategy: LoadStrategy.JOINED,
 
-          //debug: true,
+          debug: process.env.ENV == 'dev',
         }),
       ],
       global: true,

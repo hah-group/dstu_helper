@@ -36,10 +36,11 @@ export class ConversationSetupHandler {
       await this.conversationRepository.save(newConversation);
       await message.send(Text.Build('conversation-hello', { provider: message.provider }));
     } else {
+      await conversation.defaultGroup?.init();
       await message.send(
         Text.Build('conversation-comeback-hello', {
           provider: message.provider,
-          defaultGroup: conversation.defaultGroup,
+          defaultGroup: conversation.defaultGroup?.name,
         }),
       );
     }

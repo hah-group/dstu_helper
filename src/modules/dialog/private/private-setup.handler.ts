@@ -26,6 +26,8 @@ import { UserRepository } from '../../user/user.repository';
 import { OnInlineButton } from '../../../framework/bot/decorator/on-inline-button.decorator';
 import * as moment from 'moment';
 import { ScheduleService } from 'src/modules/schedule/schedule.service';
+import { UserProperties } from '../../user/user-properties/user-properties';
+import { delay } from '../../../framework/util/delay';
 
 const MY_GROUP_CHANGE_REGEX = /^\/моя группа ([a-zа-я\d- ]*)/i;
 
@@ -36,6 +38,16 @@ export class PrivateSetupHandler {
     private readonly userRepository: UserRepository,
     private readonly scheduleService: ScheduleService,
   ) {}
+
+  @OnMessage('/сброс', 'private')
+  public async onReset(message: BotMessage): Promise<void> {
+    await message.send(Text.Build('private-reset'), new KeyboardBuilder());
+    message.from.user.properties = new UserProperties();
+    message.from.user.group = undefined;
+    await this.userRepository.save(message.from.user);
+    await delay(1000);
+    await this.onStart(message);
+  }
 
   @OnMessage(['/start', 'старт', '/старт', 'start', 'Начало', 'Начать'], 'private')
   public async onStart(message: BotMessage): Promise<void> {

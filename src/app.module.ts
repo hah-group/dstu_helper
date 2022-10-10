@@ -16,6 +16,7 @@ import { UniversityModule } from './modules/university/university.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
 import { SceneModule } from './framework/scene/scene.module';
 import { VkModule } from './framework/vk/vk.module';
+import { ReleaseModule } from './modules/release/release.module';
 
 @Module({
   imports: [
@@ -50,13 +51,7 @@ import { VkModule } from './framework/vk/vk.module';
     UniversityModule,
     ConversationModule,
     SceneModule,
-    /*
-    VkModule.registerAsync({
-      token: process.env.BOT_TOKEN,
-      groupId: parseInt(process.env.GROUP_ID),
-      confirmation: process.env.CONFIRMATION,
-    }),
-   */
+    ReleaseModule,
   ],
 })
 export class AppModule {
@@ -64,9 +59,5 @@ export class AppModule {
 
   constructor() {
     this.log.log(`Application starting with version: ${process.env.npm_package_version}`);
-  }
-
-  configure(consumer: MiddlewareConsumer): any {
-    //if (process.env.USE_POLLING == 'false') consumer.apply(VkMiddleware).forRoutes('bot/vk');
   }
 }

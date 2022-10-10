@@ -1,5 +1,0 @@
--- CreateEnum
-CREATE TYPE "UserStage" AS ENUM ('INITIAL', 'INPUT_GROUP', 'FILTER_LESSON', 'DONE');
-
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "stage" "UserStage" NOT NULL DEFAULT E'INITIAL';

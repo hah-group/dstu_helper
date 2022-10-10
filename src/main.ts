@@ -13,15 +13,9 @@ process.on('unhandledRejection', function (err) {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: process.env.FLAVOUR == 'dev' ? ['error', 'warn', 'log', 'verbose', 'debug'] : ['error', 'warn', 'log'],
+    logger: process.env.ENV == 'dev' ? ['error', 'warn', 'log', 'verbose', 'debug'] : ['error', 'warn', 'log'],
   });
   await app.listen(3000);
-
-  i18n.configure({
-    locales: ['ru', 'en'],
-    directory: path.join(__dirname, 'locales'),
-  });
-  i18n.setLocale('ru');
 }
 
 bootstrap();

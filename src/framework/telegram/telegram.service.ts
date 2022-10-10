@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
 import {
   CallbackQuery,
@@ -23,11 +23,18 @@ import { BotExtendedContext } from '../bot/type/bot-context.type';
 import { InlineKeyMiddleware } from './middlewares/inline-key.middleware';
 import { BotService } from '../bot/bot.service';
 import { BotIdMiddleware } from './middlewares/bot-id.middleware';
-import { BotAction, BotAlertAction, BotEditAction, BotMessageAction } from '../bot/type/bot-action.type';
+import {
+  BotAction,
+  BotAlertAction,
+  BotBroadcastAction,
+  BotEditAction,
+  BotMessageAction,
+} from '../bot/type/bot-action.type';
 import { TelegramProducer } from './job/telegram.producer';
 import { TelegramKeyboardBuilder } from './telegram-keyboard.builder';
 import { BotPayloadType } from '../bot/type/bot-payload-type.enum';
 import { TelegramJobSend } from './job/telegram-job-data.type';
+import { delay } from '../util/delay';
 
 export type TelegramMessage = TGMessage;
 export type TelegramCallbackQuery = CallbackQuery;
@@ -58,6 +65,7 @@ export type TelegramEditKeyboardOptions = EditMessageReplyMarkupOptions;
 
 @Injectable()
 export class TelegramService {
+  private readonly log = new Logger('Telegram');
   private readonly bot: TelegramBot;
   private readonly middlewares: BaseMiddleware[];
   private readonly providerName = 'telegram';
@@ -85,6 +93,7 @@ export class TelegramService {
       edit: (ctx) => this.onEdit(ctx),
       alert: (ctx) => this.onAlert(ctx),
       flush: (ctx) => this.onFlush(ctx),
+      broadcast: (ctx) => this.onBroadcast(ctx),
     });
 
     /*this.botService.on('send', async (ctx) => {
@@ -235,5 +244,33 @@ export class TelegramService {
     };
     //console.log(inspect(telegramCtx, false, 10, true));
     this.botService.emit('event', newCtx);
+  }
+
+  private async onBroadcast(ctx: BotBroadcastAction): Promise<void> {
+    const startTime = Date.now();
+    this.log.log(`Start broadcasting for ${ctx.targetIds.length} targets`);
+
+    let i = 0;
+    for (const targetId of ctx.targetIds) {
+      this.log.log(`Send message to targetId: ${targetId}`);
+
+      const job = await this.telegramProducer.send({
+        chatId: targetId,
+        message: ctx.message.render(),
+        options: {},
+      });
+      const messageId = await job.finished();
+      i += 1;
+
+      if (messageId > -1 || i != ctx.targetIds.length) {
+        this.log.log(`Message success sent to targetId: ${targetId}. Delay 10 seconds`);
+        await delay(10000);
+      } else {
+        this.log.log(`Message sent failed for targetId: ${targetId}. Delay 30 seconds`);
+        await delay(30000);
+      }
+    }
+
+    this.log.log(`Broadcasting for ${ctx.targetIds.length} targets is ended (${(Date.now() - startTime) / 1000} s)`);
   }
 }

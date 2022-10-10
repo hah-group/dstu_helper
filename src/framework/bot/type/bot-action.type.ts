@@ -25,3 +25,9 @@ export type BotAlertAction = {
   type: 'alert';
   message: Text;
 };
+
+export type BotBroadcastAction = {
+  type: 'broadcast';
+  targetIds: number[];
+  message: Text;
+};
