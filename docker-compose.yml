@@ -3,33 +3,32 @@ version: "3.4"
 services:
   app:
     environment:
-      - BOT_TOKEN
+      - VK_BOT_TOKEN
+      - VK_BOT_ID
       - TG_BOT_TOKEN
-      - GROUP_ID
-      - CONFIRMATION
-      - DATABASE_URL
+      - DATABASE_HOST
+      - DATABASE_USER
+      - DATABASE_PASSWORD
+      - DATABASE_NAME
       - REDIS_HOST
       - REDIS_PORT
-      - CHUNK_SIZE
-      - SYSTEM_NOTIFICATION_TG_USER
-      - FLAVOUR
       - TZ
-      - USE_POLLING
+      - ENV
     image: "registry.mtdl.ru/dstu_helper_app:1.1.0r1"
     ports:
       - "3050:3000"
 
   database:
     environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-      - TZ
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+      TZ: ${TZ}
     image: "postgres"
     volumes:
-      - "dstu_helper_bot_db:/var/lib/postgresql/data/"
+      - "uni_helper_bot_db:/var/lib/postgresql/data/"
     ports:
-      - "13050:5432"
+      - "13060:5432"
 
   redis:
     image: redis
@@ -38,10 +37,10 @@ services:
       - REDIS_PORT
       - TZ
     volumes:
-      - "dstu_helper_bot_redis:/data"
+      - "uni_helper_bot_redis:/data"
 
 volumes:
-  dstu_helper_bot_db:
+  uni_helper_bot_db:
     external: true
-  dstu_helper_bot_redis:
+  uni_helper_bot_redis:
     external: true

@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ConversationService } from './conversation.service';
+import { ConversationRepository } from './conversation.repository';
+import { ConversationEntity } from './conversation.entity';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 
 @Module({
-  providers: [ConversationService],
-  exports: [ConversationService],
+  imports: [MikroOrmModule.forFeature([ConversationEntity])],
+  providers: [ConversationRepository],
+  exports: [ConversationRepository],
 })
 export class ConversationModule {}

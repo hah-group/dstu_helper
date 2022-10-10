@@ -6,6 +6,10 @@
       {
         "include": "locales/*.json",
         "watchAssets": true
+      },
+      {
+        "include": "modules/**/*.hbs",
+        "watchAssets": true
       }
     ]
   }

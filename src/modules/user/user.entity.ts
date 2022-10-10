@@ -1,51 +1,73 @@
-import { Nullable } from '../util/nullable';
-import { SocialSource } from '../bot/type/social.enum';
-import { UserStage } from './user-stage.enum';
-import { UserMenu } from './user-menu/user-menu.entity';
+import { DomainEntity } from '../../framework/database/domain.entity';
+import { Collection, Entity, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { GroupEntity } from '../group/group.entity';
+import { ConversationEntity } from '../conversation/conversation.entity';
+import { UserPropertiesType } from './user-properties/user-properties.type';
+import { UserProperties } from './user-properties/user-properties';
 
-export interface UserArgs {
-  id: number;
-  firstName: string;
-  lastName: string;
-  groupId: Nullable<number>;
-  socialType: SocialSource;
-  stage: UserStage;
-  menu: UserMenu;
-  locale: string;
+export interface UserCreateParams {
+  provider: string;
+  externalId: number;
+  firstName?: string;
+  lastName?: string;
+  nickname?: string;
 }
 
-export class User {
-  public readonly id: number;
-  public readonly firstName: string;
-  public readonly lastName?: string;
-  public readonly socialType: SocialSource;
-  public readonly menu: UserMenu;
-  public locale: string;
-  public groupId: Nullable<number>;
+@Entity({ tableName: 'user' })
+@Unique({ properties: ['externalId', 'provider'] })
+export class UserEntity extends DomainEntity {
+  @Property()
+  public firstName?: string;
 
-  constructor(params: UserArgs) {
-    const { firstName, groupId, id, lastName, socialType, stage, menu, locale } = params;
-    this.id = id;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.groupId = groupId;
-    this.socialType = socialType;
-    this._stage = stage;
-    this.menu = menu;
-    this.locale = locale;
+  @Property()
+  public lastName?: string;
+
+  @Property()
+  public nickname?: string;
+
+  @Property()
+  public provider: string;
+
+  @Property()
+  public externalId: number;
+
+  @ManyToOne()
+  public group?: GroupEntity;
+
+  @ManyToMany()
+  public conversations = new Collection<ConversationEntity>(this);
+
+  @Property({ type: UserPropertiesType, nullable: true })
+  public properties!: UserProperties;
+
+  public readonly isNew: boolean = false;
+
+  constructor(params: UserCreateParams) {
+    super();
+    this.provider = params.provider;
+    this.externalId = params.externalId;
+    this.firstName = params.firstName;
+    this.lastName = params.lastName;
+    this.nickname = params.nickname;
+    this.isNew = true;
   }
 
-  private _stage: UserStage;
+  public async checkConversation(conversation?: ConversationEntity): Promise<boolean> {
+    if (!conversation) return false;
+    if (!this.conversations.isInitialized()) await this.conversations.init();
+    if (!this.conversations.getIdentifiers().includes(conversation.id)) {
+      this.conversations.add(conversation);
+      return true;
+    }
 
-  public get stage(): UserStage {
-    return this._stage;
+    return false;
   }
 
-  public set stage(value) {
-    this._stage = value;
-  }
+  public async checkGroup(conversation?: ConversationEntity): Promise<boolean> {
+    if (!conversation || !conversation.defaultGroup) return false;
+    if (this.group) return false;
 
-  public groupIsInitialized(): boolean {
-    return !!this.groupId;
+    this.group = conversation.defaultGroup;
+    return true;
   }
 }

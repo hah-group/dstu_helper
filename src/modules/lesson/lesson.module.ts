@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
-import { LessonService } from './lesson.service';
+import { LessonRepository } from './lesson.repository';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { LessonEntity } from './lesson.entity';
 
 @Module({
-  providers: [LessonService],
-  exports: [LessonService],
+  imports: [MikroOrmModule.forFeature([LessonEntity])],
+  providers: [LessonRepository],
+  exports: [LessonRepository],
 })
 export class LessonModule {}
