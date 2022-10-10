@@ -1,6 +1,6 @@
 {
   "name": "dstu-helper",
-  "version": "1.1.0r1",
+  "version": "2.0.0",
   "description": "DSTU Helper bot for VK and Telegram",
   "author": "Efim Belyakov (belyakov.efim@gmail.com)",
   "private": true,
