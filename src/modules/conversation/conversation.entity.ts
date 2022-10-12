@@ -9,7 +9,7 @@ export class ConversationEntity extends DomainEntity {
   @Property()
   public provider!: string;
 
-  @Property()
+  @Property({ columnType: 'bigint' })
   public externalId!: number;
 
   @ManyToOne()

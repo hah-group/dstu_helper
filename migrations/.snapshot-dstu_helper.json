@@ -522,12 +522,12 @@
         },
         "external_id": {
           "name": "external_id",
-          "type": "int",
+          "type": "bigint",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "integer"
+          "mappedType": "bigint"
         },
         "default_group_id": {
           "name": "default_group_id",
@@ -648,12 +648,12 @@
         },
         "external_id": {
           "name": "external_id",
-          "type": "int",
+          "type": "bigint",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "integer"
+          "mappedType": "bigint"
         },
         "group_id": {
           "name": "group_id",
