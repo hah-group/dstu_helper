@@ -72,26 +72,28 @@ export class DSTUScheduleProvider extends ScheduleProvider {
       lesson.distance = destination.distance;
 
       const teacherId = rasp['кодПреподавателя'];
-      let teacher = teachers.get(teacherId);
-      if (!teacher && teacherData) {
-        teacher = new TeacherEntity();
-        teacher.id = rasp['кодПреподавателя'];
-        teacher.firstName = teacherData.firstName;
-        teacher.lastName = teacherData.lastName;
-        teacher.middleName = teacherData.middleName;
-        teacher.degreeRaw = teacherData.degreeRaw;
-        teachers.set(teacher.id, teacher);
-        result.teachers.push(teacher);
-      } else if (!teacherData) {
-        teacher = new TeacherEntity();
-        teacher.id = -1;
-        teacher.firstName = 'Преподаватель';
-        teacher.lastName = 'Неизвестный';
-        teachers.set(teacher.id, teacher);
-        result.teachers.push(teacher);
-      }
+      if (teacherId) {
+        let teacher = teachers.get(teacherId);
+        if (!teacher && teacherData) {
+          teacher = new TeacherEntity();
+          teacher.id = rasp['кодПреподавателя'];
+          teacher.firstName = teacherData.firstName;
+          teacher.lastName = teacherData.lastName;
+          teacher.middleName = teacherData.middleName;
+          teacher.degreeRaw = teacherData.degreeRaw;
+          teachers.set(teacher.id, teacher);
+          result.teachers.push(teacher);
+        } else if (!teacherData) {
+          teacher = new TeacherEntity();
+          teacher.id = -1;
+          teacher.firstName = 'Преподаватель';
+          teacher.lastName = 'Неизвестный';
+          teachers.set(teacher.id, teacher);
+          result.teachers.push(teacher);
+        }
 
-      lesson.teacher = <TeacherEntity>teacher;
+        lesson.teacher = <TeacherEntity>teacher;
+      }
 
       result.lessons.push(lesson);
     }

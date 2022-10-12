@@ -378,7 +378,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "mappedType": "integer"
         },
         "subgroup": {
@@ -476,6 +476,7 @@
             "id"
           ],
           "referencedTableName": "public.teacher",
+          "deleteRule": "set null",
           "updateRule": "cascade"
         }
       }

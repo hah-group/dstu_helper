@@ -35,7 +35,7 @@ export class LessonEntity extends DomainEntity {
   @Property()
   public name!: string;
   @ManyToOne()
-  public teacher!: TeacherEntity;
+  public teacher?: TeacherEntity;
   @Property()
   public subgroup = -1;
   @Property()
@@ -59,7 +59,7 @@ export class LessonEntity extends DomainEntity {
       entity.group.isEquals(this.group),
       entity.start.getTime() == this.start.getTime(),
       entity.subgroup == this.subgroup,
-      entity.teacher.isEquals(this.teacher),
+      entity.teacher && this.teacher ? entity.teacher.isEquals(this.teacher) : true,
     ];
     return checks.every((check) => check);
   }
