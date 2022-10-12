@@ -69,6 +69,7 @@ export class BotService extends EventEmitter {
   }
 
   public async onEvent(ctx: BotContext): Promise<void> {
+    if (!ctx.payload || !ctx.payload.type) return;
     for (const handler of this.handlers.values()) {
       const result = handler.checkers.every((checker) => checker.check(ctx.payload, ctx));
       if (result) {
