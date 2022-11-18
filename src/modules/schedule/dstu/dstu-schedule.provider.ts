@@ -109,7 +109,9 @@ export class DSTUScheduleProvider extends ScheduleProvider {
 
     const groups = await this.getGroups();
     const result = groups.find((record) => {
-      return prettyQuery.indexOf(record.name.toUpperCase()) == 0;
+      let recordName = record.name.toUpperCase();
+      recordName = recordName.replace(/[ \-]*/gi, '');
+      return prettyQuery.indexOf(recordName) == 0;
     });
     this.log.log(`Group found result: ${!!result}`);
 

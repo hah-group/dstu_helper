@@ -29,7 +29,7 @@ import { ScheduleService } from 'src/modules/schedule/schedule.service';
 import { UserProperties } from '../../user/user-properties/user-properties';
 import { delay } from '../../../framework/util/delay';
 
-const MY_GROUP_CHANGE_REGEX = /^\/моя группа ([a-zа-я\d- ]*)/i;
+const MY_GROUP_CHANGE_REGEX = /^\/моя группа ([a-zа-я\d\- ]*)/i;
 
 @Injectable()
 export class PrivateSetupHandler {
