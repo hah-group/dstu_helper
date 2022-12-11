@@ -5,6 +5,7 @@ services:
     environment:
       - VK_BOT_TOKEN
       - VK_BOT_ID
+      - VK_BOT_CONFIRMATION
       - TG_BOT_TOKEN
       - DATABASE_HOST
       - DATABASE_USER
