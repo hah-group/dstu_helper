@@ -27,6 +27,7 @@ export class RequestConsumer {
         if (!(e instanceof Error)) return;
         const nextAttempt = 1000 + 1000 * i;
         this.log.warn(`Request failed, reason: ${e.name}. Next attempt after ${nextAttempt} ms (Attempt ${i + 1})`);
+        this.log.warn(e.stack);
         await delay(nextAttempt);
       }
     }
