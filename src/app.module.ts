@@ -41,6 +41,7 @@ import { ReleaseModule } from './modules/release/release.module';
     VkModule.registerAsync({
       token: process.env.VK_BOT_TOKEN || '',
       groupId: parseInt(process.env.VK_BOT_ID || '1'),
+      confirmation: process.env.VK_BOT_CONFIRMATION,
     }),
     DialogModule,
     ScheduleModule,

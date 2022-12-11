@@ -59,6 +59,7 @@ export class VkService {
     this.bot = new VkBot({
       token: options.token,
       group_id: options.groupId,
+      confirmation: options.confirmation,
     });
 
     this.bot.use(async (ctx) => {
@@ -71,10 +72,10 @@ export class VkService {
       }
     });
 
-    this.bot.startPolling((err) => {
+    /*this.bot.startPolling((err) => {
       if (err) console.log(err);
       return {};
-    });
+    });*/
 
     this.middlewares = [
       new ProviderMiddleware(this.providerName),
