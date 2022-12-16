@@ -13,6 +13,14 @@
     "incremental": true,
     "skipLibCheck": true,
     "strict": true,
-    "noImplicitReturns": false
+    "noImplicitReturns": false,
+    "paths": {
+      "@dstu_helper/common": [
+        "libs/common/src"
+      ],
+      "@dstu_helper/common/*": [
+        "libs/common/src/*"
+      ]
+    }
   }
 }

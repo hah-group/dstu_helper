@@ -35,8 +35,8 @@
           "length": 6,
           "mappedType": "datetime"
         },
-        "first_name": {
-          "name": "first_name",
+        "corpus": {
+          "name": "corpus",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
@@ -44,8 +44,8 @@
           "nullable": true,
           "mappedType": "string"
         },
-        "last_name": {
-          "name": "last_name",
+        "class_room": {
+          "name": "class_room",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
@@ -53,30 +53,21 @@
           "nullable": true,
           "mappedType": "string"
         },
-        "middle_name": {
-          "name": "middle_name",
-          "type": "varchar(255)",
+        "distance": {
+          "name": "distance",
+          "type": "boolean",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": true,
-          "mappedType": "string"
-        },
-        "degree_raw": {
-          "name": "degree_raw",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "string"
+          "nullable": false,
+          "mappedType": "boolean"
         }
       },
-      "name": "teacher",
+      "name": "audience",
       "schema": "public",
       "indexes": [
         {
-          "keyName": "teacher_pkey",
+          "keyName": "audience_pkey",
           "columnNames": [
             "id"
           ],
@@ -127,22 +118,31 @@
           "primary": false,
           "nullable": false,
           "mappedType": "string"
+        },
+        "external_id": {
+          "name": "external_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
         }
       },
-      "name": "university",
+      "name": "faculty",
       "schema": "public",
       "indexes": [
         {
           "columnNames": [
-            "name"
+            "external_id"
           ],
           "composite": false,
-          "keyName": "university_name_unique",
+          "keyName": "faculty_external_id_unique",
           "primary": false,
           "unique": true
         },
         {
-          "keyName": "university_pkey",
+          "keyName": "faculty_pkey",
           "columnNames": [
             "id"
           ],
@@ -182,16 +182,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "length": 6,
-          "mappedType": "datetime"
-        },
-        "last_update_at": {
-          "name": "last_update_at",
-          "type": "timestamptz(0)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
           "length": 6,
           "mappedType": "datetime"
         },
@@ -228,8 +218,8 @@
           ],
           "mappedType": "enum"
         },
-        "university_id": {
-          "name": "university_id",
+        "faculty_id": {
+          "name": "faculty_id",
           "type": "int",
           "unsigned": false,
           "autoincrement": false,
@@ -242,12 +232,11 @@
       "schema": "public",
       "indexes": [
         {
-          "keyName": "group_external_id_university_id_unique",
           "columnNames": [
-            "external_id",
-            "university_id"
+            "external_id"
           ],
-          "composite": true,
+          "composite": false,
+          "keyName": "group_external_id_unique",
           "primary": false,
           "unique": true
         },
@@ -263,19 +252,177 @@
       ],
       "checks": [],
       "foreignKeys": {
-        "group_university_id_foreign": {
-          "constraintName": "group_university_id_foreign",
+        "group_faculty_id_foreign": {
+          "constraintName": "group_faculty_id_foreign",
           "columnNames": [
-            "university_id"
+            "faculty_id"
           ],
           "localTableName": "public.group",
           "referencedColumnNames": [
             "id"
           ],
-          "referencedTableName": "public.university",
-          "updateRule": "cascade"
+          "referencedTableName": "public.faculty"
         }
       }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        }
+      },
+      "name": "subject",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "subject_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "string"
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "middle_name": {
+          "name": "middle_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "string"
+        },
+        "degree_raw": {
+          "name": "degree_raw",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "string"
+        },
+        "external_id": {
+          "name": "external_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        }
+      },
+      "name": "teacher",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "external_id"
+          ],
+          "composite": false,
+          "keyName": "teacher_external_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "teacher_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {}
     },
     {
       "columns": {
@@ -350,7 +497,8 @@
             "PHYSICAL_EDUCATION",
             "LABORATORY",
             "EXAMINATION",
-            "EXAM_WITHOUT_MARK"
+            "EXAM_WITHOUT_MARK",
+            "NON_TYPE"
           ],
           "mappedType": "enum"
         },
@@ -363,14 +511,14 @@
           "nullable": false,
           "mappedType": "integer"
         },
-        "name": {
-          "name": "name",
-          "type": "varchar(255)",
+        "subject_id": {
+          "name": "subject_id",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "teacher_id": {
           "name": "teacher_id",
@@ -399,32 +547,14 @@
           "nullable": true,
           "mappedType": "string"
         },
-        "corpus": {
-          "name": "corpus",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "string"
-        },
-        "class_room": {
-          "name": "class_room",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "string"
-        },
-        "distance": {
-          "name": "distance",
-          "type": "boolean",
+        "audience_id": {
+          "name": "audience_id",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "boolean"
+          "mappedType": "integer"
         }
       },
       "name": "lesson",
@@ -466,6 +596,18 @@
           "referencedTableName": "public.group",
           "updateRule": "cascade"
         },
+        "lesson_subject_id_foreign": {
+          "constraintName": "lesson_subject_id_foreign",
+          "columnNames": [
+            "subject_id"
+          ],
+          "localTableName": "public.lesson",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.subject",
+          "updateRule": "cascade"
+        },
         "lesson_teacher_id_foreign": {
           "constraintName": "lesson_teacher_id_foreign",
           "columnNames": [
@@ -478,304 +620,17 @@
           "referencedTableName": "public.teacher",
           "deleteRule": "set null",
           "updateRule": "cascade"
-        }
-      }
-    },
-    {
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "unsigned": true,
-          "autoincrement": true,
-          "primary": true,
-          "nullable": false,
-          "mappedType": "integer"
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamptz(0)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 6,
-          "mappedType": "datetime"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamptz(0)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 6,
-          "mappedType": "datetime"
-        },
-        "provider": {
-          "name": "provider",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "string"
-        },
-        "external_id": {
-          "name": "external_id",
-          "type": "bigint",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "bigint"
-        },
-        "default_group_id": {
-          "name": "default_group_id",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "integer"
-        }
-      },
-      "name": "conversation",
-      "schema": "public",
-      "indexes": [
-        {
-          "keyName": "conversation_provider_external_id_unique",
+        "lesson_audience_id_foreign": {
+          "constraintName": "lesson_audience_id_foreign",
           "columnNames": [
-            "provider",
-            "external_id"
+            "audience_id"
           ],
-          "composite": true,
-          "primary": false,
-          "unique": true
-        },
-        {
-          "keyName": "conversation_pkey",
-          "columnNames": [
-            "id"
-          ],
-          "composite": false,
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "foreignKeys": {
-        "conversation_default_group_id_foreign": {
-          "constraintName": "conversation_default_group_id_foreign",
-          "columnNames": [
-            "default_group_id"
-          ],
-          "localTableName": "public.conversation",
+          "localTableName": "public.lesson",
           "referencedColumnNames": [
             "id"
           ],
-          "referencedTableName": "public.group",
-          "deleteRule": "set null",
-          "updateRule": "cascade"
-        }
-      }
-    },
-    {
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "unsigned": true,
-          "autoincrement": true,
-          "primary": true,
-          "nullable": false,
-          "mappedType": "integer"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamptz(0)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 6,
-          "mappedType": "datetime"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamptz(0)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 6,
-          "mappedType": "datetime"
-        },
-        "first_name": {
-          "name": "first_name",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "string"
-        },
-        "last_name": {
-          "name": "last_name",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "string"
-        },
-        "nickname": {
-          "name": "nickname",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "string"
-        },
-        "provider": {
-          "name": "provider",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "string"
-        },
-        "external_id": {
-          "name": "external_id",
-          "type": "bigint",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "bigint"
-        },
-        "group_id": {
-          "name": "group_id",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "integer"
-        },
-        "properties": {
-          "name": "properties",
-          "type": "json",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "json"
-        }
-      },
-      "name": "user",
-      "schema": "public",
-      "indexes": [
-        {
-          "keyName": "user_external_id_provider_unique",
-          "columnNames": [
-            "external_id",
-            "provider"
-          ],
-          "composite": true,
-          "primary": false,
-          "unique": true
-        },
-        {
-          "keyName": "user_pkey",
-          "columnNames": [
-            "id"
-          ],
-          "composite": false,
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "foreignKeys": {
-        "user_group_id_foreign": {
-          "constraintName": "user_group_id_foreign",
-          "columnNames": [
-            "group_id"
-          ],
-          "localTableName": "public.user",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.group",
-          "deleteRule": "set null",
-          "updateRule": "cascade"
-        }
-      }
-    },
-    {
-      "columns": {
-        "user_entity_id": {
-          "name": "user_entity_id",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "integer"
-        },
-        "conversation_entity_id": {
-          "name": "conversation_entity_id",
-          "type": "int",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "integer"
-        }
-      },
-      "name": "user_conversations",
-      "schema": "public",
-      "indexes": [
-        {
-          "keyName": "user_conversations_pkey",
-          "columnNames": [
-            "user_entity_id",
-            "conversation_entity_id"
-          ],
-          "composite": true,
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "foreignKeys": {
-        "user_conversations_user_entity_id_foreign": {
-          "constraintName": "user_conversations_user_entity_id_foreign",
-          "columnNames": [
-            "user_entity_id"
-          ],
-          "localTableName": "public.user_conversations",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.user",
-          "deleteRule": "cascade",
-          "updateRule": "cascade"
-        },
-        "user_conversations_conversation_entity_id_foreign": {
-          "constraintName": "user_conversations_conversation_entity_id_foreign",
-          "columnNames": [
-            "conversation_entity_id"
-          ],
-          "localTableName": "public.user_conversations",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.conversation",
-          "deleteRule": "cascade",
+          "referencedTableName": "public.audience",
           "updateRule": "cascade"
         }
       }

@@ -1,16 +1,45 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "apps/dstu-helper/src",
   "compilerOptions": {
     "assets": [
-      {
-        "include": "locales/*.json",
-        "watchAssets": true
-      },
       {
         "include": "modules/**/*.hbs",
         "watchAssets": true
       }
-    ]
+    ],
+    "webpack": false,
+    "tsConfigPath": "apps/dstu-helper/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/dstu-helper",
+  "projects": {
+    "dstu-helper": {
+      "type": "application",
+      "root": "apps/dstu-helper",
+      "entryFile": "main",
+      "sourceRoot": "apps/dstu-helper/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/dstu-helper/tsconfig.app.json"
+      }
+    },
+    "common": {
+      "type": "library",
+      "root": "libs/common",
+      "entryFile": "index",
+      "sourceRoot": "libs/common/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common/tsconfig.lib.json"
+      }
+    },
+    "schedule-service": {
+      "type": "application",
+      "root": "apps/schedule-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/schedule-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/schedule-service/tsconfig.app.json"
+      }
+    }
   }
 }
