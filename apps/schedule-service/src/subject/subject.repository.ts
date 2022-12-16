@@ -1,11 +1,10 @@
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CoreV2Repository } from '@dstu_helper/common/repository/core-v2.repository';
 import { SubjectEntity } from './subject.entity';
-import { MikroORM } from '@mikro-orm/core';
-import { CoreRepository } from '@dstu_helper/common';
 
-export class SubjectRepository extends CoreRepository<SubjectEntity> {
-  constructor(@InjectRepository(SubjectEntity) repository: EntityRepository<SubjectEntity>, orm: MikroORM) {
-    super(repository, orm);
+export class SubjectRepository extends CoreV2Repository<SubjectEntity> {
+  constructor(@InjectRepository(SubjectEntity) repository: Repository<SubjectEntity>) {
+    super(repository);
   }
 }

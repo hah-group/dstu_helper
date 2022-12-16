@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { GroupEntity } from './group.entity';
 import { GroupRepository } from './group.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { LessonEntity } from '../lesson/lesson.entity';
+import { FacultyEntity } from '../faculty/faculty.entity';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([GroupEntity])],
+  imports: [TypeOrmModule.forFeature([GroupEntity, FacultyEntity])],
   providers: [GroupRepository],
   exports: [GroupRepository],
 })

@@ -1,15 +1,14 @@
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CoreV2Repository } from '@dstu_helper/common/repository/core-v2.repository';
 import { GroupEntity } from './group.entity';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
-import { CoreRepository } from '@dstu_helper/common';
 
-export class GroupRepository extends CoreRepository<GroupEntity> {
-  constructor(@InjectRepository(GroupEntity) repository: EntityRepository<GroupEntity>, orm: MikroORM) {
-    super(repository, orm);
+export class GroupRepository extends CoreV2Repository<GroupEntity> {
+  constructor(@InjectRepository(GroupEntity) repository: Repository<GroupEntity>) {
+    super(repository);
   }
 
-  @UseRequestContext()
+  /*@UseRequestContext()
   public async upsert(entity: GroupEntity[]): Promise<void> {
     await this.orm.em.upsertMany(GroupEntity, entity);
   }
@@ -44,5 +43,5 @@ export class GroupRepository extends CoreRepository<GroupEntity> {
         id: entities.map((entity) => entity.id),
       })
       .execute();
-  }
+  }*/
 }

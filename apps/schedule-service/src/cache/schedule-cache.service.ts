@@ -4,6 +4,7 @@ import { GroupRepository } from '../group/group.repository';
 import { lodash, Time } from '@dstu_helper/common';
 import { LessonRepository } from '../lesson/lesson.repository';
 import { GroupStatus } from '../group/group-status.enum';
+import { FacultyRepository } from '../faculty/faculty.repository';
 
 export const GROUP_CHUNK_SIZE = 50;
 
@@ -13,21 +14,34 @@ export class ScheduleCacheService {
     private readonly scheduleProviderService: ScheduleProviderService,
     private readonly groupRepository: GroupRepository,
     private readonly lessonRepository: LessonRepository,
+    private readonly facultyRepository: FacultyRepository,
   ) {}
 
   public async updateGroupList(): Promise<void> {
     const existGroups = await this.groupRepository.findAll();
+    const existFaculties = await this.facultyRepository.findAll();
+    const existFaculty = lodash.uniqBy(existFaculties, (record) => record.externalId);
 
-    const groups = await this.scheduleProviderService.getGroupList(existGroups);
-    /*const t = lodash.groupBy(groups, (group) => group.faculty.externalId);
-    Object.keys(t).map((rec) => {
-      if (t[rec].length > 1) console.log(t[rec]);
-    });
-*/
-    /*const groupsToDelete = lodash.differenceBy(existGroups, groups, (record) => record.externalId);
-    await this.groupRepository.deleteMany(groupsToDelete);*/
+    const groups = await this.scheduleProviderService.mergeGroupList(existGroups, existFaculty);
+    const groupFaculties = lodash.uniqBy(
+      groups.map((record) => record.faculty),
+      (record) => record.externalId,
+    );
 
-    await this.groupRepository.upsert(groups);
+    const facultiesToCreate = lodash.differenceBy(groupFaculties, existFaculty, (record) => record.externalId);
+    await this.facultyRepository.save(facultiesToCreate);
+
+    const groupFacultiesMap = lodash.keyBy(groupFaculties, (record) => record.externalId);
+    groups
+      .filter((record) => !record.faculty.isSaved)
+      .forEach((record) => {
+        record.faculty = groupFacultiesMap[record.faculty.externalId];
+      });
+
+    const groupsToDelete = lodash.differenceBy(existGroups, groups, (record) => record.externalId);
+    await this.groupRepository.delete(groupsToDelete);
+
+    await this.groupRepository.save(groups);
   }
 
   public async updateSchedule(): Promise<void> {

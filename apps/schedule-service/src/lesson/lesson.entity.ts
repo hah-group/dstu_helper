@@ -1,17 +1,17 @@
-import { Entity, Enum, Filter, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Column, Entity, JoinTable, ManyToOne } from 'typeorm';
 import { LessonType } from './lesson-type.enum';
 import { TeacherEntity } from '../teacher/teacher.entity';
 import { GroupEntity } from '../group/group.entity';
 import * as moment from 'moment';
-import { DateTime, DomainEntity } from '@dstu_helper/common';
+import { DateTime, DomainV2Entity } from '@dstu_helper/common';
 import { SubjectEntity } from '../subject/subject.entity';
 import { AudienceEntity } from '../audience/audience.entity';
 import DSTULessonParser from './parser/lesson.parser';
 import { GetLessonId } from './lesson-id';
 import { ApiDSTUScheduleItem } from '../schedule-provider/type/api-response-schedule.dstu.type';
 
-@Entity({ tableName: 'lesson' })
-@Unique({ properties: ['group', 'start', 'subgroup', 'teacher'] })
+@Entity({ name: 'lesson' })
+/*@Unique({ properties: ['group', 'start', 'subgroup', 'teacher'] })
 @Filter({
   name: 'atDateFilter',
   cond: (args: { date: DateTime }) => {
@@ -24,27 +24,40 @@ import { ApiDSTUScheduleItem } from '../schedule-provider/type/api-response-sche
       },
     };
   },
-})
-export class LessonEntity extends DomainEntity {
-  @ManyToOne()
+})*/
+export class LessonEntity extends DomainV2Entity {
+  @ManyToOne(() => GroupEntity, (entity) => entity.lessons, { eager: true })
+  @JoinTable()
   public group!: GroupEntity;
-  @Property()
+
+  @Column('timestamp with time zone')
   public start!: Date;
-  @Property()
+
+  @Column('time with time zone')
   public end!: Date;
-  @Enum(() => LessonType)
+
+  @Column({ type: 'varchar', length: 32 })
   public type!: LessonType;
-  @Property()
+
+  @Column()
   public order!: number;
-  @ManyToOne()
+
+  @ManyToOne(() => SubjectEntity, (entity) => entity.lessons, { eager: true })
+  @JoinTable()
   public subject!: SubjectEntity;
-  @ManyToOne()
+
+  @ManyToOne(() => TeacherEntity, (entity) => entity.lessons, { nullable: true, eager: true })
+  @JoinTable()
   public teacher?: TeacherEntity;
-  @Property()
+
+  @Column('int')
   public subgroup = -1;
-  @Property()
+
+  @Column({ nullable: true })
   public subsection?: string;
-  @ManyToOne()
+
+  @ManyToOne(() => AudienceEntity, (entity) => entity.lessons, { eager: true })
+  @JoinTable()
   public audience!: AudienceEntity;
 
   /*public getDestination(): string | undefined {
@@ -54,11 +67,11 @@ export class LessonEntity extends DomainEntity {
     if (this.classRoom) return this.classRoom;
   }*/
 
-  constructor(data: ApiDSTUScheduleItem, group: GroupEntity) {
-    super();
-
-    this.update(data);
-    this.group = group;
+  public static Create(data: ApiDSTUScheduleItem, group: GroupEntity): LessonEntity {
+    const entity = new this();
+    entity.update(data);
+    entity.group = group;
+    return entity;
   }
 
   public get uniqueId(): string {
@@ -115,13 +128,13 @@ export class LessonEntity extends DomainEntity {
     const teacherInfo = DSTULessonParser.ParseTeacher(data['преподаватель'], data['должность']);
     if (!teacherInfo) return;
 
-    if (!this.teacher) this.teacher = new TeacherEntity(teacherInfo, data['кодПреподавателя']);
+    if (!this.teacher) this.teacher = TeacherEntity.Create(teacherInfo, data['кодПреподавателя']);
     else this.teacher.update(teacherInfo, data['кодПреподавателя']);
   }
 
   private updateAudience(data: ApiDSTUScheduleItem): void {
     const audienceInfo = DSTULessonParser.ParseAudience(data['аудитория']);
-    if (!this.audience) this.audience = new AudienceEntity(audienceInfo);
+    if (!this.audience) this.audience = AudienceEntity.Create(audienceInfo);
     else this.audience.update(audienceInfo);
   }
 }

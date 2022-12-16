@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { SubjectEntity } from './subject.entity';
 import { SubjectRepository } from './subject.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([SubjectEntity])],
+  imports: [TypeOrmModule.forFeature([SubjectEntity])],
   providers: [SubjectRepository],
   exports: [SubjectRepository],
 })

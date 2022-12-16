@@ -1,32 +1,33 @@
-import { Cascade, Collection, Entity, OneToMany, Property, Unique } from '@mikro-orm/core';
+import { Column, Entity, JoinTable, OneToMany } from 'typeorm';
 import { LessonEntity } from '../lesson/lesson.entity';
-import { DomainEntity } from '@dstu_helper/common';
+import { DomainV2Entity } from '@dstu_helper/common';
 import { TeacherInfo } from '../lesson/parser/lesson.parser';
 
-@Entity({ tableName: 'teacher' })
-export class TeacherEntity extends DomainEntity {
-  @Property()
+@Entity({ name: 'teacher' })
+export class TeacherEntity extends DomainV2Entity {
+  @Column({ nullable: true })
   public firstName?: string;
 
-  @Property()
+  @Column()
   public lastName!: string;
 
-  @Property()
+  @Column({ nullable: true })
   public middleName?: string;
 
-  @Property()
+  @Column({ nullable: true })
   public degreeRaw?: string;
 
-  @Property()
-  @Unique()
+  @Column({ unique: true })
   public externalId!: number;
 
-  @OneToMany(() => LessonEntity, 'teacher', { cascade: [Cascade.MERGE] })
-  public lessons = new Collection<LessonEntity>(this);
+  @OneToMany(() => LessonEntity, (entity) => entity.teacher)
+  @JoinTable()
+  public lessons!: Promise<LessonEntity[]>;
 
-  constructor(data: TeacherInfo, externalId: number) {
-    super();
-    this.update(data, externalId);
+  public static Create(data: TeacherInfo, externalId: number): TeacherEntity {
+    const entity = new this();
+    entity.update(data, externalId);
+    return entity;
   }
 
   public isEquals(entity: TeacherEntity): boolean {

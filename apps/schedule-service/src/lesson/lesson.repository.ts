@@ -1,15 +1,14 @@
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CoreV2Repository } from '@dstu_helper/common/repository/core-v2.repository';
 import { LessonEntity } from './lesson.entity';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
-import { CoreRepository } from '@dstu_helper/common';
 
-export class LessonRepository extends CoreRepository<LessonEntity> {
-  constructor(@InjectRepository(LessonEntity) repository: EntityRepository<LessonEntity>, orm: MikroORM) {
-    super(repository, orm);
+export class LessonRepository extends CoreV2Repository<LessonEntity> {
+  constructor(@InjectRepository(LessonEntity) repository: Repository<LessonEntity>) {
+    super(repository);
   }
 
-  @UseRequestContext()
+  /*@UseRequestContext()
   public async upsertMany(entities: LessonEntity[]): Promise<void> {
     await this.queryBuilder()
       .insert(entities)
@@ -25,5 +24,5 @@ export class LessonRepository extends CoreRepository<LessonEntity> {
         id: entities.map((entity) => entity.id),
       })
       .execute();
-  }
+  }*/
 }

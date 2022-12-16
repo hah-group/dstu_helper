@@ -1,11 +1,10 @@
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
+import { InjectRepository } from '@nestjs/typeorm';
 import { AudienceEntity } from './audience.entity';
-import { MikroORM } from '@mikro-orm/core';
-import { CoreRepository } from '@dstu_helper/common';
+import { Repository } from 'typeorm';
+import { CoreV2Repository } from '@dstu_helper/common/repository/core-v2.repository';
 
-export class AudienceRepository extends CoreRepository<AudienceEntity> {
-  constructor(@InjectRepository(AudienceEntity) repository: EntityRepository<AudienceEntity>, orm: MikroORM) {
-    super(repository, orm);
+export class AudienceRepository extends CoreV2Repository<AudienceEntity> {
+  constructor(@InjectRepository(AudienceEntity) repository: Repository<AudienceEntity>) {
+    super(repository);
   }
 }

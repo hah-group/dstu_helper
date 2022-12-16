@@ -24,24 +24,28 @@ export class ScheduleProviderService {
     return Moment(response.data.info.dateUploadingRasp).toDate();
   }
 
-  public async getGroupList(existGroups: GroupEntity[]): Promise<GroupEntity[]> {
+  public async mergeGroupList(existGroups: GroupEntity[], existFaculty: FacultyEntity[]): Promise<GroupEntity[]> {
     const response: ApiResponseGroupDSTU = await this.sendRequest('GET', 'raspGrouplist', {
       year: this.getStudyYear(),
     });
 
     const existsGroupMap = lodash.keyBy(existGroups, (record) => record.externalId);
+    const existFacultyMap = lodash.keyBy(existFaculty, (record) => record.externalId);
 
     return response.data.map((record) => {
       const group = existsGroupMap[record.id];
       if (!group) {
-        const faculty = new FacultyEntity(record.facultyID, record.facul);
-        return new GroupEntity(record.id, record.name, faculty);
+        let faculty;
+        if (existFacultyMap[record.facultyID]) faculty = existFacultyMap[record.facultyID];
+        else faculty = FacultyEntity.Create(record.facultyID, record.facul);
+
+        return GroupEntity.Create(record.id, record.name, faculty);
       }
 
       group.name = record.name;
       group.externalId = record.id;
       group.faculty.name = record.facul;
-      group.faculty.id = record.facultyID;
+      group.faculty.externalId = record.facultyID;
       return group;
     });
   }
@@ -70,7 +74,7 @@ export class ScheduleProviderService {
         existLesson.update(scheduleItem);
         return existLesson;
       } else {
-        return new LessonEntity(scheduleItem, group);
+        return LessonEntity.Create(scheduleItem, group);
       }
     });
   }

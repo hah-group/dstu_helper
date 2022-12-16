@@ -1,23 +1,27 @@
-import { Collection, Entity, OneToMany, Property } from '@mikro-orm/core';
-import { DomainEntity } from '@dstu_helper/common';
 import { LessonEntity } from '../lesson/lesson.entity';
 import { AudienceInfo } from '../lesson/parser/lesson.parser';
+import { DomainV2Entity } from '@dstu_helper/common';
+import { Column, Entity, JoinTable, OneToMany } from 'typeorm';
 
-@Entity({ tableName: 'audience' })
-export class AudienceEntity extends DomainEntity {
-  @Property()
+@Entity({ name: 'audience' })
+export class AudienceEntity extends DomainV2Entity {
+  @Column({ nullable: true })
   public corpus?: string;
-  @Property()
+
+  @Column({ nullable: true })
   public classRoom?: string;
-  @Property()
+
+  @Column()
   public distance!: boolean;
 
-  @OneToMany(() => LessonEntity, 'audience')
-  public lessons = new Collection<LessonEntity>(this);
+  @OneToMany(() => LessonEntity, (entity) => entity.audience)
+  @JoinTable()
+  public lessons!: Promise<LessonEntity[]>;
 
-  constructor(data: AudienceInfo) {
-    super();
-    this.update(data);
+  public static Create(data: AudienceInfo): AudienceEntity {
+    const entity = new this();
+    entity.update(data);
+    return entity;
   }
 
   public update(data: AudienceInfo): void {

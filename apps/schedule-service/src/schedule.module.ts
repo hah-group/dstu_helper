@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseModule } from '@dstu_helper/common';
+import { DatabaseV2Module } from '@dstu_helper/common';
 import { BullModule } from '@nestjs/bull';
 import { ScheduleModule as CronModule } from '@nestjs/schedule/dist/schedule.module';
 import { ScheduleProviderModule } from './schedule-provider/schedule-provider.module';
@@ -10,7 +10,7 @@ import { ScheduleCacheModule } from './cache/schedule-cache.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    DatabaseModule.forRoot(),
+    DatabaseV2Module.forRoot('schedule_service'),
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST,

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TeacherRepository } from './teacher.repository';
 import { TeacherEntity } from './teacher.entity';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([TeacherEntity])],
+  imports: [TypeOrmModule.forFeature([TeacherEntity])],
   providers: [TeacherRepository],
   exports: [TeacherRepository],
 })

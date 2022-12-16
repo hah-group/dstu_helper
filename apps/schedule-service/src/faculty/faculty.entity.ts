@@ -1,23 +1,23 @@
-import { Collection, Entity, OneToMany, Property, Unique } from '@mikro-orm/core';
-import { DomainEntity } from '@dstu_helper/common';
+import { Column, Entity, Index, JoinTable, OneToMany } from 'typeorm';
+import { DomainV2Entity } from '@dstu_helper/common';
 import { GroupEntity } from '../group/group.entity';
 
-@Entity({ tableName: 'faculty' })
-export class FacultyEntity extends DomainEntity {
-  @Property()
+@Entity({ name: 'faculty' })
+export class FacultyEntity extends DomainV2Entity {
+  @Column()
   public name!: string;
 
-  @Property()
-  @Unique()
+  @Column({ unique: true })
   public externalId!: number;
 
-  @OneToMany(() => GroupEntity, 'faculty')
-  public groups = new Collection<GroupEntity>(this);
+  @OneToMany(() => GroupEntity, (entity) => entity.faculty)
+  @JoinTable()
+  public groups!: Promise<GroupEntity[]>;
 
-  constructor(externalId: number, name: string) {
-    super();
-
-    this.externalId = externalId;
-    this.name = name;
+  public static Create(externalId: number, name: string): FacultyEntity {
+    const entity = new this();
+    entity.externalId = externalId;
+    entity.name = name;
+    return entity;
   }
 }
