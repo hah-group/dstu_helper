@@ -22,7 +22,7 @@ export class DatabaseV2Module {
           autoLoadEntities: true,
 
           applicationName: applicationName,
-          logging: process.env.ENV == 'dev' ? 'all' : ['warn', 'error'],
+          //logging: process.env.ENV == 'dev' ? 'all' : ['warn', 'error'],
         }),
         /*MikroOrmModule.forRoot({
           entities: [path.join(process.cwd(), './dist/apps/schedule-service/!**!/!*.entity.js')],

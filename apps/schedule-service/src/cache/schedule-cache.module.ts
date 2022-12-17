@@ -5,9 +5,20 @@ import { GroupModule } from '../group/group.module';
 import { LessonModule } from '../lesson/lesson.module';
 import { ScheduleProviderModule } from '../schedule-provider/schedule-provider.module';
 import { FacultyModule } from '../faculty/faculty.module';
+import { AudienceModule } from '../audience/audience.module';
+import { SubjectModule } from '../subject/subject.module';
+import { TeacherModule } from '../teacher/teacher.module';
 
 @Module({
-  imports: [GroupModule, LessonModule, FacultyModule, ScheduleProviderModule],
+  imports: [
+    GroupModule,
+    LessonModule,
+    FacultyModule,
+    AudienceModule,
+    SubjectModule,
+    TeacherModule,
+    ScheduleProviderModule,
+  ],
   providers: [ScheduleCacheService, ScheduleCronService],
   exports: [ScheduleCacheService],
 })

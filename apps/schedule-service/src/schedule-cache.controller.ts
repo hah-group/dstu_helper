@@ -19,6 +19,6 @@ export class ScheduleCacheController implements OnApplicationBootstrap {
 
   public async onApplicationBootstrap(): Promise<void> {
     await delay(5000);
-    await this.scheduleCacheService.updateGroupList();
+    await this.scheduleCacheService.updateSchedule();
   }
 }

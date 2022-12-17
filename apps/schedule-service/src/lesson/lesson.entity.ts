@@ -1,9 +1,8 @@
-import { Column, Entity, JoinTable, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToOne } from 'typeorm';
 import { LessonType } from './lesson-type.enum';
 import { TeacherEntity } from '../teacher/teacher.entity';
 import { GroupEntity } from '../group/group.entity';
-import * as moment from 'moment';
-import { DateTime, DomainV2Entity } from '@dstu_helper/common';
+import { DomainV2Entity } from '@dstu_helper/common';
 import { SubjectEntity } from '../subject/subject.entity';
 import { AudienceEntity } from '../audience/audience.entity';
 import DSTULessonParser from './parser/lesson.parser';
@@ -11,8 +10,8 @@ import { GetLessonId } from './lesson-id';
 import { ApiDSTUScheduleItem } from '../schedule-provider/type/api-response-schedule.dstu.type';
 
 @Entity({ name: 'lesson' })
-/*@Unique({ properties: ['group', 'start', 'subgroup', 'teacher'] })
-@Filter({
+@Index(['group', 'start', 'subgroup', 'teacher'], { unique: true })
+/*@Filter({
   name: 'atDateFilter',
   cond: (args: { date: DateTime }) => {
     return {
@@ -26,14 +25,18 @@ import { ApiDSTUScheduleItem } from '../schedule-provider/type/api-response-sche
   },
 })*/
 export class LessonEntity extends DomainV2Entity {
-  @ManyToOne(() => GroupEntity, (entity) => entity.lessons, { eager: true })
+  @ManyToOne(() => GroupEntity, (entity) => entity.lessons, {
+    eager: true,
+    nullable: false,
+    cascade: ['insert', 'update'],
+  })
   @JoinTable()
   public group!: GroupEntity;
 
   @Column('timestamp with time zone')
   public start!: Date;
 
-  @Column('time with time zone')
+  @Column('timestamp with time zone')
   public end!: Date;
 
   @Column({ type: 'varchar', length: 32 })
@@ -42,11 +45,11 @@ export class LessonEntity extends DomainV2Entity {
   @Column()
   public order!: number;
 
-  @ManyToOne(() => SubjectEntity, (entity) => entity.lessons, { eager: true })
+  @ManyToOne(() => SubjectEntity, (entity) => entity.lessons, { eager: true, cascade: ['update'], nullable: false })
   @JoinTable()
   public subject!: SubjectEntity;
 
-  @ManyToOne(() => TeacherEntity, (entity) => entity.lessons, { nullable: true, eager: true })
+  @ManyToOne(() => TeacherEntity, (entity) => entity.lessons, { nullable: true, eager: true, cascade: ['update'] })
   @JoinTable()
   public teacher?: TeacherEntity;
 
@@ -56,7 +59,7 @@ export class LessonEntity extends DomainV2Entity {
   @Column({ nullable: true })
   public subsection?: string;
 
-  @ManyToOne(() => AudienceEntity, (entity) => entity.lessons, { eager: true })
+  @ManyToOne(() => AudienceEntity, (entity) => entity.lessons, { eager: true, nullable: false, cascade: ['update'] })
   @JoinTable()
   public audience!: AudienceEntity;
 
@@ -98,18 +101,6 @@ export class LessonEntity extends DomainV2Entity {
     this.updateTeacher(data);
     this.updateAudience(data);
 
-    /*lesson.group = group;
-    lesson.start = DSTULessonParser.dateParser(rasp['датаНачала']);
-    lesson.end = DSTULessonParser.dateParser(rasp['датаОкончания']);
-    lesson.order = rasp['номерЗанятия'];
-    lesson.type = subject.type;
-    lesson.name = subject.name;
-    lesson.subgroup = subject.subgroup || -1;
-    lesson.subsection = subject.subsection;
-    lesson.corpus = destination.corpus;
-    lesson.classRoom = destination.classRoom;
-    lesson.distance = destination.distance;*/
-
     this.start = DSTULessonParser.ParseDate(data['датаНачала']);
     this.end = DSTULessonParser.ParseDate(data['датаОкончания']);
     this.order = data['номерЗанятия'];
@@ -118,7 +109,10 @@ export class LessonEntity extends DomainV2Entity {
   private updateSubject(data: ApiDSTUScheduleItem): void {
     const subjectInfo = DSTULessonParser.ParseSubject(data['дисциплина']);
     if (!subjectInfo) throw new Error(`Subject parse error: "${data['дисциплина']}"`);
-    this.subject.name = subjectInfo.name;
+
+    if (!this.subject) this.subject = SubjectEntity.Create(subjectInfo.name);
+    else this.subject.name = subjectInfo.name;
+
     this.type = subjectInfo.type;
     this.subsection = subjectInfo.subsection || undefined;
     this.subgroup = subjectInfo.subgroup || -1;

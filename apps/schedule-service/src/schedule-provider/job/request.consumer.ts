@@ -17,7 +17,8 @@ export class RequestConsumer {
     const uri = this.httpService.axiosRef.getUri({
       baseURL: 'https://edu.donstu.ru/api/',
       url: data.url,
-      data: data.data,
+      method: data.method,
+      params: data.data,
     });
     this.log.log(`Send request ${data.method} ${uri}`);
 

@@ -9,10 +9,23 @@ import { GetLessonId } from '../lesson/lesson-id';
 import DSTULessonParser from '../lesson/parser/lesson.parser';
 import { ApiResponseScheduleDSTU } from './type/api-response-schedule.dstu.type';
 import { ApiResponseGroupDSTU } from './type/api-response-group.dstu.type';
+import { Dictionary } from 'lodash';
+import { TeacherEntity } from '../teacher/teacher.entity';
+import { SubjectEntity } from '../subject/subject.entity';
+import { AudienceEntity } from '../audience/audience.entity';
 
-export interface ProviderGroup {
-  id: number;
-  name: string;
+export interface MergeScheduleOriginParams {
+  existLessons: LessonEntity[];
+  existTeacherMap: Dictionary<TeacherEntity>;
+  existSubjectMap: Dictionary<SubjectEntity>;
+  existAudienceMap: Dictionary<AudienceEntity>;
+}
+
+export interface MergeScheduleResult {
+  lessons: LessonEntity[];
+  subjects: Map<string, SubjectEntity>;
+  teachers: Map<number, TeacherEntity>;
+  audiences: Map<string, AudienceEntity>;
 }
 
 @Injectable()
@@ -50,18 +63,26 @@ export class ScheduleProviderService {
     });
   }
 
-  public async getSchedule(
-    existLessons: LessonEntity[],
+  public async mergeSchedule(
+    params: MergeScheduleOriginParams,
     group: GroupEntity,
     startDate: DateTime,
-  ): Promise<LessonEntity[]> {
+  ): Promise<MergeScheduleResult> {
     const response: ApiResponseScheduleDSTU = await this.sendRequest('GET', 'Rasp', {
       idGroup: group.externalId,
       sdate: this.getScheduleDate(startDate),
     });
 
-    const existLessonsMap = lodash.keyBy(existLessons, (record) => record.uniqueId);
-    return response.data.rasp.map((scheduleItem) => {
+    const existLessonsMap = lodash.keyBy(params.existLessons, (record) => record.uniqueId);
+
+    const result: MergeScheduleResult = {
+      lessons: [],
+      subjects: new Map(),
+      teachers: new Map(),
+      audiences: new Map(),
+    };
+
+    response.data.rasp.forEach((scheduleItem) => {
       const scheduleItemId = GetLessonId({
         groupId: group.externalId,
         start: DSTULessonParser.ParseDate(scheduleItem['датаНачала']).getTime(),
@@ -70,13 +91,25 @@ export class ScheduleProviderService {
       });
 
       const existLesson = existLessonsMap[scheduleItemId];
-      if (existLesson) {
-        existLesson.update(scheduleItem);
-        return existLesson;
-      } else {
-        return LessonEntity.Create(scheduleItem, group);
-      }
+      let lesson = existLesson;
+      if (existLesson) existLesson.update(scheduleItem);
+      else lesson = LessonEntity.Create(scheduleItem, group);
+
+      result.lessons.push(lesson);
+
+      if (params.existSubjectMap[lesson.subject.name])
+        lesson.subject.id = params.existSubjectMap[lesson.subject.name].id;
+      if (lesson.teacher && params.existTeacherMap[lesson.teacher.externalId])
+        lesson.teacher.id = params.existTeacherMap[lesson.teacher.externalId].id;
+      if (params.existAudienceMap[lesson.audience.uniqueId])
+        lesson.audience.id = params.existAudienceMap[lesson.audience.uniqueId].id;
+
+      if (lesson.teacher) result.teachers.set(lesson.teacher.externalId, lesson.teacher);
+      result.subjects.set(lesson.subject.name, lesson.subject);
+      result.audiences.set(lesson.audience.uniqueId, lesson.audience);
     });
+
+    return result;
   }
 
   private getStudyYear(): string {

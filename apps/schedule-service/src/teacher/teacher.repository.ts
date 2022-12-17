@@ -8,6 +8,13 @@ export class TeacherRepository extends CoreV2Repository<TeacherEntity> {
     super(repository);
   }
 
+  public async upsert(entities: TeacherEntity[]): Promise<void> {
+    await this.repository.upsert(entities, {
+      skipUpdateIfNoValuesChanged: true,
+      conflictPaths: ['externalId'],
+    });
+  }
+
   /*@UseRequestContext()
   public async upsertMany(entities: TeacherEntity[]): Promise<void> {
     const entitiesToSave = entities.map((entity) => {

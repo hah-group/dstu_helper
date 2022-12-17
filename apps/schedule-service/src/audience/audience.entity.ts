@@ -1,9 +1,10 @@
 import { LessonEntity } from '../lesson/lesson.entity';
 import { AudienceInfo } from '../lesson/parser/lesson.parser';
 import { DomainV2Entity } from '@dstu_helper/common';
-import { Column, Entity, JoinTable, OneToMany } from 'typeorm';
+import { Column, Entity, Index, JoinTable, OneToMany } from 'typeorm';
 
 @Entity({ name: 'audience' })
+@Index(['corpus', 'classRoom', 'distance'], { unique: true })
 export class AudienceEntity extends DomainV2Entity {
   @Column({ nullable: true })
   public corpus?: string;
@@ -28,5 +29,9 @@ export class AudienceEntity extends DomainV2Entity {
     this.corpus = data.corpus;
     this.classRoom = data.classRoom;
     this.distance = data.distance;
+  }
+
+  public get uniqueId(): string {
+    return [this.corpus, this.classRoom, this.distance].join('_');
   }
 }

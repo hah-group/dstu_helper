@@ -19,7 +19,7 @@ export class GroupEntity extends DomainV2Entity {
   /*@OneToMany(() => UserEntity, 'group')
   public users = new Collection<UserEntity>(this);*/
 
-  @OneToMany(() => LessonEntity, (entity) => entity.group)
+  @OneToMany(() => LessonEntity, (entity) => entity.group, { nullable: false, cascade: true })
   @JoinTable()
   public lessons!: Promise<LessonEntity[]>;
 

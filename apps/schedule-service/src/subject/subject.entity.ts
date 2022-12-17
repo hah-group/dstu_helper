@@ -4,7 +4,7 @@ import { LessonEntity } from '../lesson/lesson.entity';
 
 @Entity({ name: 'subject' })
 export class SubjectEntity extends DomainV2Entity {
-  @Column()
+  @Column({ unique: true })
   public name!: string;
 
   @OneToMany(() => LessonEntity, (entity) => entity.subject)

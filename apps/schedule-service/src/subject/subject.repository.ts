@@ -7,4 +7,11 @@ export class SubjectRepository extends CoreV2Repository<SubjectEntity> {
   constructor(@InjectRepository(SubjectEntity) repository: Repository<SubjectEntity>) {
     super(repository);
   }
+
+  public async upsert(entities: SubjectEntity[]): Promise<void> {
+    await this.repository.upsert(entities, {
+      skipUpdateIfNoValuesChanged: true,
+      conflictPaths: ['name'],
+    });
+  }
 }

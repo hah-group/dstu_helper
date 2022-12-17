@@ -7,4 +7,11 @@ export class AudienceRepository extends CoreV2Repository<AudienceEntity> {
   constructor(@InjectRepository(AudienceEntity) repository: Repository<AudienceEntity>) {
     super(repository);
   }
+
+  public async upsert(entities: AudienceEntity[]): Promise<void> {
+    await this.repository.upsert(entities, {
+      skipUpdateIfNoValuesChanged: true,
+      conflictPaths: ['corpus', 'classRoom', 'distance'],
+    });
+  }
 }
