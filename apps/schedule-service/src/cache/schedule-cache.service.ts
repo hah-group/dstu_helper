@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ScheduleProviderService } from '../schedule-provider/schedule-provider.service';
 import { GroupRepository } from '../group/group.repository';
-import { delay, lodash, Time } from '@dstu_helper/common';
+import { lodash, Time } from '@dstu_helper/common';
 import { LessonRepository } from '../lesson/lesson.repository';
 import { GroupStatus } from '../group/group-status.enum';
 import { FacultyRepository } from '../faculty/faculty.repository';
@@ -9,10 +9,8 @@ import { TeacherRepository } from '../teacher/teacher.repository';
 import { SubjectRepository } from '../subject/subject.repository';
 import { AudienceRepository } from '../audience/audience.repository';
 import { TeacherEntity } from '../teacher/teacher.entity';
-import { LessonEntity } from '../lesson/lesson.entity';
 import { SubjectEntity } from '../subject/subject.entity';
 import { AudienceEntity } from '../audience/audience.entity';
-import { inspect } from 'util';
 
 export const GROUP_CHUNK_SIZE = 1;
 
@@ -78,7 +76,7 @@ export class ScheduleCacheService {
 
       await Promise.all(
         chunk.map(async (group) => {
-          const existLessons = await group.lessons;
+          const existLessons = await this.lessonRepository.getFromDate(startTime, group);
           try {
             const mergeScheduleResult = await this.scheduleProviderService.mergeSchedule(
               {
@@ -131,6 +129,13 @@ export class ScheduleCacheService {
                 record.audience.id = audience.id;
               }
             });
+
+            const lessonsToDelete = lodash.differenceBy(
+              existLessons,
+              mergeScheduleResult.lessons,
+              (record) => record.uniqueId,
+            );
+            await this.lessonRepository.delete(lessonsToDelete);
 
             await this.lessonRepository.upsert(mergeScheduleResult.lessons);
           } catch (e) {
