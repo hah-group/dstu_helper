@@ -1,8 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { CoreV2Repository } from '@dstu_helper/common/repository/core-v2.repository';
 import { LessonEntity } from './lesson.entity';
-import { TeacherEntity } from '../teacher/teacher.entity';
+import { DateTime } from '@dstu_helper/common';
+import { GroupEntity } from '../group/group.entity';
 
 export class LessonRepository extends CoreV2Repository<LessonEntity> {
   constructor(@InjectRepository(LessonEntity) repository: Repository<LessonEntity>) {
@@ -13,6 +14,17 @@ export class LessonRepository extends CoreV2Repository<LessonEntity> {
     await this.repository.upsert(entities, {
       skipUpdateIfNoValuesChanged: true,
       conflictPaths: ['group', 'start', 'subgroup', 'teacher'],
+    });
+  }
+
+  public async getFromDate(date: DateTime, group: GroupEntity): Promise<LessonEntity[]> {
+    return this.repository.find({
+      where: {
+        start: MoreThanOrEqual(date.startOf('d').toDate()),
+        group: {
+          id: group.id,
+        },
+      },
     });
   }
 

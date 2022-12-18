@@ -2,7 +2,7 @@ import * as str from 'string';
 import { LessonTypeTextFilter } from './text-filter/lesson-type.text-filter';
 import { TextFilterBuilder } from './text-filter/text-filter.builder';
 import { SubgroupTextFilter } from './text-filter/subgroup.text-filter';
-import { SubsectionTextFilter } from './text-filter/subsection.text-filter';
+import { FinalTextFilter, firstLetterUpper } from './text-filter/final.text-filter';
 import * as lodash from 'lodash';
 import { LessonType } from '../lesson-type.enum';
 import { pretties } from './lesson.prettier';
@@ -29,11 +29,16 @@ export interface AudienceInfo {
   distance: boolean;
 }
 
+export interface SubsectionFilterResult {
+  subsection: string;
+  filtered: string;
+}
+
 export default class DSTULessonParser {
   public static ParseSubject(subject: string): SubjectInfo | undefined {
     const normalText = normalizeWhiteSpaces(subject);
 
-    const filters = new TextFilterBuilder([LessonTypeTextFilter, SubgroupTextFilter, SubsectionTextFilter]);
+    const filters = new TextFilterBuilder([LessonTypeTextFilter, SubgroupTextFilter, FinalTextFilter]);
     const filterResult = filters.execute(normalText);
 
     const result: SubjectInfo = lodash.merge(filterResult, this.subjectPrettier(filterResult));
@@ -47,7 +52,20 @@ export default class DSTULessonParser {
     return filterResult.subgroup || -1;
   }
 
-  public static ParseAudience(classRoom: string): AudienceInfo {
+  public static ParseSubsection(subject: string): SubsectionFilterResult | undefined {
+    const regex = new RegExp(/\((.*?)\)([^ ]|$)/, 'i');
+    const match = subject.match(regex);
+
+    if (match && match[1]) {
+      const subsection = firstLetterUpper(match[1].trim());
+      return {
+        subsection: subsection.trim(),
+        filtered: subject.replace(`(${match[1]})`, '').trim(),
+      };
+    }
+  }
+
+  public static ParseAudience(classRoom: string): AudienceInfo | undefined {
     const match = classRoom.match(/^(\d+)-(\d+[а-я]?)$/i);
     const matchDistance = !!classRoom.match(/Д[ОO0]/i);
 
@@ -70,10 +88,11 @@ export default class DSTULessonParser {
     clearText = clearText.replace(/( {2})/g, ' ');
     clearText = clearText.replace(/[^а-я \d,.]/gi, '');
     clearText = clearText.trim();
-    return {
-      classRoom: str(clearText).capitalize().s,
-      distance: false,
-    };
+    if (clearText.length > 0)
+      return {
+        classRoom: str(clearText).capitalize().s,
+        distance: false,
+      };
   }
 
   public static ParseDate(date: string): Date {
@@ -83,21 +102,16 @@ export default class DSTULessonParser {
 
   public static ParseTeacher(teacher?: string, degree?: string): TeacherInfo | undefined {
     if (!teacher) return;
-    const match = teacher.match(/^([а-яё-]*).*?([а-яё]*) ([а-яё]*)$/i);
-    if (!match || match.length < 4) {
-      let clearText = teacher;
-      clearText = clearText.replace(/(?<dig>\d+)/g, ' $<dig>');
-      clearText = clearText.replace(/( {2})/g, ' ');
-      clearText = clearText.trim();
-      return {
-        lastName: str(clearText).capitalize().s,
-      };
-    }
+    let clearText = teacher.replace(new RegExp(degree || '', 'gi'), '');
+    clearText = clearText.replace(/(?<dig>\d+)/g, ' $<dig>');
+    clearText = clearText.replace(/( {2})/g, ' ');
+    clearText = clearText.trim();
 
+    const names = clearText.split(' ');
     return {
-      firstName: str(match[2]).capitalize().s,
-      lastName: str(match[1]).capitalize().s,
-      middleName: str(match[3]).capitalize().s,
+      lastName: str(names[0] || clearText).capitalize().s,
+      firstName: names[1] && str(names[1]).capitalize().s,
+      middleName: names[2] && str(names[2]).capitalize().s,
       degreeRaw: degree,
     };
   }

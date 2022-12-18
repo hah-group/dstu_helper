@@ -117,4 +117,129 @@ describe('Lesson parser', () => {
       type: LessonType.LECTURE,
     });
   });
+
+  it('пр. Иностранный язык в профессиональной деятельности, п/г 2', () => {
+    const result = DSTULessonParser.ParseSubject('пр. Иностранный язык в профессиональной деятельности, п/г 2');
+    expect(result).toEqual({
+      name: 'Иностранный язык в профессиональной деятельности',
+      type: LessonType.PRACTICAL,
+      subgroup: 2,
+    });
+  });
+
+  it('пр. "Проект ""Геймдизайн"""', () => {
+    const result = DSTULessonParser.ParseSubject('пр. "Проект ""Геймдизайн"""');
+    expect(result).toEqual({
+      name: 'Проект',
+      type: LessonType.PRACTICAL,
+      subsection: 'Геймдизайн',
+    });
+  });
+
+  it('пр. Физико- технические основы Индустрии 4.0', () => {
+    const result = DSTULessonParser.ParseSubject('пр. Физико- технические основы Индустрии 4.0');
+    expect(result).toEqual({
+      type: LessonType.PRACTICAL,
+      name: 'Физико-технические основы Индустрии 4.0',
+    });
+  });
+
+  it('пр. Тепло- и хладогеника', () => {
+    const result = DSTULessonParser.ParseSubject('пр. Тепло- и хладогеника');
+    expect(result).toEqual({
+      name: 'Тепло и хладогеника',
+      type: LessonType.PRACTICAL,
+    });
+  });
+
+  it('пр. Ресурсо- и энергосберегающие технологии и материалы', () => {
+    const result = DSTULessonParser.ParseSubject('пр. Ресурсо- и энергосберегающие технологии и материалы');
+    expect(result).toEqual({
+      name: 'Ресурсо и энергосберегающие технологии и материалы',
+      type: LessonType.PRACTICAL,
+    });
+  });
+
+  it('пр. WEB-программирование', () => {
+    const result = DSTULessonParser.ParseSubject('пр. WEB-программирование');
+    expect(result).toEqual({
+      name: 'WEB-программирование',
+      type: LessonType.PRACTICAL,
+    });
+  });
+
+  it('пр. web-программирование', () => {
+    const result = DSTULessonParser.ParseSubject('пр. web-программирование');
+    expect(result).toEqual({
+      name: 'WEB-программирование',
+      type: LessonType.PRACTICAL,
+    });
+  });
+
+  it('пр. Программирование под платформу .NET', () => {
+    const result = DSTULessonParser.ParseSubject('пр. Программирование под платформу .NET');
+    expect(result).toEqual({
+      name: 'Программирование под платформу .NET',
+      type: LessonType.PRACTICAL,
+    });
+  });
+
+  it('пр. Индустрия 4.0', () => {
+    const result = DSTULessonParser.ParseSubject('пр. Индустрия 4.0');
+    expect(result).toEqual({
+      name: 'Индустрия 4.0',
+      type: LessonType.PRACTICAL,
+    });
+  });
+
+  it('пр. Проект – полный цикл разработки игр и приложений', () => {
+    const result = DSTULessonParser.ParseSubject('пр. Проект – полный цикл разработки игр и приложений');
+    expect(result).toEqual({
+      name: 'Проект – полный цикл разработки игр и приложений',
+      type: LessonType.PRACTICAL,
+    });
+  });
+
+  it('пр. "Основы проектирования ""зеленого каркаса"" градостроительного пространства"', () => {
+    const result = DSTULessonParser.ParseSubject(
+      'пр. "Основы проектирования ""зеленого каркаса"" градостроительного пространства"',
+    );
+    expect(result).toEqual({
+      name: 'Основы проектирования "зеленого каркаса" градостроительного пространства',
+      type: LessonType.PRACTICAL,
+    });
+  });
+
+  it('пр. Теоретические основы электротехники ч.1', () => {
+    const result = DSTULessonParser.ParseSubject('пр. Теоретические основы электротехники ч.1');
+    expect(result).toEqual({
+      name: 'Теоретические основы электротехники ч. 1',
+      type: LessonType.PRACTICAL,
+    });
+  });
+
+  it('пр. История (история России, всеобщая история)', () => {
+    const result = DSTULessonParser.ParseSubject('пр. История (история России, всеобщая история)');
+    expect(result).toEqual({
+      name: 'История России, всеобщая история',
+      type: LessonType.PRACTICAL,
+    });
+  });
+
+  it('пр. Практический курс второго иностранного языка (испанский), п/г 3', () => {
+    const result = DSTULessonParser.ParseSubject('пр. Практический курс второго иностранного языка (испанский), п/г 3');
+    expect(result).toEqual({
+      name: 'Практический курс второго иностранного языка (испанский)',
+      type: LessonType.PRACTICAL,
+      subgroup: 3,
+    });
+  });
+
+  it('лек Информационные системы бизнеса (1С: Предприятие)', () => {
+    const result = DSTULessonParser.ParseSubject('лек Информационные системы бизнеса (1С: Предприятие)');
+    expect(result).toEqual({
+      name: 'Информационные системы бизнеса (1С: Предприятие)',
+      type: LessonType.LECTURE,
+    });
+  });
 });

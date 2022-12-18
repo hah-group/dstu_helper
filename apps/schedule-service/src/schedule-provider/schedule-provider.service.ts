@@ -2,7 +2,6 @@ import { DateTime, lodash, Moment, Time } from '@dstu_helper/common';
 import { Injectable } from '@nestjs/common';
 import { RequestProducer } from './job/request.producer';
 import { GroupEntity } from '../group/group.entity';
-import { GroupRepository } from '../group/group.repository';
 import { FacultyEntity } from '../faculty/faculty.entity';
 import { LessonEntity } from '../lesson/lesson.entity';
 import { GetLessonId } from '../lesson/lesson-id';
@@ -101,12 +100,16 @@ export class ScheduleProviderService {
         lesson.subject.id = params.existSubjectMap[lesson.subject.name].id;
       if (lesson.teacher && params.existTeacherMap[lesson.teacher.externalId])
         lesson.teacher.id = params.existTeacherMap[lesson.teacher.externalId].id;
-      if (params.existAudienceMap[lesson.audience.uniqueId])
-        lesson.audience.id = params.existAudienceMap[lesson.audience.uniqueId].id;
 
       if (lesson.teacher) result.teachers.set(lesson.teacher.externalId, lesson.teacher);
       result.subjects.set(lesson.subject.name, lesson.subject);
-      result.audiences.set(lesson.audience.uniqueId, lesson.audience);
+
+      if (lesson.audience) {
+        if (params.existAudienceMap[lesson.audience.uniqueId])
+          lesson.audience.id = params.existAudienceMap[lesson.audience.uniqueId].id;
+
+        result.audiences.set(lesson.audience.uniqueId, lesson.audience);
+      }
     });
 
     return result;

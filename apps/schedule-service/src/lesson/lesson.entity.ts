@@ -28,7 +28,7 @@ export class LessonEntity extends DomainV2Entity {
   @ManyToOne(() => GroupEntity, (entity) => entity.lessons, {
     eager: true,
     nullable: false,
-    cascade: ['insert', 'update'],
+    cascade: ['update'],
   })
   @JoinTable()
   public group!: GroupEntity;
@@ -59,9 +59,9 @@ export class LessonEntity extends DomainV2Entity {
   @Column({ nullable: true })
   public subsection?: string;
 
-  @ManyToOne(() => AudienceEntity, (entity) => entity.lessons, { eager: true, nullable: false, cascade: ['update'] })
+  @ManyToOne(() => AudienceEntity, (entity) => entity.lessons, { eager: true, nullable: true, cascade: ['update'] })
   @JoinTable()
-  public audience!: AudienceEntity;
+  public audience?: AudienceEntity;
 
   /*public getDestination(): string | undefined {
     if (this.distance) return undefined;
@@ -128,6 +128,7 @@ export class LessonEntity extends DomainV2Entity {
 
   private updateAudience(data: ApiDSTUScheduleItem): void {
     const audienceInfo = DSTULessonParser.ParseAudience(data['аудитория']);
+    if (!audienceInfo) return;
     if (!this.audience) this.audience = AudienceEntity.Create(audienceInfo);
     else this.audience.update(audienceInfo);
   }

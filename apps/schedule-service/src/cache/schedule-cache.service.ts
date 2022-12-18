@@ -126,8 +126,10 @@ export class ScheduleCacheService {
               const subject = <SubjectEntity>mergeScheduleResult.subjects.get(record.subject.name);
               record.subject.id = subject.id;
 
-              const audience = <AudienceEntity>mergeScheduleResult.audiences.get(record.audience.uniqueId);
-              record.audience.id = audience.id;
+              if (record.audience) {
+                const audience = <AudienceEntity>mergeScheduleResult.audiences.get(record.audience.uniqueId);
+                record.audience.id = audience.id;
+              }
             });
 
             await this.lessonRepository.upsert(mergeScheduleResult.lessons);
