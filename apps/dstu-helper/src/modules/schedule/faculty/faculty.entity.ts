@@ -1,4 +1,4 @@
-import { Column, Entity, Index, JoinTable, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, OneToMany } from 'typeorm';
 import { DomainV2Entity } from '@dstu_helper/common';
 import { GroupEntity } from '../group/group.entity';
 

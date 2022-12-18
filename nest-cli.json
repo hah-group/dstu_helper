@@ -32,14 +32,5 @@
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
     },
-    "schedule-service": {
-      "type": "application",
-      "root": "apps/schedule-service",
-      "entryFile": "main",
-      "sourceRoot": "apps/schedule-service/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/schedule-service/tsconfig.app.json"
-      }
-    }
   }
 }

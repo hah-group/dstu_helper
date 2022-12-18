@@ -1,4 +1,4 @@
-import { Logger, MiddlewareConsumer, Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule as CronModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -7,19 +7,19 @@ import { TelegramModule } from './framework/telegram/telegram.module';
 import { DialogModule } from './modules/dialog/dialog.module';
 import { UserModule } from './modules/user/user.module';
 import { BullModule } from '@nestjs/bull';
-import { UniversityModule } from './modules/university/university.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
 import { SceneModule } from './framework/scene/scene.module';
 import { VkModule } from './framework/vk/vk.module';
 import { ReleaseModule } from './modules/release/release.module';
-import { DatabaseModule } from '@dstu_helper/common';
+import { DatabaseV2Module } from '@dstu_helper/common';
+import { ScheduleModule } from './modules/schedule/schedule.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     CronModule.forRoot(),
     EventEmitterModule.forRoot(),
-    DatabaseModule.forRoot(),
+    DatabaseV2Module.forRoot('app'),
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST,
@@ -40,10 +40,10 @@ import { DatabaseModule } from '@dstu_helper/common';
     }),
     DialogModule,
     UserModule,
-    UniversityModule,
     ConversationModule,
     SceneModule,
     ReleaseModule,
+    ScheduleModule,
   ],
 })
 export class AppModule {

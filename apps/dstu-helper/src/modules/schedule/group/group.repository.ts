@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CoreV2Repository } from '@dstu_helper/common/repository/core-v2.repository';
 import { GroupEntity } from './group.entity';
+import { CoreV2Repository } from '@dstu_helper/common';
 
 export class GroupRepository extends CoreV2Repository<GroupEntity> {
   constructor(@InjectRepository(GroupEntity) repository: Repository<GroupEntity>) {

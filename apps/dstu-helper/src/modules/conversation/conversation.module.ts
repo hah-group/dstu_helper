@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConversationRepository } from './conversation.repository';
 import { ConversationEntity } from './conversation.entity';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([ConversationEntity])],
+  imports: [TypeOrmModule.forFeature([ConversationEntity])],
   providers: [ConversationRepository],
   exports: [ConversationRepository],
 })

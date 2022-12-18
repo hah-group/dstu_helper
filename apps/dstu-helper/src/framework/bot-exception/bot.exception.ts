@@ -1,32 +1,25 @@
-import { BotExceptionType } from './exception/bot-exception-type.enum';
-
-export interface BotExceptionLocalizeMessage {
-  phrase: string;
-  replacements?: {
-    [key: string]: string;
-  };
-}
+import { Text } from '../text/text';
 
 export interface BotExceptionParams {
-  type: BotExceptionType;
+  type: string;
   notifyScope: 'USER' | 'SYSTEM' | 'ALL';
   message: string;
-  localizeMessage: BotExceptionLocalizeMessage;
+  text: Text;
   data?: any;
 }
 
 export class BotException extends Error {
-  public readonly type: BotExceptionType;
-  public readonly localizeMessage: BotExceptionLocalizeMessage;
+  public readonly type: string;
+  public readonly text: Text;
   public readonly notifyScope: 'USER' | 'SYSTEM' | 'ALL';
   public readonly data?: any;
 
   constructor(params: BotExceptionParams) {
-    const { data, message, notifyScope, type, localizeMessage } = params;
+    const { data, message, notifyScope, type, text } = params;
     super(message);
     this.type = type;
     this.notifyScope = notifyScope;
     this.data = data;
-    this.localizeMessage = localizeMessage;
+    this.text = text;
   }
 }

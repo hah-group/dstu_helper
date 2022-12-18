@@ -1,8 +1,7 @@
-import { Collection, Entity, ManyToMany, Property, Unique } from '@mikro-orm/core';
 import { ConversationEntity } from '../conversation/conversation.entity';
-import { UserPropertiesType } from './user-properties/user-properties.type';
 import { UserProperties } from './user-properties/user-properties';
-import { DomainEntity } from '@dstu_helper/common';
+import { Column, Entity, Index, JoinTable, ManyToMany } from 'typeorm';
+import { DomainV2Entity } from '@dstu_helper/common';
 
 export interface UserCreateParams {
   provider: string;
@@ -12,34 +11,33 @@ export interface UserCreateParams {
   nickname?: string;
 }
 
-@Entity({ tableName: 'user' })
-@Unique({ properties: ['externalId', 'provider'] })
-export class UserEntity extends DomainEntity {
-  @Property()
+@Entity({ name: 'user' })
+@Index(['externalId', 'provider'], { unique: true })
+export class UserEntity extends DomainV2Entity {
+  @Column()
   public firstName?: string;
 
-  @Property()
+  @Column()
   public lastName?: string;
 
-  @Property()
+  @Column()
   public nickname?: string;
 
-  @Property()
+  @Column()
   public provider: string;
 
-  @Property({ columnType: 'bigint' })
+  @Column({ type: 'bigint' })
   public externalId: number;
 
-  @Property()
+  @Column()
   public groupId?: number;
 
-  @ManyToMany()
-  public conversations = new Collection<ConversationEntity>(this);
+  @ManyToMany(() => ConversationEntity, (entity) => entity.users)
+  @JoinTable()
+  public conversations!: Promise<ConversationEntity[]>;
 
-  @Property({ type: UserPropertiesType, nullable: true })
+  @Column({ type: 'simple-json', nullable: true })
   public properties!: UserProperties;
-
-  public readonly isNew: boolean = false;
 
   constructor(params: UserCreateParams) {
     super();
@@ -48,14 +46,14 @@ export class UserEntity extends DomainEntity {
     this.firstName = params.firstName;
     this.lastName = params.lastName;
     this.nickname = params.nickname;
-    this.isNew = true;
   }
 
   public async checkConversation(conversation?: ConversationEntity): Promise<boolean> {
     if (!conversation) return false;
-    if (!this.conversations.isInitialized()) await this.conversations.init();
-    if (!this.conversations.getIdentifiers().includes(conversation.id)) {
-      this.conversations.add(conversation);
+    const conversations = await this.conversations;
+    const conversationIds = conversations.map((record) => record.id);
+    if (!conversationIds.includes(conversation.id)) {
+      this.conversations = Promise.resolve([...conversations, conversation]);
       return true;
     }
 

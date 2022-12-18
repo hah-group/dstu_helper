@@ -34,7 +34,7 @@ import { TelegramProducer } from './job/telegram.producer';
 import { TelegramKeyboardBuilder } from './telegram-keyboard.builder';
 import { BotPayloadType } from '../bot/type/bot-payload-type.enum';
 import { TelegramJobSend } from './job/telegram-job-data.type';
-import { delay } from '../util/delay';
+import { delay } from '@dstu_helper/common';
 
 export type TelegramMessage = TGMessage;
 export type TelegramCallbackQuery = CallbackQuery;

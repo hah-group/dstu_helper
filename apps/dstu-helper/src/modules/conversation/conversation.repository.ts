@@ -1,19 +1,19 @@
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
 import { ConversationEntity } from './conversation.entity';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
-import { CoreRepository } from '@dstu_helper/common';
+import { CoreV2Repository } from '@dstu_helper/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
-export class ConversationRepository extends CoreRepository<ConversationEntity> {
-  constructor(@InjectRepository(ConversationEntity) repository: EntityRepository<ConversationEntity>, orm: MikroORM) {
-    super(repository, orm);
+export class ConversationRepository extends CoreV2Repository<ConversationEntity> {
+  constructor(@InjectRepository(ConversationEntity) repository: Repository<ConversationEntity>) {
+    super(repository);
   }
 
-  @UseRequestContext()
   public async getById(id: number, provider: string): Promise<ConversationEntity | null> {
     return this.repository.findOne({
-      externalId: id,
-      provider: provider,
+      where: {
+        externalId: id,
+        provider: provider,
+      },
     });
   }
 }

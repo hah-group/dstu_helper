@@ -1,26 +1,28 @@
-import { Collection, Entity, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { UserEntity } from '../user/user.entity';
-import { DomainEntity } from '@dstu_helper/common';
+import { DomainV2Entity } from '@dstu_helper/common';
+import { Column, Entity, Index, ManyToMany } from 'typeorm';
+import { JoinTable } from 'typeorm/browser';
 
-@Entity({ tableName: 'conversation' })
-@Unique({ properties: ['provider', 'externalId'] })
-export class ConversationEntity extends DomainEntity {
-  @Property()
+@Entity({ name: 'conversation' })
+@Index(['provider', 'externalId'], { unique: true })
+export class ConversationEntity extends DomainV2Entity {
+  @Column()
   public provider!: string;
 
-  @Property({ columnType: 'bigint' })
+  @Column({ type: 'bigint' })
   public externalId!: number;
 
-  @Property()
+  @Column()
   public defaultGroupId?: number;
 
-  @ManyToMany(() => UserEntity, 'conversations')
-  public users = new Collection<UserEntity>(this);
+  @ManyToMany(() => UserEntity, (entity) => entity.conversations, { cascade: ['update'] })
+  @JoinTable()
+  public users!: Promise<UserEntity[]>;
 
   public async updateGroup(groupId: number): Promise<void> {
-    if (!this.users.isInitialized()) await this.users.init();
+    const users = await this.users;
 
-    this.users.getItems().forEach((user) => {
+    users.forEach((user) => {
       if (!this.defaultGroupId || !user.groupId) return;
       if (user.groupId == this.defaultGroupId) user.groupId = groupId;
     });

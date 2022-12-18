@@ -1,3 +1,4 @@
+/*
 import { BotException } from '../bot.exception';
 import { BotExceptionType } from './bot-exception-type.enum';
 import { UserEntity } from '../../../modules/user/user.entity';
@@ -14,3 +15,4 @@ export class GroupNotFoundException extends BotException {
     });
   }
 }
+*/

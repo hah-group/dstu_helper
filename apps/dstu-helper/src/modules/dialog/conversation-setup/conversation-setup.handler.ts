@@ -3,8 +3,6 @@ import { OnInvite } from '../../../framework/bot/decorator/on-invite.decorator';
 import { BotAnyMessage, BotInlineMessage, BotMessage } from '../../../framework/bot/type/bot-message.type';
 import { Text } from '../../../framework/text/text';
 import { OnMessage } from '../../../framework/bot/decorator/on-message.decorator';
-import { ScheduleService } from '../../schedule/schedule.service';
-import { GroupEntity } from '../../group/group.entity';
 import { ConversationRepository } from '../../conversation/conversation.repository';
 import { ConversationEntity } from '../../conversation/conversation.entity';
 import { KeyboardBuilder } from '../../../framework/bot/keyboard/keyboard.builder';
@@ -20,7 +18,6 @@ export class ConversationSetupHandler {
   private readonly log = new Logger('ConversationSetupHandler');
 
   constructor(
-    private readonly scheduleService: ScheduleService,
     private readonly conversationRepository: ConversationRepository,
     private readonly sceneService: SceneService,
   ) {}
@@ -36,7 +33,7 @@ export class ConversationSetupHandler {
       await this.conversationRepository.save(newConversation);
       await message.send(Text.Build('conversation-hello', { provider: message.provider }));
     } else {
-      await conversation.defaultGroup?.init();
+      await conversation.defaultGroupId?.init();
       await message.send(
         Text.Build('conversation-comeback-hello', {
           provider: message.provider,

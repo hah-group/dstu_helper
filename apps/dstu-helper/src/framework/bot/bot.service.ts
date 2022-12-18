@@ -87,13 +87,10 @@ export class BotService extends EventEmitter {
   }
 
   public async getUser(ctx: BotContext): Promise<UserEntity> {
-    let user = await this.userRepository.findOne(
-      {
-        provider: ctx.provider,
-        externalId: ctx.from.id,
-      },
-      { populate: ['group'] },
-    );
+    let user = await this.userRepository.findOne({
+      provider: ctx.provider,
+      externalId: ctx.from.id,
+    });
 
     if (!user) {
       if (ctx.provider == 'vk') {
@@ -121,7 +118,7 @@ export class BotService extends EventEmitter {
 
     const addedGroup = await (<UserEntity>user).checkGroup(conversation || undefined);
     if (addedGroup) {
-      this.log.log(`Add user (id: ${user?.id}) to group (id: ${user?.group?.id})`);
+      this.log.log(`Add user (id: ${user?.id}) to group (id: ${user?.groupId})`);
     }
 
     if (addedConversation || addedGroup) await this.userRepository.save(<UserEntity>user);

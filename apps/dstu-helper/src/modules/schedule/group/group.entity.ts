@@ -1,7 +1,7 @@
 import { Column, Entity, Index, JoinTable, ManyToOne, OneToMany } from 'typeorm';
 import { LessonEntity } from '../lesson/lesson.entity';
 import { GroupStatus } from './group-status.enum';
-import { DateTime, DomainV2Entity } from '@dstu_helper/common';
+import { DomainV2Entity } from '@dstu_helper/common';
 import { FacultyEntity } from '../faculty/faculty.entity';
 
 @Entity({ name: 'group' })

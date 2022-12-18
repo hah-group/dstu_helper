@@ -1,3 +1,4 @@
+/*
 import { BotException } from '../bot.exception';
 import { BotExceptionType } from './bot-exception-type.enum';
 
@@ -16,3 +17,4 @@ export class UnknownException extends BotException {
     });
   }
 }
+*/

@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CoreV2Repository } from '@dstu_helper/common/repository/core-v2.repository';
+import { CoreV2Repository } from '@dstu_helper/common';
 import { TeacherEntity } from './teacher.entity';
 
 export class TeacherRepository extends CoreV2Repository<TeacherEntity> {

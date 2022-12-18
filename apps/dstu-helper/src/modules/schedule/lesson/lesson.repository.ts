@@ -1,8 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThanOrEqual, Repository } from 'typeorm';
-import { CoreV2Repository } from '@dstu_helper/common/repository/core-v2.repository';
 import { LessonEntity } from './lesson.entity';
-import { DateTime } from '@dstu_helper/common';
+import { CoreV2Repository, DateTime } from '@dstu_helper/common';
 import { GroupEntity } from '../group/group.entity';
 
 export class LessonRepository extends CoreV2Repository<LessonEntity> {
