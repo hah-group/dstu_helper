@@ -3,21 +3,25 @@ import { Text } from '../../../framework/text/text';
 import { DateParser } from '../../../framework/util/date-parser/date.parser';
 import { LessonGroupProcessor } from '../../../framework/util/lesson-group/lesson-group.processor';
 import { WHERE_AUDIENCE } from './activation/where-audience.activation';
-import { TimeRelativeProcessor } from '../../../framework/util/time-relative.processor';
 import { nearestUp } from '../../../framework/util/nearest-up';
 import { LessonGroupResult } from '../../../framework/util/lesson-group/lesson-group.type';
 import { OrderDefinition } from './activation/definition/order-definition';
-import { LanguageOrderDefinition, LanguageOrderKey } from '../../../framework/util/language-order-definition';
 import { DateTime, Time } from '@dstu_helper/common';
+import { LessonRepository } from '../../schedule/lesson/lesson.repository';
+import { GroupEntity } from '../../schedule/group/group.entity';
+import { TimeOrderProcessor } from '../../../framework/util/time-order/time-order.processor';
+import { LessonInterval } from '../../schedule/schedule-provider/lesson-interval';
+import { LanguageOrderDefinition, LanguageOrderKey } from '../../../framework/text/language-order.definition';
 
 @Injectable()
 export class ScheduleBuilder {
-  public async buildAtDay(query: string | DateTime, groupId: number, strict = false): Promise<Text> {
+  constructor(private readonly lessonRepository: LessonRepository) {}
+  public async buildAtDay(query: string | DateTime, group: GroupEntity, strict = false): Promise<Text> {
     let atDate: DateTime;
     if (typeof query == 'string') atDate = DateParser.Parse(query);
     else atDate = query;
 
-    const lessons = await group.getLessonsAtDate(atDate);
+    const lessons = await this.lessonRepository.getFromDate(atDate, group);
     const groups = new LessonGroupProcessor(lessons).getLessonGroups();
 
     return Text.Build('schedule-at-day', {
@@ -28,23 +32,23 @@ export class ScheduleBuilder {
     });
   }
 
-  public async buildWhere(now: boolean, groupId: number): Promise<Text>;
-  public async buildWhere(query: string, groupId: number): Promise<Text>;
-  public async buildWhere(query: string | boolean, groupId: number): Promise<Text> {
+  public async buildWhere(now: boolean, group: GroupEntity): Promise<Text>;
+  public async buildWhere(query: string, group: GroupEntity): Promise<Text>;
+  public async buildWhere(query: string | boolean, group: GroupEntity): Promise<Text> {
     const currentTime = Time.get();
     let isNow;
     if (typeof query == 'string') isNow = !!query.match(WHERE_AUDIENCE);
     else isNow = query;
 
-    const lessons = await group.getLessonsAtDate(currentTime);
+    const lessons = await this.lessonRepository.getFromDate(currentTime, group);
     const lessonGroups = new LessonGroupProcessor(lessons);
 
     const orders = lessonGroups.getOrders();
 
-    const nowOrder = TimeRelativeProcessor.now(false, currentTime);
+    const nowOrder = TimeOrderProcessor.now(LessonInterval, false, currentTime);
     let order: number | undefined;
     if (isNow) order = nowOrder;
-    else order = TimeRelativeProcessor.next(currentTime, orders[0]);
+    else order = TimeOrderProcessor.next(LessonInterval, currentTime, orders[0]);
 
     const lastInOrder = orders[orders.length - 1];
     const isEndOfDay = !nowOrder || lastInOrder < nowOrder;
@@ -71,7 +75,7 @@ export class ScheduleBuilder {
     });
   }
 
-  public async buildOrder(query: string, groupId: number): Promise<Text | undefined> {
+  public async buildOrder(query: string, group: GroupEntity): Promise<Text | undefined> {
     const orderMatch = query.match(/\d/);
     let order: number | undefined;
 
@@ -86,7 +90,7 @@ export class ScheduleBuilder {
     if (!order) return;
 
     const currentTime = Time.get();
-    const lessons = await group.getLessonsAtDate(currentTime);
+    const lessons = await this.lessonRepository.getFromDate(currentTime, group);
     const lessonGroups = new LessonGroupProcessor(lessons);
 
     const orders = lessonGroups.getOrders();

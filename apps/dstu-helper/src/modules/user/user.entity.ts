@@ -1,7 +1,8 @@
 import { ConversationEntity } from '../conversation/conversation.entity';
 import { UserProperties } from './user-properties/user-properties';
-import { Column, Entity, Index, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import { DomainV2Entity } from '@dstu_helper/common';
+import { GroupEntity } from '../schedule/group/group.entity';
 
 export interface UserCreateParams {
   provider: string;
@@ -24,13 +25,14 @@ export class UserEntity extends DomainV2Entity {
   public nickname?: string;
 
   @Column()
-  public provider: string;
+  public provider!: string;
 
   @Column({ type: 'bigint' })
-  public externalId: number;
+  public externalId!: number;
 
-  @Column()
-  public groupId?: number;
+  @ManyToOne(() => GroupEntity, (entity) => entity.users)
+  @JoinTable()
+  public group?: Promise<GroupEntity>;
 
   @ManyToMany(() => ConversationEntity, (entity) => entity.users)
   @JoinTable()
@@ -39,13 +41,18 @@ export class UserEntity extends DomainV2Entity {
   @Column({ type: 'simple-json', nullable: true })
   public properties!: UserProperties;
 
-  constructor(params: UserCreateParams) {
-    super();
-    this.provider = params.provider;
-    this.externalId = params.externalId;
-    this.firstName = params.firstName;
-    this.lastName = params.lastName;
-    this.nickname = params.nickname;
+  public static Create(data: UserCreateParams): UserEntity {
+    const entity = new this();
+    entity.update(data);
+    return entity;
+  }
+
+  public update(data: UserCreateParams): void {
+    this.provider = data.provider;
+    this.externalId = data.externalId;
+    this.firstName = data.firstName;
+    this.lastName = data.lastName;
+    this.nickname = data.nickname;
   }
 
   public async checkConversation(conversation?: ConversationEntity): Promise<boolean> {
@@ -61,10 +68,10 @@ export class UserEntity extends DomainV2Entity {
   }
 
   public async checkGroup(conversation?: ConversationEntity): Promise<boolean> {
-    if (!conversation || !conversation.defaultGroupId) return false;
-    if (this.groupId) return false;
+    if (!conversation || !conversation.defaultGroup) return false;
+    if (!this.group) return false;
 
-    this.groupId = conversation.defaultGroupId;
+    this.group = conversation.defaultGroup;
     return true;
   }
 }

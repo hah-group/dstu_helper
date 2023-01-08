@@ -9,6 +9,7 @@ import { KeyboardBuilder } from '../../../framework/bot/keyboard/keyboard.builde
 import { OnInlineButton } from '../../../framework/bot/decorator/on-inline-button.decorator';
 import { SceneParams, SceneService } from '../../../framework/scene/scene.service';
 import { ChangeGroupConfirmButton, ChangeGroupConfirmKeyboard } from './keyboard/change-group-confirm.keyboard';
+import { GroupService } from '../../schedule/group/group.service';
 
 //TODO Add abstraction for different university
 const GROUP_CHANGE_REGEX = /^\/группа ([a-zа-я\d\- ]*)/i;
@@ -20,6 +21,7 @@ export class ConversationSetupHandler {
   constructor(
     private readonly conversationRepository: ConversationRepository,
     private readonly sceneService: SceneService,
+    private readonly groupService: GroupService,
   ) {}
 
   @OnInvite('iam')
@@ -33,11 +35,10 @@ export class ConversationSetupHandler {
       await this.conversationRepository.save(newConversation);
       await message.send(Text.Build('conversation-hello', { provider: message.provider }));
     } else {
-      await conversation.defaultGroupId?.init();
       await message.send(
         Text.Build('conversation-comeback-hello', {
           provider: message.provider,
-          defaultGroup: conversation.defaultGroup?.name,
+          defaultGroup: await conversation.defaultGroup,
         }),
       );
     }
@@ -104,8 +105,7 @@ export class ConversationSetupHandler {
   }
 
   private async changeGroup(message: BotAnyMessage, groupName: string, sceneParams?: SceneParams): Promise<void> {
-    await message.send(Text.Build('change-group-searching', { state: 'loading' }));
-    const group = await this.scheduleService.findGroup(groupName, message.universityName);
+    const group = await this.groupService.findGroup(groupName);
 
     const warning = await this.sceneService.get({
       provider: message.provider,
@@ -134,13 +134,7 @@ export class ConversationSetupHandler {
       await this.conversationRepository.save(conversation);
       if (sceneParams) await this.sceneService.remove(sceneParams);
 
-      return this.getSchedule(message, group);
+      await message.send(Text.Build('change-group-searching', { state: 'success' }));
     }
-  }
-
-  private async getSchedule(message: BotAnyMessage, group: GroupEntity): Promise<void> {
-    await message.send(Text.Build('schedule-loading', { state: 'loading' }));
-    await this.scheduleService.updateSchedule(group.university.name, group.externalId);
-    await message.send(Text.Build('schedule-loading', { state: 'done' }));
   }
 }

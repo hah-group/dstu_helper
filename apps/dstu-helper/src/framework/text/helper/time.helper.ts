@@ -1,7 +1,7 @@
 import * as Handlebars from 'handlebars';
 import { BaseHelper } from './base.helper';
 import * as moment from 'moment';
-import { DateTime } from '../../util/time';
+import { DateTime } from '@dstu_helper/common';
 
 export class TimeHelper extends BaseHelper {
   public register(): void {

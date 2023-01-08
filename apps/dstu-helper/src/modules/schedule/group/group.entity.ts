@@ -3,6 +3,8 @@ import { LessonEntity } from '../lesson/lesson.entity';
 import { GroupStatus } from './group-status.enum';
 import { DomainV2Entity } from '@dstu_helper/common';
 import { FacultyEntity } from '../faculty/faculty.entity';
+import { UserEntity } from '../../user/user.entity';
+import { ConversationEntity } from '../../conversation/conversation.entity';
 
 @Entity({ name: 'group' })
 export class GroupEntity extends DomainV2Entity {
@@ -16,15 +18,16 @@ export class GroupEntity extends DomainV2Entity {
   @Column({ type: 'varchar', length: 16 })
   public status: GroupStatus = GroupStatus.READY;
 
-  /*@OneToMany(() => UserEntity, 'group')
-  public users = new Collection<UserEntity>(this);*/
+  @OneToMany(() => UserEntity, (entity) => entity.group)
+  @JoinTable()
+  public users!: Promise<UserEntity[]>;
 
   @OneToMany(() => LessonEntity, (entity) => entity.group, { nullable: false, cascade: true })
   @JoinTable()
   public lessons!: Promise<LessonEntity[]>;
 
-  /*@OneToMany(() => ConversationEntity, 'defaultGroup')
-  public conversations = new Collection<ConversationEntity>(this);*/
+  @OneToMany(() => ConversationEntity, (entity) => entity.defaultGroup)
+  public conversations!: Promise<ConversationEntity>;
 
   @ManyToOne(() => FacultyEntity, (entity) => entity.groups, {
     eager: true,
@@ -40,19 +43,6 @@ export class GroupEntity extends DomainV2Entity {
     entity.name = name;
     entity.faculty = faculty;
     return entity;
-  }
-
-  /*public async getLessonsAtDate(atDate: DateTime): Promise<LessonEntity[]> {
-    if (!this.isInitialized()) await this.init();
-    //if (!this.lessons.isInitialized()) await this.lessons.init();
-
-    return this.lessons.matching({ filters: { atDateFilter: { date: atDate } } });
-  }*/
-
-  public async getLessons(): Promise<LessonEntity[]> {
-    /*if (!this.isInitialized()) await this.init();
-    return this.lessons.getItems();*/
-    return [];
   }
 
   public isEquals(group: GroupEntity): boolean {

@@ -10,23 +10,25 @@ import { ConversationRepository } from '../../conversation/conversation.reposito
 import { Text } from '../../../framework/text/text';
 import { LessonGroupProcessor } from '../../../framework/util/lesson-group/lesson-group.processor';
 import { NEXT_AUDIENCE, WHERE_AUDIENCE } from './activation/where-audience.activation';
-import { GroupEntity } from '../../group/group.entity';
-import { Time } from '../../../framework/util/time';
 import { ORDER_LESSON_ACTIVATION } from './activation/order.activation';
 import { ORDER_LAST_LESSON_ACTIVATION } from './activation/order-last.activation';
 import { ORDER_FIRST_LESSON_ACTIVATION } from './activation/order-first.activation';
 import { ScheduleBuilder } from './schedule.builder';
+import { Time } from '@dstu_helper/common';
+import { GroupEntity } from '../../schedule/group/group.entity';
+import { LessonRepository } from '../../schedule/lesson/lesson.repository';
 
 @Injectable()
 export class ScheduleTextQueryHandler {
   constructor(
     private readonly conversationRepository: ConversationRepository,
     private readonly scheduleBuilder: ScheduleBuilder,
+    private readonly lessonRepository: LessonRepository,
   ) {}
 
   @OnMessage([ScheduleActivation, AtActivation, WhatActivation, WhomActivation])
   public async schedule(message: BotMessage): Promise<void> {
-    const group = await this.getGroupId(message);
+    const group = await this.getGroup(message);
 
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
@@ -38,7 +40,7 @@ export class ScheduleTextQueryHandler {
 
   @OnMessage([WHERE_AUDIENCE, NEXT_AUDIENCE])
   public async whereAudience(message: BotMessage): Promise<void> {
-    const group = await this.getGroupId(message);
+    const group = await this.getGroup(message);
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
@@ -49,7 +51,7 @@ export class ScheduleTextQueryHandler {
 
   @OnMessage(ORDER_LESSON_ACTIVATION)
   public async orderLesson(message: BotMessage): Promise<void> {
-    const group = await this.getGroupId(message);
+    const group = await this.getGroup(message);
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
@@ -61,14 +63,14 @@ export class ScheduleTextQueryHandler {
 
   @OnMessage(ORDER_LAST_LESSON_ACTIVATION)
   public async orderLastLesson(message: BotMessage): Promise<void> {
-    const group = await this.getGroupId(message);
+    const group = await this.getGroup(message);
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
     }
 
     const currentTime = Time.get();
-    const lessons = await group.getLessonsAtDate(currentTime);
+    const lessons = await this.lessonRepository.getFromDate(currentTime, group);
     const lessonGroups = new LessonGroupProcessor(lessons);
 
     const orders = lessonGroups.getOrders();
@@ -86,14 +88,14 @@ export class ScheduleTextQueryHandler {
 
   @OnMessage(ORDER_FIRST_LESSON_ACTIVATION)
   public async orderFirstLesson(message: BotMessage): Promise<void> {
-    const group = await this.getGroupId(message);
+    const group = await this.getGroup(message);
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
     }
 
     const atDate = DateParser.Parse(message.payload.text);
-    const lessons = await group.getLessonsAtDate(atDate);
+    const lessons = await this.lessonRepository.getFromDate(atDate, group);
     const lessonGroups = new LessonGroupProcessor(lessons);
 
     const orders = lessonGroups.getOrders();
@@ -110,12 +112,12 @@ export class ScheduleTextQueryHandler {
     );
   }
 
-  private async getGroupId(message: BotMessage): Promise<number | undefined> {
-    let group = message.from.user.groupId;
+  private async getGroup(message: BotMessage): Promise<GroupEntity | undefined> {
+    let group = message.from.user.group;
     if (!group) {
       if (message.chat.scope == 'conversation') {
         const conversation = await this.conversationRepository.getById(message.chat.id, message.provider);
-        if (conversation) group = conversation.defaultGroupId;
+        if (conversation) group = conversation.defaultGroup;
       }
     }
 

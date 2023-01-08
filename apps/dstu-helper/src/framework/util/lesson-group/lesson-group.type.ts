@@ -1,12 +1,11 @@
-import { LessonEntity } from '../../../modules/lesson/lesson.entity';
+import { LessonEntity } from '../../../modules/schedule/lesson/lesson.entity';
+import { AudienceEntity } from '../../../modules/schedule/audience/audience.entity';
 
 export type LessonGroupResult =
   | LessonGroupSingle
   | LessonGroupSingleManyClassRooms
   | LessonGroupMultiply
   | LessonGroupSingleManyOrders;
-
-export type LessonDestination = Pick<LessonEntity, 'subgroup' | 'classRoom' | 'corpus'>;
 
 export interface LessonGroupSingle {
   order: number;
@@ -17,7 +16,10 @@ export interface LessonGroupSingle {
 export interface LessonGroupSingleManyClassRooms {
   order: number;
   type: 'SINGLE_DIFFERENT_CLASS_ROOMS';
-  destinations: LessonDestination[];
+  destinations: {
+    audience?: AudienceEntity;
+    subgroup?: LessonEntity['subgroup'];
+  }[];
   info: LessonEntity;
 }
 

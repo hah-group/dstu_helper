@@ -1,7 +1,7 @@
 import { KeyboardBuilder } from '../../../../framework/bot/keyboard/keyboard.builder';
 import { TextButton } from '../../../../framework/bot/keyboard/text.button';
 import { Text } from '../../../../framework/text/text';
-import { DateTime, Time } from '../../../../framework/util/time';
+import { DateTime, Time } from '@dstu_helper/common';
 
 type DateContextItem = (currentDate?: DateTime) => any;
 

@@ -1,10 +1,10 @@
 import * as Handlebars from 'handlebars';
 import { BaseHelper } from './base.helper';
 import * as moment from 'moment';
-import { DateTime, Time } from '../../util/time';
 import { WeekdayGenDefinition, WeekdayNumbers } from '../weekday.definition';
 import { MonthGenDefinition, MonthNumbers } from '../month.definition';
 import * as str from 'string';
+import { DateTime, Time } from '@dstu_helper/common';
 
 export class RelativeDateHelper extends BaseHelper {
   public register(): void {

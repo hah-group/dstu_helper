@@ -6,7 +6,7 @@ import {
   LessonGroupSingleManyClassRooms,
   LessonGroupSingleManyOrders,
 } from './lesson-group.type';
-import { LessonEntity } from '../../../modules/lesson/lesson.entity';
+import { LessonEntity } from '../../../modules/schedule/lesson/lesson.entity';
 
 export class LessonGroupProcessor {
   private readonly allLessons: LessonEntity[];
@@ -66,8 +66,8 @@ export class LessonGroupProcessor {
   }
 
   private tryGroupSingle(lessons: LessonEntity[]): LessonGroupSingle | undefined {
-    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => [lesson.name, lesson.subsection].join('_'));
-    const groupedByClassRoom = lodash.uniqBy(lessons, (lesson) => lesson.getDestination());
+    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => [lesson.subject.name, lesson.subsection].join('_'));
+    const groupedByClassRoom = lodash.uniqBy(lessons, (lesson) => lesson.audience?.render());
 
     if (gropedBySubjects.length == 1 && groupedByClassRoom.length == 1) {
       const oneLesson = lessons[0];
@@ -81,7 +81,7 @@ export class LessonGroupProcessor {
   }
 
   private tryGroupSingleDifferentClassRooms(lessons: LessonEntity[]): LessonGroupSingleManyClassRooms | undefined {
-    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => lesson.name);
+    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => lesson.subject.name);
     if (gropedBySubjects.length != 1) return;
 
     let resultLessons = lessons;
@@ -95,16 +95,15 @@ export class LessonGroupProcessor {
       order: firstLesson.order,
       type: 'SINGLE_DIFFERENT_CLASS_ROOMS',
       destinations: resultLessons.map((lesson) => ({
+        audience: lesson.audience,
         subgroup: lesson.subgroup,
-        classRoom: lesson.classRoom,
-        corpus: lesson.corpus,
       })),
       info: firstLesson,
     };
   }
 
   private tryGroupMultiply(lessons: LessonEntity[]): LessonGroupMultiply | undefined {
-    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => lesson.name);
+    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => lesson.subject.name);
 
     if (gropedBySubjects.length < 2) return;
 
@@ -152,6 +151,6 @@ export class LessonGroupProcessor {
   }
 
   private getLessonKey(lesson: LessonEntity): string {
-    return `${lesson.name}_${lesson.getDestination()}_${lesson.type}_${lesson.subgroup}_${lesson.subsection}`;
+    return `${lesson.subject.name}_${lesson.audience?.render()}_${lesson.type}_${lesson.subgroup}_${lesson.subsection}`;
   }
 }

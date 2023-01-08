@@ -98,7 +98,7 @@ export class BotService extends EventEmitter {
         if (!transport.getUser) throw new Error('Unable to get user. Method not implemented');
         user = await transport.getUser(ctx);
       } else {
-        user = new UserEntity({
+        user = UserEntity.Create({
           provider: ctx.provider,
           externalId: ctx.from.id,
           firstName: ctx.from.firstName,
@@ -118,7 +118,7 @@ export class BotService extends EventEmitter {
 
     const addedGroup = await (<UserEntity>user).checkGroup(conversation || undefined);
     if (addedGroup) {
-      this.log.log(`Add user (id: ${user?.id}) to group (id: ${user?.groupId})`);
+      this.log.log(`Add user (id: ${user?.id}) to group (id: ${addedGroup})`);
     }
 
     if (addedConversation || addedGroup) await this.userRepository.save(<UserEntity>user);

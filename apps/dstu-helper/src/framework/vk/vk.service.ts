@@ -25,7 +25,7 @@ import {
 } from '../bot/type/bot-action.type';
 import { BotPayloadType } from '../bot/type/bot-payload-type.enum';
 import { VkKeyboardBuilder } from './vk-keyboard.builder';
-import { delay } from '../util/delay';
+import { delay } from '@dstu_helper/common';
 
 export interface VkContextMetadata {
   lastMessageId?: number;
@@ -119,7 +119,7 @@ export class VkService {
       console.error(e);
     }
 
-    return new UserEntity({
+    return UserEntity.Create({
       provider: 'vk',
       externalId: userId,
       firstName: response?.first_name,
@@ -194,7 +194,7 @@ export class VkService {
 
     const result: UserEntity = await job.finished();
 
-    return new UserEntity({
+    return UserEntity.Create({
       provider: 'vk',
       externalId: result.externalId,
       firstName: result.firstName,

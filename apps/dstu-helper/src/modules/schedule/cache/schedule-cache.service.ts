@@ -49,6 +49,8 @@ export class ScheduleCacheService {
     const groupsToDelete = lodash.differenceBy(existGroups, groups, (record) => record.externalId);
     await this.groupRepository.delete(groupsToDelete);
 
+    console.log(groups.filter((e) => !e.faculty.id));
+
     await this.groupRepository.save(groups);
   }
 

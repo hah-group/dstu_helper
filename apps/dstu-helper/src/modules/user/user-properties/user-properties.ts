@@ -1,4 +1,4 @@
-import { Moment, Time } from '@dstu_helper/common';
+import { DateTime, Moment, Time } from '@dstu_helper/common';
 
 export interface UserPropertiesEntityParams {
   selectedDate?: Date;

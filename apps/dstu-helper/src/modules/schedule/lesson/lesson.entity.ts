@@ -106,6 +106,25 @@ export class LessonEntity extends DomainV2Entity {
     this.order = data['номерЗанятия'];
   }
 
+  public renderType(): string {
+    switch (this.type) {
+      case LessonType.LECTURE:
+        return '📔 Лекция:';
+      case LessonType.PRACTICAL:
+        return '📕 Практика:';
+      case LessonType.LABORATORY:
+        return '🔬 Лабораторная:';
+      case LessonType.EXAMINATION:
+        return '📝 Экзамен:';
+      case LessonType.EXAM_WITHOUT_MARK:
+        return '📝 Зачет:';
+      case LessonType.PHYSICAL_EDUCATION:
+        return '🏃‍';
+      case LessonType.NON_TYPE:
+        return '';
+    }
+  }
+
   private updateSubject(data: ApiDSTUScheduleItem): void {
     const subjectInfo = DSTULessonParser.ParseSubject(data['дисциплина']);
     if (!subjectInfo) throw new Error(`Subject parse error: "${data['дисциплина']}"`);

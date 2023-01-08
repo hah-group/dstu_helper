@@ -6,6 +6,6 @@ export const Moment = moment;
 
 export class Time {
   public static get(): DateTime {
-    return moment();
+    return moment('2023-01-01');
   }
 }

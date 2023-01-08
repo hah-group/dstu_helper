@@ -1,4 +1,4 @@
-import { TimeOrderInterval } from '../../../framework/util/time-order/time-order-interval.type';
+import { TimeOrderInterval } from '../time-order-interval.type';
 
 export const LessonInterval: TimeOrderInterval[] = [
   {

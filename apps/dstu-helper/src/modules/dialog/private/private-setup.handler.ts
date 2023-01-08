@@ -10,9 +10,7 @@ import {
   WhereNextAudienceButton,
 } from './keyboard/main-menu.keyboard';
 import { OnButton } from '../../../framework/bot/decorator/on-button.decorator';
-import { GroupEntity } from '../../group/group.entity';
 import { ScheduleBuilder } from '../schedule-text-query/schedule.builder';
-import { DateTime, Time } from '../../../framework/util/time';
 import {
   CurrentDateButton,
   NextDayButton,
@@ -25,9 +23,10 @@ import {
 import { UserRepository } from '../../user/user.repository';
 import { OnInlineButton } from '../../../framework/bot/decorator/on-inline-button.decorator';
 import * as moment from 'moment';
-import { ScheduleService } from '../../schedule/schedule.service';
 import { UserProperties } from '../../user/user-properties/user-properties';
-import { delay } from '../../../framework/util/delay';
+import { DateTime, delay, Time } from '@dstu_helper/common';
+import { GroupService } from '../../schedule/group/group.service';
+import { GroupEntity } from '../../schedule/group/group.entity';
 
 const MY_GROUP_CHANGE_REGEX = /^\/моя группа ([a-zа-я\d\- ]*)/i;
 
@@ -36,7 +35,7 @@ export class PrivateSetupHandler {
   constructor(
     private readonly scheduleBuilder: ScheduleBuilder,
     private readonly userRepository: UserRepository,
-    private readonly scheduleService: ScheduleService,
+    private readonly groupService: GroupService,
   ) {}
 
   @OnMessage('/сброс', 'private')
@@ -63,11 +62,6 @@ export class PrivateSetupHandler {
     );
   }
 
-  @OnMessage(/^\/моя группа[\n ]*$/im)
-  public async onIncorrectChangeGroup(message: BotMessage): Promise<void> {
-    await message.send(Text.Build('change-private-group-incorrect'));
-  }
-
   @OnMessage(MY_GROUP_CHANGE_REGEX)
   public async onChangeGroup(message: BotMessage): Promise<void> {
     const match = message.payload.text.match(MY_GROUP_CHANGE_REGEX);
@@ -77,16 +71,16 @@ export class PrivateSetupHandler {
     }
 
     await message.send(Text.Build('change-group-searching', { state: 'loading' }), new KeyboardBuilder());
-    const group = await this.scheduleService.findGroup(match[1], message.universityName);
+    const group = await this.groupService.findGroup(match[1]);
 
     if (!group) {
       await message.send(Text.Build('change-group-searching', { state: 'failed' }));
     } else {
-      message.from.user.group = group;
+      message.from.user.group = Promise.resolve(group);
       await this.userRepository.save(message.from.user);
 
       await message.send(Text.Build('schedule-loading', { state: 'loading' }));
-      await this.scheduleService.updateSchedule(group.university.name, group.externalId);
+      //await this.scheduleService.updateSchedule(group.university.name, group.externalId);
 
       let keyboard;
       if (message.chat.scope == 'private') keyboard = MainMenuKeyboard;
@@ -104,7 +98,7 @@ export class PrivateSetupHandler {
 
   @OnButton(WhereAudienceButton, 'private')
   public async onWhereAudience(message: BotMessage): Promise<void> {
-    const group = message.from.user.group;
+    const group = await message.from.user.group;
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
@@ -116,7 +110,7 @@ export class PrivateSetupHandler {
 
   @OnButton(WhereNextAudienceButton, 'private')
   public async onWhereNextAudience(message: BotMessage): Promise<void> {
-    const group = message.from.user.group;
+    const group = await message.from.user.group;
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
@@ -128,7 +122,7 @@ export class PrivateSetupHandler {
 
   @OnInlineButton(TodayButton())
   public async onToday(message: BotMessage, edit = true): Promise<void> {
-    const group = message.from.user.group;
+    const group = await message.from.user.group;
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
@@ -141,7 +135,7 @@ export class PrivateSetupHandler {
 
   @OnInlineButton(NextDayButton())
   public async onNextDay(message: BotMessage): Promise<void> {
-    const group = message.from.user.group;
+    const group = await message.from.user.group;
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
@@ -155,7 +149,7 @@ export class PrivateSetupHandler {
 
   @OnInlineButton(PrevDayButton())
   public async onPrevDay(message: BotMessage): Promise<void> {
-    const group = message.from.user.group;
+    const group = await message.from.user.group;
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
@@ -169,7 +163,7 @@ export class PrivateSetupHandler {
 
   @OnInlineButton(NextWeekButton())
   public async onNextWeek(message: BotMessage): Promise<void> {
-    const group = message.from.user.group;
+    const group = await message.from.user.group;
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
@@ -183,7 +177,7 @@ export class PrivateSetupHandler {
 
   @OnInlineButton(PrevWeekButton())
   public async onPrevWeek(message: BotMessage): Promise<void> {
-    const group = message.from.user.group;
+    const group = await message.from.user.group;
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;

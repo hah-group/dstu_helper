@@ -8,6 +8,7 @@ import { FacultyModule } from '../faculty/faculty.module';
 import { AudienceModule } from '../audience/audience.module';
 import { SubjectModule } from '../subject/subject.module';
 import { TeacherModule } from '../teacher/teacher.module';
+import { ScheduleCacheController } from './schedule-cache.controller';
 
 @Module({
   imports: [
@@ -21,5 +22,6 @@ import { TeacherModule } from '../teacher/teacher.module';
   ],
   providers: [ScheduleCacheService, ScheduleCronService],
   exports: [ScheduleCacheService],
+  controllers: [ScheduleCacheController],
 })
 export class ScheduleCacheModule {}

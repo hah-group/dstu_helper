@@ -34,4 +34,10 @@ export class AudienceEntity extends DomainV2Entity {
   public get uniqueId(): string {
     return [this.corpus, this.classRoom, this.distance].join('_');
   }
+
+  public render(): string | undefined {
+    if (this.distance) return;
+    if (this.corpus) return `${this.corpus}-${this.classRoom}`;
+    else return this.classRoom;
+  }
 }
