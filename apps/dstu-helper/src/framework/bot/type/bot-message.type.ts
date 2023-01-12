@@ -39,6 +39,8 @@ export type BotHandlerContext = BotContext & BotSendCallback & BotEditCallback &
 
 export type BotMessage = BotBaseContext & BotPayload<BotMessagePayload> & BotSendCallback & BotEditCallback;
 
+export type BotEditableMessage = BotBaseContext & BotSendCallback & BotEditCallback;
+
 export type BotChatEvent = BotBaseContext & BotPayload<BotChatEventPayload> & BotSendCallback;
 
 export type BotInlineMessage = BotBaseContext &

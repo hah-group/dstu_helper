@@ -1,9 +1,9 @@
 import { Column, Entity, JoinTable, OneToMany } from 'typeorm';
-import { DomainV2Entity } from '@dstu_helper/common';
+import { DomainEntity } from '@dstu_helper/common';
 import { GroupEntity } from '../group/group.entity';
 
 @Entity({ name: 'faculty' })
-export class FacultyEntity extends DomainV2Entity {
+export class FacultyEntity extends DomainEntity {
   @Column()
   public name!: string;
 

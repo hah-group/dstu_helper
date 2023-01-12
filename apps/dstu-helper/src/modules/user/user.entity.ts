@@ -1,7 +1,7 @@
 import { ConversationEntity } from '../conversation/conversation.entity';
 import { UserProperties } from './user-properties/user-properties';
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
-import { DomainV2Entity } from '@dstu_helper/common';
+import { DomainEntity } from '@dstu_helper/common';
 import { GroupEntity } from '../schedule/group/group.entity';
 
 export interface UserCreateParams {
@@ -14,7 +14,7 @@ export interface UserCreateParams {
 
 @Entity({ name: 'user' })
 @Index(['externalId', 'provider'], { unique: true })
-export class UserEntity extends DomainV2Entity {
+export class UserEntity extends DomainEntity {
   @Column()
   public firstName?: string;
 
@@ -38,8 +38,17 @@ export class UserEntity extends DomainV2Entity {
   @JoinTable()
   public conversations!: Promise<ConversationEntity[]>;
 
-  @Column({ type: 'simple-json', nullable: true })
-  public properties!: UserProperties;
+  @Column({ type: 'simple-json', nullable: true, name: 'properties' })
+  private _properties!: UserProperties;
+
+  public get properties(): UserProperties {
+    if (!this._properties) this._properties = new UserProperties();
+    return this._properties;
+  }
+
+  public set properties(value: UserProperties) {
+    this._properties = value;
+  }
 
   public static Create(data: UserCreateParams): UserEntity {
     const entity = new this();

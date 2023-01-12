@@ -1,11 +1,11 @@
 import { UserEntity } from '../user/user.entity';
-import { DomainV2Entity } from '@dstu_helper/common';
+import { DomainEntity } from '@dstu_helper/common';
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import { GroupEntity } from '../schedule/group/group.entity';
 
 @Entity({ name: 'conversation' })
 @Index(['provider', 'externalId'], { unique: true })
-export class ConversationEntity extends DomainV2Entity {
+export class ConversationEntity extends DomainEntity {
   @Column()
   public provider!: string;
 

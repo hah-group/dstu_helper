@@ -48,7 +48,7 @@ export class PrivateSetupHandler {
     await this.onStart(message);
   }
 
-  @OnMessage(['/start', 'старт', '/старт', 'start', 'Начало', 'Начать'], 'private')
+  @OnMessage(['/start$', 'старт$', '/старт$', 'start$', 'Начало$', 'Начать$'], 'private')
   public async onStart(message: BotMessage): Promise<void> {
     const isGroupExist = !!message.from.user.group;
     let keyboard: KeyboardBuilder | undefined;
@@ -70,23 +70,17 @@ export class PrivateSetupHandler {
       return;
     }
 
-    await message.send(Text.Build('change-group-searching', { state: 'loading' }), new KeyboardBuilder());
     const group = await this.groupService.findGroup(match[1]);
-
     if (!group) {
       await message.send(Text.Build('change-group-searching', { state: 'failed' }));
     } else {
       message.from.user.group = Promise.resolve(group);
       await this.userRepository.save(message.from.user);
 
-      await message.send(Text.Build('schedule-loading', { state: 'loading' }));
-      //await this.scheduleService.updateSchedule(group.university.name, group.externalId);
-
       let keyboard;
       if (message.chat.scope == 'private') keyboard = MainMenuKeyboard;
 
-      await message.send(Text.Build('schedule-loading', { state: 'done' }), keyboard);
-
+      await message.send(Text.Build('change-group-searching', { state: 'success' }), keyboard);
       if (message.chat.scope == 'private') await this.onSchedule(message);
     }
   }

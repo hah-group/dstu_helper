@@ -12,4 +12,6 @@ export const MainMenuKeyboard = new KeyboardBuilder()
   .add(ScheduleButton)
   .row()
   .add(WhereAudienceButton)
-  .add(WhereNextAudienceButton);
+  .add(WhereNextAudienceButton)
+  .row()
+  .add(SettingsButton);

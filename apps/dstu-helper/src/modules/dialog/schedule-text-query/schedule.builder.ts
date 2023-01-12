@@ -12,6 +12,7 @@ import { GroupEntity } from '../../schedule/group/group.entity';
 import { TimeOrderProcessor } from '../../../framework/util/time-order/time-order.processor';
 import { LessonInterval } from '../../schedule/schedule-provider/lesson-interval';
 import { LanguageOrderDefinition, LanguageOrderKey } from '../../../framework/text/language-order.definition';
+import { inspect } from 'util';
 
 @Injectable()
 export class ScheduleBuilder {
@@ -21,9 +22,23 @@ export class ScheduleBuilder {
     if (typeof query == 'string') atDate = DateParser.Parse(query);
     else atDate = query;
 
-    const lessons = await this.lessonRepository.getFromDate(atDate, group);
+    const lessons = await this.lessonRepository.getAtDate(atDate, group);
+    console.log(lessons);
     const groups = new LessonGroupProcessor(lessons).getLessonGroups();
 
+    console.log(
+      inspect(
+        {
+          schedule: groups,
+          group: group,
+          atDate: atDate,
+          strictDate: strict,
+        },
+        false,
+        10,
+        true,
+      ),
+    );
     return Text.Build('schedule-at-day', {
       schedule: groups,
       group: group,
@@ -40,7 +55,7 @@ export class ScheduleBuilder {
     if (typeof query == 'string') isNow = !!query.match(WHERE_AUDIENCE);
     else isNow = query;
 
-    const lessons = await this.lessonRepository.getFromDate(currentTime, group);
+    const lessons = await this.lessonRepository.getAtDate(currentTime, group);
     const lessonGroups = new LessonGroupProcessor(lessons);
 
     const orders = lessonGroups.getOrders();
@@ -90,7 +105,7 @@ export class ScheduleBuilder {
     if (!order) return;
 
     const currentTime = Time.get();
-    const lessons = await this.lessonRepository.getFromDate(currentTime, group);
+    const lessons = await this.lessonRepository.getAtDate(currentTime, group);
     const lessonGroups = new LessonGroupProcessor(lessons);
 
     const orders = lessonGroups.getOrders();

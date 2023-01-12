@@ -1,9 +1,9 @@
-import { CoreV2Repository } from '@dstu_helper/common';
+import { CoreRepository } from '@dstu_helper/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SubjectEntity } from './subject.entity';
 
-export class SubjectRepository extends CoreV2Repository<SubjectEntity> {
+export class SubjectRepository extends CoreRepository<SubjectEntity> {
   constructor(@InjectRepository(SubjectEntity) repository: Repository<SubjectEntity>) {
     super(repository);
   }

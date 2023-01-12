@@ -1,12 +1,16 @@
-import { BaseEntity, PrimaryKey, Property } from '@mikro-orm/core';
+import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
-export class DomainEntity extends BaseEntity<DomainEntity, 'id'> {
-  @PrimaryKey()
+export class DomainEntity {
+  @PrimaryGeneratedColumn()
   public id!: number;
 
-  @Property()
-  public readonly createdAt: Date = new Date();
+  @CreateDateColumn()
+  public readonly createdAt!: Date;
 
-  @Property({ onUpdate: () => new Date() })
-  public readonly updatedAt: Date = new Date();
+  @UpdateDateColumn()
+  public readonly updatedAt!: Date;
+
+  public get isSaved(): boolean {
+    return typeof this.id !== 'number';
+  }
 }

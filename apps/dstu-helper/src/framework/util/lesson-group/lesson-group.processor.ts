@@ -81,7 +81,7 @@ export class LessonGroupProcessor {
   }
 
   private tryGroupSingleDifferentClassRooms(lessons: LessonEntity[]): LessonGroupSingleManyClassRooms | undefined {
-    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => lesson.subject.name);
+    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => lesson.subject.id);
     if (gropedBySubjects.length != 1) return;
 
     let resultLessons = lessons;
@@ -103,7 +103,7 @@ export class LessonGroupProcessor {
   }
 
   private tryGroupMultiply(lessons: LessonEntity[]): LessonGroupMultiply | undefined {
-    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => lesson.subject.name);
+    const gropedBySubjects = lodash.uniqBy(lessons, (lesson) => lesson.subject.id);
 
     if (gropedBySubjects.length < 2) return;
 
@@ -151,6 +151,6 @@ export class LessonGroupProcessor {
   }
 
   private getLessonKey(lesson: LessonEntity): string {
-    return `${lesson.subject.name}_${lesson.audience?.render()}_${lesson.type}_${lesson.subgroup}_${lesson.subsection}`;
+    return `${lesson.subject.id}_${lesson.audience?.render()}_${lesson.type}_${lesson.subgroup}_${lesson.subsection}`;
   }
 }

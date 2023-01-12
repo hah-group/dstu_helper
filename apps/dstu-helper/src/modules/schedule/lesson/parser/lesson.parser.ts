@@ -8,6 +8,8 @@ import { LessonType } from '../lesson-type.enum';
 import { pretties } from './lesson.prettier';
 import { Moment } from '@dstu_helper/common';
 import { normalizeWhiteSpaces } from 'normalize-text';
+import { TeacherDegree } from '../../teacher/teacher-degree.enum';
+import { TeacherDegreeDefinition, TeacherDegreeKeys } from '../../teacher/teacher-degree.definition';
 
 export interface SubjectInfo {
   type: LessonType;
@@ -20,7 +22,7 @@ export interface TeacherInfo {
   firstName?: string;
   lastName: string;
   middleName?: string;
-  degreeRaw?: string;
+  degree: TeacherDegree;
 }
 
 export interface AudienceInfo {
@@ -100,9 +102,14 @@ export default class DSTULessonParser {
     return Moment(correctDate).toDate();
   }
 
-  public static ParseTeacher(teacher?: string, degree?: string): TeacherInfo | undefined {
+  public static ParseTeacher(teacher?: string, degreeRaw?: string): TeacherInfo | undefined {
     if (!teacher) return;
-    let clearText = teacher.replace(new RegExp(degree || '', 'gi'), '');
+    let degree = degreeRaw ? TeacherDegreeDefinition[degreeRaw] : undefined;
+
+    const degreeMatch = teacher.match(new RegExp(`(${TeacherDegreeKeys()})`, 'ig'));
+    if (degreeMatch && degreeMatch[1]) degree = TeacherDegreeDefinition[<string>degreeMatch[1]];
+
+    let clearText = teacher.replace(new RegExp(TeacherDegreeKeys(), 'gi'), '');
     clearText = clearText.replace(/(?<dig>\d+)/g, ' $<dig>');
     clearText = clearText.replace(/( {2})/g, ' ');
     clearText = clearText.trim();
@@ -112,7 +119,7 @@ export default class DSTULessonParser {
       lastName: str(names[0] || clearText).capitalize().s,
       firstName: names[1] && str(names[1]).capitalize().s,
       middleName: names[2] && str(names[2]).capitalize().s,
-      degreeRaw: degree,
+      degree: degree || TeacherDegree.NON_TYPE,
     };
   }
 

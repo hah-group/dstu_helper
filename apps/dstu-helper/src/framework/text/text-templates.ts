@@ -8,19 +8,21 @@ import { TimeHelper } from './helper/time.helper';
 import { LessonDestinationHelper } from './helper/lesson-destination.helper';
 import * as basicHelpers from 'handlebars-helpers';
 import { LessonTypeHelper } from './helper/lesson-type.helper';
-import { RenderDestinationHelper } from './helper/render-destination.helper';
 import { RelativeDateHelper } from './helper/relative-date.helper';
 import { DateButtonHelper } from './helper/date-button.helper';
 import { IsNowLessonHelper } from './helper/is-now-lesson.helper';
+import { RenderBooleanHelper } from './helper/render-boolean.helper';
+import { TeacherHelper } from './helper/teacher.helper';
 
 const helpers: Type<BaseHelper>[] = [
   TimeHelper,
   LessonDestinationHelper,
   LessonTypeHelper,
-  RenderDestinationHelper,
   RelativeDateHelper,
   DateButtonHelper,
   IsNowLessonHelper,
+  RenderBooleanHelper,
+  TeacherHelper,
 ];
 const log = new Logger('TextTemplate');
 

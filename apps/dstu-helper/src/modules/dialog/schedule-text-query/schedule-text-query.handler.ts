@@ -70,7 +70,7 @@ export class ScheduleTextQueryHandler {
     }
 
     const currentTime = Time.get();
-    const lessons = await this.lessonRepository.getFromDate(currentTime, group);
+    const lessons = await this.lessonRepository.getAtDate(currentTime, group);
     const lessonGroups = new LessonGroupProcessor(lessons);
 
     const orders = lessonGroups.getOrders();
@@ -95,7 +95,7 @@ export class ScheduleTextQueryHandler {
     }
 
     const atDate = DateParser.Parse(message.payload.text);
-    const lessons = await this.lessonRepository.getFromDate(atDate, group);
+    const lessons = await this.lessonRepository.getAtDate(atDate, group);
     const lessonGroups = new LessonGroupProcessor(lessons);
 
     const orders = lessonGroups.getOrders();

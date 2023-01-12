@@ -1,11 +1,11 @@
 import { LessonEntity } from '../lesson/lesson.entity';
 import { AudienceInfo } from '../lesson/parser/lesson.parser';
-import { DomainV2Entity } from '@dstu_helper/common';
+import { DomainEntity } from '@dstu_helper/common';
 import { Column, Entity, Index, JoinTable, OneToMany } from 'typeorm';
 
 @Entity({ name: 'audience' })
 @Index(['corpus', 'classRoom', 'distance'], { unique: true })
-export class AudienceEntity extends DomainV2Entity {
+export class AudienceEntity extends DomainEntity {
   @Column({ nullable: true })
   public corpus?: string;
 

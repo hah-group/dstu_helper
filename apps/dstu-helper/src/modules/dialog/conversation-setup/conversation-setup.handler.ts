@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnInvite } from '../../../framework/bot/decorator/on-invite.decorator';
-import { BotAnyMessage, BotInlineMessage, BotMessage } from '../../../framework/bot/type/bot-message.type';
+import { BotEditableMessage, BotInlineMessage, BotMessage } from '../../../framework/bot/type/bot-message.type';
 import { Text } from '../../../framework/text/text';
 import { OnMessage } from '../../../framework/bot/decorator/on-message.decorator';
 import { ConversationRepository } from '../../conversation/conversation.repository';
@@ -100,11 +100,10 @@ export class ConversationSetupHandler {
     await this.sceneService.remove(sceneParams);
     await message.edit(Text.Build('change-group-warning'), new KeyboardBuilder());
 
-    //TODO Add types for scene value
     return this.changeGroup(message, sceneValue.groupName, sceneParams);
   }
 
-  private async changeGroup(message: BotAnyMessage, groupName: string, sceneParams?: SceneParams): Promise<void> {
+  private async changeGroup(message: BotEditableMessage, groupName: string, sceneParams?: SceneParams): Promise<void> {
     const group = await this.groupService.findGroup(groupName);
 
     const warning = await this.sceneService.get({
@@ -124,8 +123,10 @@ export class ConversationSetupHandler {
       );
     }
 
+    const action = sceneParams ? message.edit : message.send;
+
     if (!group) {
-      await message.send(Text.Build('change-group-searching', { state: 'failed' }));
+      await action(Text.Build('change-group-searching', { state: 'failed' }));
     } else {
       const conversation = await this.conversationRepository.getById(message.chat.id, message.provider);
       if (!conversation) throw new Error('Conversation not found');
@@ -134,7 +135,7 @@ export class ConversationSetupHandler {
       await this.conversationRepository.save(conversation);
       if (sceneParams) await this.sceneService.remove(sceneParams);
 
-      await message.send(Text.Build('change-group-searching', { state: 'success' }));
+      await action(Text.Build('change-group-searching', { state: 'success' }));
     }
   }
 }

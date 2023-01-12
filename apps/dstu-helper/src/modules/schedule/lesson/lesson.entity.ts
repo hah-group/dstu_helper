@@ -2,7 +2,7 @@ import { Column, Entity, Index, JoinTable, ManyToOne } from 'typeorm';
 import { LessonType } from './lesson-type.enum';
 import { TeacherEntity } from '../teacher/teacher.entity';
 import { GroupEntity } from '../group/group.entity';
-import { DomainV2Entity } from '@dstu_helper/common';
+import { DomainEntity } from '@dstu_helper/common';
 import { SubjectEntity } from '../subject/subject.entity';
 import { AudienceEntity } from '../audience/audience.entity';
 import DSTULessonParser from './parser/lesson.parser';
@@ -24,7 +24,7 @@ import { ApiDSTUScheduleItem } from '../schedule-provider/type/api-response-sche
     };
   },
 })*/
-export class LessonEntity extends DomainV2Entity {
+export class LessonEntity extends DomainEntity {
   @ManyToOne(() => GroupEntity, (entity) => entity.lessons, {
     eager: true,
     nullable: false,

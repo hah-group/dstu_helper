@@ -1,13 +1,13 @@
 import { Column, Entity, Index, JoinTable, ManyToOne, OneToMany } from 'typeorm';
 import { LessonEntity } from '../lesson/lesson.entity';
 import { GroupStatus } from './group-status.enum';
-import { DomainV2Entity } from '@dstu_helper/common';
+import { DomainEntity } from '@dstu_helper/common';
 import { FacultyEntity } from '../faculty/faculty.entity';
 import { UserEntity } from '../../user/user.entity';
 import { ConversationEntity } from '../../conversation/conversation.entity';
 
 @Entity({ name: 'group' })
-export class GroupEntity extends DomainV2Entity {
+export class GroupEntity extends DomainEntity {
   @Column()
   public name!: string;
 

@@ -1,10 +1,11 @@
 import { Column, Entity, JoinTable, OneToMany } from 'typeorm';
 import { LessonEntity } from '../lesson/lesson.entity';
-import { DomainV2Entity } from '@dstu_helper/common';
+import { DomainEntity, lodash } from '@dstu_helper/common';
 import { TeacherInfo } from '../lesson/parser/lesson.parser';
+import { TeacherDegree } from './teacher-degree.enum';
 
 @Entity({ name: 'teacher' })
-export class TeacherEntity extends DomainV2Entity {
+export class TeacherEntity extends DomainEntity {
   @Column({ nullable: true })
   public firstName?: string;
 
@@ -14,8 +15,8 @@ export class TeacherEntity extends DomainV2Entity {
   @Column({ nullable: true })
   public middleName?: string;
 
-  @Column({ nullable: true })
-  public degreeRaw?: string;
+  @Column({ nullable: false })
+  public degree!: TeacherDegree;
 
   @Column({ unique: true })
   public externalId!: number;
@@ -38,7 +39,29 @@ export class TeacherEntity extends DomainV2Entity {
     this.lastName = data.lastName;
     this.firstName = data.firstName;
     this.middleName = data.middleName;
-    this.degreeRaw = data.degreeRaw;
+    this.degree = data.degree;
     this.externalId = externalId;
+  }
+
+  public render(short: boolean): string {
+    const entities: (string | undefined)[] = [this.lastName];
+
+    if (short) {
+      if (this.firstName && this.middleName) {
+        entities.push(`${this.firstName[0]}.${this.middleName[0]}.`);
+      }
+    } else entities.push(...[this.firstName, this.middleName]);
+
+    let degree;
+    switch (this.degree) {
+      case TeacherDegree.DEAN:
+        degree = 'Декан';
+        break;
+      case TeacherDegree.DEPARTMENT_CHAIRMAN:
+        degree = 'Зам. кафедры';
+        break;
+    }
+
+    return `👨‍🏫 ${lodash.compact(entities).join(' ')}${degree ? ` (${degree})` : ''}`;
   }
 }

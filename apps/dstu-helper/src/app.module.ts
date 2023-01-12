@@ -11,7 +11,7 @@ import { ConversationModule } from './modules/conversation/conversation.module';
 import { SceneModule } from './framework/scene/scene.module';
 import { VkModule } from './framework/vk/vk.module';
 import { ReleaseModule } from './modules/release/release.module';
-import { DatabaseV2Module } from '@dstu_helper/common';
+import { DatabaseModule } from '@dstu_helper/common';
 import { ScheduleModule } from './modules/schedule/schedule.module';
 
 @Module({
@@ -19,7 +19,7 @@ import { ScheduleModule } from './modules/schedule/schedule.module';
     ConfigModule.forRoot(),
     CronModule.forRoot(),
     EventEmitterModule.forRoot(),
-    DatabaseV2Module.forRoot('app'),
+    DatabaseModule.forRoot('app'),
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST,

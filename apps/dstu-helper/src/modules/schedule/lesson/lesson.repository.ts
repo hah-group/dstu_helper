@@ -1,10 +1,10 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThanOrEqual, Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { LessonEntity } from './lesson.entity';
-import { CoreV2Repository, DateTime } from '@dstu_helper/common';
+import { CoreRepository, DateTime } from '@dstu_helper/common';
 import { GroupEntity } from '../group/group.entity';
 
-export class LessonRepository extends CoreV2Repository<LessonEntity> {
+export class LessonRepository extends CoreRepository<LessonEntity> {
   constructor(@InjectRepository(LessonEntity) repository: Repository<LessonEntity>) {
     super(repository);
   }
@@ -20,6 +20,18 @@ export class LessonRepository extends CoreV2Repository<LessonEntity> {
     return this.repository.find({
       where: {
         start: MoreThanOrEqual(date.startOf('d').toDate()),
+        group: {
+          id: group.id,
+        },
+      },
+    });
+  }
+
+  public async getAtDate(date: DateTime, group: GroupEntity): Promise<LessonEntity[]> {
+    return this.repository.find({
+      where: {
+        start: MoreThanOrEqual(date.startOf('d').toDate()),
+        end: LessThanOrEqual(date.endOf('d').toDate()),
         group: {
           id: group.id,
         },

@@ -1,51 +1,39 @@
-import { DomainEntity } from '../database/domain.entity';
-import { EntityRepository, QueryBuilder } from '@mikro-orm/postgresql';
-import { FilterQuery, Loaded, RequiredEntityData } from '@mikro-orm/core/typings';
-import { FindOptions, MikroORM, UseRequestContext } from '@mikro-orm/core';
-import { FindOneOptions } from '@mikro-orm/core/drivers/IDatabaseDriver';
+import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
+import { DomainEntity } from '@dstu_helper/common';
+import { Logger } from '@nestjs/common';
 
-export abstract class CoreRepository<E extends Record<string, any>> {
-  protected constructor(protected readonly repository: EntityRepository<E>, protected readonly orm: MikroORM) {}
+export abstract class CoreRepository<E extends DomainEntity> {
+  private readonly log = new Logger('Repository');
+  protected constructor(protected readonly repository: Repository<E>) {}
 
-  @UseRequestContext()
-  public async create(data: Omit<RequiredEntityData<E>, keyof DomainEntity>): Promise<E> {
-    return this.repository.create(<RequiredEntityData<E>>data);
-  }
-
-  @UseRequestContext()
-  public async get<P extends string = never>(id: number, options?: FindOneOptions<E, P>): Promise<Loaded<E, P> | null> {
-    return this.repository.findOne(
-      <any>{
+  public async get(id: number): Promise<E | null> {
+    return this.repository.findOne(<any>{
+      where: {
         id: id,
       },
-      options,
-    );
+    });
   }
 
-  @UseRequestContext()
-  public async findOne<P extends string = never>(
-    query: FilterQuery<E>,
-    options?: FindOneOptions<E, P>,
-  ): Promise<Loaded<E, P> | null> {
-    return this.repository.findOne(query, options);
+  public async findOne(query: FindOptionsWhere<E>, options?: Omit<FindOneOptions<E>, 'where'>): Promise<E | null> {
+    return this.repository.findOne({
+      where: query,
+      ...options,
+    });
   }
 
-  @UseRequestContext()
-  public async findAll(data?: FindOptions<E>): Promise<E[]> {
-    return this.repository.findAll(data || {});
+  public async findAll(data?: FindOptionsWhere<E>): Promise<E[]> {
+    return this.repository.find({ where: data });
   }
 
-  public queryBuilder(alias?: string): QueryBuilder<E> {
-    return this.repository.qb(alias);
+  public async delete(entity: E | E[]): Promise<void> {
+    this.log.debug(`Deleting entity${Array.isArray(entity) ? ' array' : ''}: ${this.repository.metadata.name}`);
+    const entities = Array.isArray(entity) ? entity : [entity];
+    await this.repository.remove(entities);
   }
 
-  @UseRequestContext()
-  public async delete(entity: E): Promise<void> {
-    return this.repository.remove(entity).flush();
-  }
-
-  @UseRequestContext()
   public async save(entity: E | E[]): Promise<void> {
-    return this.repository.persistAndFlush(entity);
+    this.log.debug(`Saving entity${Array.isArray(entity) ? ' array' : ''}: ${this.repository.metadata.name}`);
+    const entities = Array.isArray(entity) ? entity : [entity];
+    await this.repository.save(entities);
   }
 }

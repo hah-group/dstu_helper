@@ -1,9 +1,9 @@
 import { ConversationEntity } from './conversation.entity';
-import { CoreV2Repository } from '@dstu_helper/common';
+import { CoreRepository } from '@dstu_helper/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-export class ConversationRepository extends CoreV2Repository<ConversationEntity> {
+export class ConversationRepository extends CoreRepository<ConversationEntity> {
   constructor(@InjectRepository(ConversationEntity) repository: Repository<ConversationEntity>) {
     super(repository);
   }
