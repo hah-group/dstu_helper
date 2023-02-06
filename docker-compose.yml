@@ -15,7 +15,7 @@ services:
       - REDIS_PORT
       - TZ
       - ENV
-    image: "registry.mtdl.ru/dstu_helper_app:2.0.3r1"
+    image: "registry.mtdl.ru/dstu_helper_app:2.0.3r2"
     ports:
       - "3060:3000"
 
