@@ -5663,7 +5663,7 @@ inquirer@8.1.1:
     strip-ansi "^6.0.0"
     through "^2.3.6"
 
-inspectable@^1.2.1:
+inspectable@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/inspectable/-/inspectable-1.2.2.tgz#dbc3ecad55b6159f4d2c91862403ef48d6e45437"
   integrity sha512-6wGbJJe0Y8oTLSoLXIZht1OVLLh9DNitpX+IoneyUWczkHQNWcVYuFVu7beGQoCemBELdJXpaffswBeQ9RTSVA==
@@ -7091,7 +7091,7 @@ micromatch@^4.0.4:
     braces "^3.0.2"
     picomatch "^2.3.1"
 
-middleware-io@^2.8.0:
+middleware-io@^2.8.1:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/middleware-io/-/middleware-io-2.8.1.tgz#89b5cbe16ea985402891e2d29b967be2dd4f6cb0"
   integrity sha512-H0XftkexHKxxQsoCsItMzM7WU3S/rIFzL3T4guU8tWLKr7e5cVkdaZ+JQeeL+TB3OaHpqFi/ozYqQl69z2X6bg==
@@ -9555,17 +9555,17 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vk-io@^4.4.0:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/vk-io/-/vk-io-4.7.0.tgz#cb76348801cf769c275f068bfca0c92bb3e3030e"
-  integrity sha512-Ohn+qVNnShV2lejeuyK4AWDXEPtEAXDkUlVDnxjTPSjEHfyxfgKgpCNoi/8BWV3CtaI0koGm2YY8NaZKkPyWpw==
+vk-io@^4.7.0:
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/vk-io/-/vk-io-4.8.1.tgz#0d32f2f566de0c46b74d2f22af341ac50034ac95"
+  integrity sha512-ThaHZNjn+ocNgipMz76w3IAMxoV4i70R/mNfsWVDQw0QlBdl9xDtB/O0ZBx9tdTYZqdBllQ5JBaALqTyQkgQWA==
   dependencies:
     abort-controller "^3.0.0"
     debug "^4.3.4"
     form-data-encoder "^1.7.2"
     formdata-node "^4.4.1"
-    inspectable "^1.2.1"
-    middleware-io "^2.8.0"
+    inspectable "^1.2.2"
+    middleware-io "^2.8.1"
     node-fetch "^3.2.10"
 
 w3c-hr-time@^1.0.2:

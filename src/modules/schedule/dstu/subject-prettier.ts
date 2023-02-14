@@ -1,6 +1,7 @@
 import { SubjectInfo } from './dstu-lesson.parser';
 import { LessonTypeDefinition } from './lesson-type.definition';
 import { LessonType } from '../../lesson/lesson-type.enum';
+import * as str from 'string';
 
 interface SubjectPrettierDef {
   regex: RegExp;
@@ -17,7 +18,7 @@ export const pretties: SubjectPrettierDef[] = [
       if (subject.match(/Учебно/gi))
         return {
           type: LessonType.PHYSICAL_EDUCATION,
-          name: match[3] || match[2],
+          name: str((match[3] || match[2]).trim()).capitalize().s,
         };
       else {
         //пр. Физическая культура и спорт (основная группа) => пр. Физическая культура и спорт
@@ -34,11 +35,19 @@ export const pretties: SubjectPrettierDef[] = [
             //ЕБАНЫЙ УЧЕБНЫЙ ОТДЕЛ ПИШИТЕ ОДИНАКОВО ДИСЦИПЛИНЫ. ЧТО ЭТО ТАКОЕ??: пр. Физическая культура и спорт (Специальная медицинская группа)
             name: 'Физическая культура и спорт',
           };
-        else
-          return {
-            type: LessonType.PHYSICAL_EDUCATION,
-            name: match[3] || match[2],
-          };
+        else {
+          if (isNaN(parseFloat(match[3]))) {
+            return {
+              type: LessonType.PHYSICAL_EDUCATION,
+              name: str((match[3] || match[2]).trim()).capitalize().s,
+            };
+          } else {
+            return {
+              type: LessonType.PHYSICAL_EDUCATION,
+              name: str(match[2].trim()).capitalize().s,
+            };
+          }
+        }
       }
     },
   },
@@ -46,10 +55,17 @@ export const pretties: SubjectPrettierDef[] = [
     regex: /Иностранный язык/gi,
     handler: (subject, match) => {
       // пр. Иностранный язык (английский) => пр. Английский язык
-      return {
-        type: LessonTypeDefinition[match[1]],
-        name: match[3] ? `${match[3]} язык` : match[2],
-      };
+      if (isNaN(parseFloat(match[3]))) {
+        return {
+          type: LessonTypeDefinition[match[1]],
+          name: match[3] ? `${match[3]} язык` : match[2],
+        };
+      } else {
+        return {
+          type: LessonTypeDefinition[match[1]],
+          name: match[2],
+        };
+      }
     },
   },
   {

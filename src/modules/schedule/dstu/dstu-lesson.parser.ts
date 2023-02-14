@@ -22,10 +22,12 @@ export default class DSTULessonParser {
   public static subjectParse(subject: string): SubjectInfo | undefined {
     subject = subject.replace(/""(.*?)""/, '($1)');
     subject = subject.replace('"', '');
+    subject = subject.replace(/[^а-яёa-z)+ \d]$/i, '');
 
     let regex;
     const isBracketsExist = subject.indexOf('(') > -1;
     if (isBracketsExist && subject.indexOf(')') < 0) subject += ')';
+    if (!isBracketsExist) subject = subject.replace(/[()]/g, '');
 
     if (isBracketsExist) regex = this.withBracketsRegex();
     else regex = this.withoutBracketsRegex();
@@ -38,15 +40,34 @@ export default class DSTULessonParser {
 
     if (match && match.length > 2) {
       const pretty = this.subjectPrettier(subject, match);
-      const result: SubjectInfo = {
-        type: LessonTypeDefinition[match[1].toLowerCase()],
-        name: str(match[2]).capitalize().s,
-      };
+      let info: any;
 
-      if (!isBracketsExist) result.subgroup = match[3] ? parseInt(match[3]) : undefined;
-      else result.subsection = match[3] ? match[3] : undefined;
+      if (match[1]) {
+        info = {
+          type: LessonTypeDefinition[match[1].toLowerCase()],
+          name: str(match[2]).capitalize().s,
+        };
+      }
 
-      return pretty ? { ...pretty, name: str(pretty.name.trim()).capitalize().s } : result;
+      let subgroup;
+      let subsection;
+
+      if (!isBracketsExist) subgroup = match[3] ? parseInt(match[3]) : undefined;
+      else {
+        subgroup = match[4] ? parseInt(match[4]) : undefined;
+        subsection = match[3] ? str(match[3].trim()).capitalize().s : undefined;
+      }
+
+      if (!pretty && !match[1]) return;
+
+      if (pretty?.subsection) {
+        pretty.subsection = str(pretty.subsection?.trim()).capitalize().s;
+      }
+      const result = pretty
+        ? { ...pretty, name: str(pretty.name.trim()).capitalize().s, subgroup: subgroup }
+        : { ...info, subgroup: subgroup, subsection: subsection };
+
+      return <any>Object.fromEntries(Object.entries(result).filter(([key, value]) => !!value));
     }
   }
 
@@ -122,11 +143,11 @@ export default class DSTULessonParser {
 
   private static withoutBracketsRegex(): RegExp {
     const keys = this.getLessonTypes();
-    return new RegExp(`(${keys})\\.? ([а-яa-z\\-. ,:\\/\\d]+?)(?:, п\\/г (\\d)|$)`, 'i');
+    return new RegExp(`(?:(${keys})\\.? )?([а-яёa-z\\-. ,:\\/\\d+]+?)(?:, п\\/г (\\d)|$)`, 'i');
   }
 
   private static withBracketsRegex(): RegExp {
     const keys = this.getLessonTypes();
-    return new RegExp(`(${keys})\\.? ([а-яa-z\\-. ,:\\/\\d]+?) ?\\((.*?)\\)`, 'i');
+    return new RegExp(`(?:(${keys})\\.? )?([а-яёa-z\\-. ,:\\/\\d+]+?) ?\\((.*?)\\)(?:, п\\/г (\\d)|$)`, 'i');
   }
 }
