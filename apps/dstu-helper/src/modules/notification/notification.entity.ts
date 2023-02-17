@@ -1,0 +1,31 @@
+import { Column, Entity, Index, JoinTable, ManyToOne } from 'typeorm';
+import { DomainEntity } from '@dstu_helper/common';
+import { UserEntity } from '../user/user.entity';
+import { PropertiesTransformer } from '../../../../../libs/common/src/database/properties/base/properties.transformer';
+import { NotificationProperties, NotificationPropertiesData } from './properties/notification-properties';
+
+@Entity({ name: 'notification' })
+@Index(['event', 'user'], { unique: true })
+export class NotificationEntity extends DomainEntity {
+  @Column()
+  public event!: string;
+
+  @ManyToOne(() => UserEntity, (entity) => entity.notifications, { eager: true, cascade: ['update'], nullable: false })
+  @JoinTable()
+  public user!: UserEntity;
+
+  @Column({
+    type: 'simple-json',
+    nullable: false,
+    transformer: new PropertiesTransformer(NotificationProperties),
+  })
+  public properties!: NotificationProperties;
+
+  public static Create(user: UserEntity, event: string, data?: NotificationPropertiesData): NotificationEntity {
+    const entity = new this();
+    entity.event = event;
+    entity.user = user;
+    entity.properties = new NotificationProperties(data);
+    return entity;
+  }
+}

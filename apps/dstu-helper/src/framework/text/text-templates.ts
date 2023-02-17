@@ -3,16 +3,19 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Logger, Type } from '@nestjs/common';
 import { glob } from 'glob';
+import * as basicHelpers from 'handlebars-helpers';
 import { BaseHelper } from './helper/base.helper';
 import { TimeHelper } from './helper/time.helper';
 import { LessonDestinationHelper } from './helper/lesson-destination.helper';
-import * as basicHelpers from 'handlebars-helpers';
 import { LessonTypeHelper } from './helper/lesson-type.helper';
 import { RelativeDateHelper } from './helper/relative-date.helper';
 import { DateButtonHelper } from './helper/date-button.helper';
 import { IsNowLessonHelper } from './helper/is-now-lesson.helper';
 import { RenderBooleanHelper } from './helper/render-boolean.helper';
 import { TeacherHelper } from './helper/teacher.helper';
+import { BooleanTextHelper } from './helper/boolean-text.helper';
+import { TimeIntervalHelper } from './helper/time-interval.helper';
+import { AppearanceValueHelper } from './helper/appearance-value.helper';
 
 const helpers: Type<BaseHelper>[] = [
   TimeHelper,
@@ -23,6 +26,9 @@ const helpers: Type<BaseHelper>[] = [
   IsNowLessonHelper,
   RenderBooleanHelper,
   TeacherHelper,
+  BooleanTextHelper,
+  TimeIntervalHelper,
+  AppearanceValueHelper,
 ];
 const log = new Logger('TextTemplate');
 
@@ -39,7 +45,7 @@ const loadTemplates: () => Map<string, HandlebarsTemplateDelegate> = () => {
     const fileName = path.basename(file);
     const startTime = Date.now();
 
-    const basename = fileName.split('.')[0];
+    const basename = fileName.replace(/(.*)\..*$/g, '$1');
     const fileContent = fs.readFileSync(file);
     result.set(basename, Handlebars.compile(fileContent.toString()));
 

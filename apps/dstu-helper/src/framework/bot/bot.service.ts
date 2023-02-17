@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter } from 'events';
-import { BotContext } from './type/bot-context.type';
-import { BotHandler } from './decorator/bot-handler.type';
+import { BotContext, BotExtendedContext } from './type/bot-context.type';
+import { BotHandler } from './decorator/type/bot-handler.type';
 import { BotHandlerContext } from './type/bot-message.type';
 import { BotAction, BotAlertAction, BotBroadcastAction, BotEditAction, BotMessageAction } from './type/bot-action.type';
 import { UserRepository } from '../../modules/user/user.repository';
@@ -51,6 +51,12 @@ export class BotService extends EventEmitter {
 
   public registerHandler(handler: BotHandler): void {
     this.handlers.add(handler);
+
+    const array = Array.from(this.handlers.values());
+    const hasEventHandlers = array.filter((handler) => handler.hasEvent);
+    const emptyEventHandlers = array.filter((handler) => !handler.hasEvent);
+
+    this.handlers = new Set([...hasEventHandlers, ...emptyEventHandlers]);
   }
 
   public registerProvider(provider: string, transport: ProviderTransport): void {
@@ -71,17 +77,21 @@ export class BotService extends EventEmitter {
   public async onEvent(ctx: BotContext): Promise<void> {
     if (!ctx.payload || !ctx.payload.type) return;
     for (const handler of this.handlers.values()) {
-      const result = handler.checkers.every((checker) => checker.check(ctx.payload, ctx));
-      if (result) {
+      const isCorrect = handler.check(ctx.payload, ctx);
+      if (isCorrect) {
         ctx.from.user = await this.getUser(ctx);
         const context = this.buildContext(ctx);
-        try {
-          await handler.callback(context);
-        } catch (e) {
-          console.error(e);
-          await context.send(Text.Build('unexpected-error'));
+
+        const isExecute = handler.filter(ctx);
+        if (isExecute) {
+          try {
+            await handler.callback(context);
+          } catch (e) {
+            console.error(e);
+            await context.send(Text.Build('unexpected-error'));
+          }
+          if (!handler.allowNext) break;
         }
-        break;
       }
     }
   }
@@ -126,59 +136,80 @@ export class BotService extends EventEmitter {
     return <UserEntity>user;
   }
 
-  public buildContext(ctx: Omit<BotContext, 'universityName'>): BotHandlerContext {
-    const fullCtx: BotContext = {
-      ...ctx,
-      universityName: 'DSTU', // TODO Add University abstraction
-    };
-
+  public buildContext(ctx: BotExtendedContext): BotHandlerContext {
     return {
-      ...fullCtx,
-      send: (message, keyboard, options) => this.send(fullCtx, { message, keyboard, options }),
-      edit: (message, keyboard) => this.edit(fullCtx, { message, keyboard }),
-      alert: (message) => this.alert(fullCtx, { message }),
-      flush: () => this.flush(fullCtx),
+      ...ctx,
+      send: (message, keyboard, options) => this.send(ctx, { message, keyboard, options }),
+      edit: (message, keyboard) => this.edit(ctx, { message, keyboard }),
+      alert: (message) => this.alert(ctx, { message }),
+      flush: () => this.flush(ctx),
     };
   }
 
-  public send(ctx: BotContext, action: Omit<BotMessageAction, 'type'>): Promise<number> {
+  public async send(ctx: BotExtendedContext, action: Omit<BotMessageAction, 'type'>): Promise<number> {
     const transport = <ProviderTransport>this.transports.get(ctx.provider);
-    return transport.send({
+    const beforeSend = Date.now();
+    const result = await transport.send({
       context: ctx,
       action: {
         type: 'message',
         ...action,
       },
     });
+
+    //console.log(ctx.from.user.properties.inputStage.get());
+    this.printResponseTime(ctx, beforeSend);
+    return result;
   }
 
-  public edit(ctx: BotContext, action: Omit<BotEditAction, 'type'>): Promise<void> {
+  public async edit(ctx: BotExtendedContext, action: Omit<BotEditAction, 'type'>): Promise<void> {
     const transport = <ProviderTransport>this.transports.get(ctx.provider);
-    return transport.edit({
+    const beforeSend = Date.now();
+    const result = await transport.edit({
       context: ctx,
       action: {
         type: 'edit',
         ...action,
       },
     });
+
+    this.printResponseTime(ctx, beforeSend);
+    return result;
   }
 
-  public alert(ctx: BotContext, action: Omit<BotAlertAction, 'type'>): Promise<void> {
+  public async alert(ctx: BotExtendedContext, action: Omit<BotAlertAction, 'type'>): Promise<void> {
     const transport = <ProviderTransport>this.transports.get(ctx.provider);
-    return transport.alert({
+    const beforeSend = Date.now();
+    const result = await transport.alert({
       context: ctx,
       action: {
         type: 'alert',
         ...action,
       },
     });
+
+    this.printResponseTime(ctx, beforeSend);
+    return result;
   }
 
-  public flush(ctx: BotContext): Promise<void> {
+  public async flush(ctx: BotExtendedContext): Promise<void> {
     const transport = <ProviderTransport>this.transports.get(ctx.provider);
-    return transport.flush({
+    const beforeSend = Date.now();
+    const result = await transport.flush({
       context: ctx,
       action: null,
     });
+
+    this.printResponseTime(ctx, beforeSend);
+    return result;
+  }
+
+  private printResponseTime(ctx: BotExtendedContext, beforeSend: number): void {
+    if (ctx.coreMetadata?.requestTime) {
+      this.log.log(
+        `Response completed: ${Date.now() - ctx.coreMetadata?.requestTime} ms (${Date.now() - beforeSend} ms)`,
+      );
+      ctx.coreMetadata.requestTime = Date.now();
+    }
   }
 }

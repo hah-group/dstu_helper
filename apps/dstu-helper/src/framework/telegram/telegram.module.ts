@@ -27,7 +27,7 @@ export class TelegramModule {
         BullModule.registerQueue({
           name: 'telegram',
           limiter: {
-            max: 10,
+            max: 30,
             duration: 1000,
           },
         }),

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { BotHandlerLoader } from './decorator/bot-handler.loader';
+import { BotHandlerLoader } from './decorator/accessor/bot-handler.loader';
 import { DiscoveryModule } from '@nestjs/core';
-import { BotMetadataAccessor } from './decorator/bot-metadata.accessor';
+import { BotMetadataAccessor } from './decorator/accessor/bot-metadata.accessor';
 import { BotService } from './bot.service';
 import { UserModule } from '../../modules/user/user.module';
 import { ConversationModule } from '../../modules/conversation/conversation.module';

@@ -1,27 +1,29 @@
-import { DateTime, Moment, Time } from '@dstu_helper/common';
+import { DateProperty, PropertiesContainerBase, StringPathProperty, Time } from '@dstu_helper/common';
+import { Appearance, AppearanceProperty } from './appearance.property';
 
 export interface UserPropertiesEntityParams {
   selectedDate?: Date;
+  inputStage?: string;
+  appearance?: Appearance;
 }
 
-export class UserProperties {
+export class UserProperties extends PropertiesContainerBase<UserPropertiesEntityParams> {
+  public readonly selectedDate: DateProperty;
+  public readonly inputStage: StringPathProperty;
+  public readonly appearance: AppearanceProperty;
+
   constructor(params?: UserPropertiesEntityParams) {
-    this._selectedDate = Moment(params?.selectedDate) || Time.get();
+    super();
+    this.selectedDate = new DateProperty('selectedDate', params?.selectedDate || Time.get());
+    this.inputStage = new StringPathProperty('inputStage', 'default', params?.inputStage);
+    this.appearance = new AppearanceProperty('appearance', params?.appearance);
   }
 
-  private _selectedDate: DateTime;
-
-  public get selectedDate(): DateTime {
-    return this._selectedDate;
-  }
-
-  public set selectedDate(value: Date | DateTime) {
-    this._selectedDate = Moment(value);
-  }
-
-  public toJSON(): Required<UserPropertiesEntityParams> {
+  public render(): Required<UserPropertiesEntityParams> {
     return {
-      selectedDate: this.selectedDate.toDate(),
+      selectedDate: this.selectedDate.render(),
+      inputStage: this.inputStage.render(),
+      appearance: this.appearance.render(),
     };
   }
 }

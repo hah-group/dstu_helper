@@ -7,5 +7,6 @@ import { GroupModule } from '../../schedule/group/group.module';
 @Module({
   imports: [ScheduleTextQueryModule, UserModule, GroupModule],
   providers: [PrivateSetupHandler],
+  exports: [PrivateSetupHandler],
 })
 export class PrivateSetupModule {}

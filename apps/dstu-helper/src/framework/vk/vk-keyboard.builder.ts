@@ -1,9 +1,9 @@
 import { KeyboardBuilder } from '../bot/keyboard/keyboard.builder';
 
 export class VkKeyboardBuilder {
-  public static Build(keyboard: KeyboardBuilder): any {
+  public static Build(keyboard: KeyboardBuilder, forceInline: boolean): any {
     if (keyboard.isEmpty()) return this.BuildRemove();
-    else if (keyboard.isInline()) return this.BuildInline(keyboard);
+    else if (forceInline || keyboard.isInline()) return this.BuildInline(keyboard);
     else return this.BuildReply(keyboard);
   }
 

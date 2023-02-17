@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ScheduleProviderService } from '../schedule-provider/schedule-provider.service';
 import { GroupRepository } from '../group/group.repository';
-import { lodash, Time } from '@dstu_helper/common';
+import { lodash } from '@dstu_helper/common';
 import { LessonRepository } from '../lesson/lesson.repository';
 import { GroupStatus } from '../group/group-status.enum';
 import { FacultyRepository } from '../faculty/faculty.repository';
@@ -49,14 +49,11 @@ export class ScheduleCacheService {
     const groupsToDelete = lodash.differenceBy(existGroups, groups, (record) => record.externalId);
     await this.groupRepository.delete(groupsToDelete);
 
-    console.log(groups.filter((e) => !e.faculty.id));
-
     await this.groupRepository.save(groups);
   }
 
   public async updateSchedule(): Promise<void> {
     const startedTime = Date.now();
-    const startTime = Time.get().subtract(1, 'w').startOf('w');
     const [groups, existTeachers, existSubjects, existAudience] = await Promise.all([
       this.groupRepository.findAll(),
       this.teacherRepository.findAll(),
@@ -78,7 +75,7 @@ export class ScheduleCacheService {
 
       await Promise.all(
         chunk.map(async (group) => {
-          const existLessons = await this.lessonRepository.getFromDate(startTime, group);
+          const existLessons = await this.lessonRepository.getAll(group);
           try {
             const mergeScheduleResult = await this.scheduleProviderService.mergeSchedule(
               {
@@ -88,7 +85,6 @@ export class ScheduleCacheService {
                 existAudienceMap: existAudienceMap,
               },
               group,
-              startTime,
             );
 
             const teachersToCreate = lodash.differenceBy(

@@ -7,9 +7,9 @@ import {
 import { KeyboardBuilder } from '../bot/keyboard/keyboard.builder';
 
 export class TelegramKeyboardBuilder {
-  public static Build(keyboard: KeyboardBuilder): TelegramKeyboard {
+  public static Build(keyboard: KeyboardBuilder, forceInline: boolean): TelegramKeyboard {
     if (keyboard.isEmpty()) return this.BuildRemove(keyboard);
-    else if (keyboard.isInline()) return this.BuildInline(keyboard);
+    else if (forceInline || keyboard.isInline()) return this.BuildInline(keyboard);
     else return this.BuildReply(keyboard);
   }
 

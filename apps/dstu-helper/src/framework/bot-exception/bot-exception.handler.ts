@@ -15,7 +15,7 @@ export interface BotExceptionHandlerParams {
 export class BotExceptionHandler {
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
-  /* public async handle(params: BotExceptionHandlerParams): Promise<void> {
+  /* public async isValid(params: BotExceptionHandlerParams): Promise<void> {
     const { exception, sendCallback, social, user, locale } = params;
 
     if (exception.notifyScope == 'SYSTEM' || exception.notifyScope == 'ALL')

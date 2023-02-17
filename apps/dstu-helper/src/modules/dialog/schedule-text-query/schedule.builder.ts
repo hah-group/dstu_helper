@@ -12,7 +12,6 @@ import { GroupEntity } from '../../schedule/group/group.entity';
 import { TimeOrderProcessor } from '../../../framework/util/time-order/time-order.processor';
 import { LessonInterval } from '../../schedule/schedule-provider/lesson-interval';
 import { LanguageOrderDefinition, LanguageOrderKey } from '../../../framework/text/language-order.definition';
-import { inspect } from 'util';
 
 @Injectable()
 export class ScheduleBuilder {
@@ -23,22 +22,8 @@ export class ScheduleBuilder {
     else atDate = query;
 
     const lessons = await this.lessonRepository.getAtDate(atDate, group);
-    console.log(lessons);
     const groups = new LessonGroupProcessor(lessons).getLessonGroups();
 
-    console.log(
-      inspect(
-        {
-          schedule: groups,
-          group: group,
-          atDate: atDate,
-          strictDate: strict,
-        },
-        false,
-        10,
-        true,
-      ),
-    );
     return Text.Build('schedule-at-day', {
       schedule: groups,
       group: group,

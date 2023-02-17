@@ -62,14 +62,9 @@ export class ScheduleProviderService {
     });
   }
 
-  public async mergeSchedule(
-    params: MergeScheduleOriginParams,
-    group: GroupEntity,
-    startDate: DateTime,
-  ): Promise<MergeScheduleResult> {
+  public async mergeSchedule(params: MergeScheduleOriginParams, group: GroupEntity): Promise<MergeScheduleResult> {
     const response: ApiResponseScheduleDSTU = await this.sendRequest('GET', 'Rasp', {
       idGroup: group.externalId,
-      sdate: this.getScheduleDate(startDate),
     });
 
     const existLessonsMap = lodash.keyBy(params.existLessons, (record) => record.uniqueId);

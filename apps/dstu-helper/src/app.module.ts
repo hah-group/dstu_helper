@@ -13,6 +13,7 @@ import { VkModule } from './framework/vk/vk.module';
 import { ReleaseModule } from './modules/release/release.module';
 import { DatabaseModule } from '@dstu_helper/common';
 import { ScheduleModule } from './modules/schedule/schedule.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { ScheduleModule } from './modules/schedule/schedule.module';
     SceneModule,
     ReleaseModule,
     ScheduleModule,
+    NotificationModule,
   ],
 })
 export class AppModule {

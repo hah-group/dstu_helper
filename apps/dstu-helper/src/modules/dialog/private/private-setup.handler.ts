@@ -40,10 +40,11 @@ export class PrivateSetupHandler {
 
   @OnMessage('/сброс', 'private')
   public async onReset(message: BotMessage): Promise<void> {
+    const user = message.from.user;
     await message.send(Text.Build('private-reset'), new KeyboardBuilder());
-    message.from.user.properties = new UserProperties();
-    message.from.user.group = undefined;
-    await this.userRepository.save(message.from.user);
+    user.properties = new UserProperties();
+    user.group = undefined;
+    await this.userRepository.save(user);
     await delay(1000);
     await this.onStart(message);
   }
@@ -85,6 +86,10 @@ export class PrivateSetupHandler {
     }
   }
 
+  public async toHome(message: BotMessage): Promise<void> {
+    await this.onToday(message, false, MainMenuKeyboard);
+  }
+
   @OnButton(ScheduleButton, 'private')
   public async onSchedule(message: BotMessage): Promise<void> {
     await this.onToday(message, false);
@@ -115,7 +120,7 @@ export class PrivateSetupHandler {
   }
 
   @OnInlineButton(TodayButton())
-  public async onToday(message: BotMessage, edit = true): Promise<void> {
+  public async onToday(message: BotMessage, edit = true, keyboard?: KeyboardBuilder): Promise<void> {
     const group = await message.from.user.group;
     if (!group) {
       await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
@@ -124,7 +129,7 @@ export class PrivateSetupHandler {
 
     const currentDate = Time.get();
 
-    await this.sendSchedule(currentDate, group, message, edit);
+    await this.sendSchedule(currentDate, group, message, edit, keyboard);
   }
 
   @OnInlineButton(NextDayButton())
@@ -135,7 +140,7 @@ export class PrivateSetupHandler {
       return;
     }
 
-    const currentDate = message.from.user.properties.selectedDate;
+    const currentDate = message.from.user.properties.selectedDate.get();
     const targetDate = moment(currentDate).add(1, 'd');
 
     await this.sendSchedule(targetDate, group, message);
@@ -149,7 +154,7 @@ export class PrivateSetupHandler {
       return;
     }
 
-    const currentDate = message.from.user.properties.selectedDate;
+    const currentDate = message.from.user.properties.selectedDate.get();
     const targetDate = moment(currentDate).subtract(1, 'd');
 
     await this.sendSchedule(targetDate, group, message);
@@ -163,7 +168,7 @@ export class PrivateSetupHandler {
       return;
     }
 
-    const currentDate = message.from.user.properties.selectedDate;
+    const currentDate = message.from.user.properties.selectedDate.get();
     const targetDate = moment(currentDate).add(1, 'w');
 
     await this.sendSchedule(targetDate, group, message);
@@ -177,7 +182,7 @@ export class PrivateSetupHandler {
       return;
     }
 
-    const currentDate = message.from.user.properties.selectedDate;
+    const currentDate = message.from.user.properties.selectedDate.get();
     const targetDate = moment(currentDate).subtract(1, 'w');
 
     await this.sendSchedule(targetDate, group, message);
@@ -193,12 +198,13 @@ export class PrivateSetupHandler {
     group: GroupEntity,
     message: BotMessage,
     edit = true,
+    keyboard?: KeyboardBuilder,
   ): Promise<void> {
-    message.from.user.properties.selectedDate = targetDate;
+    message.from.user.properties.selectedDate.set(targetDate);
     await this.userRepository.save(message.from.user);
 
     const text = await this.scheduleBuilder.buildAtDay(targetDate, group, true);
-    const keyboard = ScheduleKeyboard(targetDate);
+    keyboard = keyboard || ScheduleKeyboard(targetDate);
 
     if (edit) await message.edit(text, keyboard);
     else await message.send(text, keyboard);

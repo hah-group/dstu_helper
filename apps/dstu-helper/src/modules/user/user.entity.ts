@@ -1,8 +1,10 @@
 import { ConversationEntity } from '../conversation/conversation.entity';
 import { UserProperties } from './user-properties/user-properties';
-import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { DomainEntity } from '@dstu_helper/common';
 import { GroupEntity } from '../schedule/group/group.entity';
+import { NotificationEntity } from '../notification/notification.entity';
+import { PropertiesTransformer } from '../../../../../libs/common/src/database/properties/base/properties.transformer';
 
 export interface UserCreateParams {
   provider: string;
@@ -38,17 +40,16 @@ export class UserEntity extends DomainEntity {
   @JoinTable()
   public conversations!: Promise<ConversationEntity[]>;
 
-  @Column({ type: 'simple-json', nullable: true, name: 'properties' })
-  private _properties!: UserProperties;
+  @OneToMany(() => NotificationEntity, (entity) => entity.user)
+  @JoinTable()
+  public notifications!: Promise<NotificationEntity[]>;
 
-  public get properties(): UserProperties {
-    if (!this._properties) this._properties = new UserProperties();
-    return this._properties;
-  }
-
-  public set properties(value: UserProperties) {
-    this._properties = value;
-  }
+  @Column({
+    type: 'simple-json',
+    nullable: true,
+    transformer: new PropertiesTransformer(UserProperties),
+  })
+  public properties!: UserProperties;
 
   public static Create(data: UserCreateParams): UserEntity {
     const entity = new this();

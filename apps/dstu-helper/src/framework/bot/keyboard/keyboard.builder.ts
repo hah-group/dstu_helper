@@ -14,7 +14,8 @@ export class KeyboardBuilder {
   }
 
   public row(): KeyboardBuilder {
-    this._row += 1;
+    const row = this.keyboard[this._row];
+    if (row && row.length > 0) this._row += 1;
     return this;
   }
 

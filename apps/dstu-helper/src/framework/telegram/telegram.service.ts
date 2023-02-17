@@ -95,14 +95,6 @@ export class TelegramService {
       flush: (ctx) => this.onFlush(ctx),
       broadcast: (ctx) => this.onBroadcast(ctx),
     });
-
-    /*this.botService.on('send', async (ctx) => {
-      if (ctx.context.provider != 'telegram') return;
-      await this.onSend(ctx);
-
-      /!*const renderedMessage = ctx.action.text.render();
-      await this.bot.sendMessage(ctx.context.chat.key, renderedMessage);*!/
-    });*/
   }
 
   public async sendMessage(chatId: number, message: string, options: TelegramSendOptions): Promise<number> {
@@ -145,7 +137,8 @@ export class TelegramService {
     const options: TelegramJobSend['options'] = {};
 
     const message = ctx.action.message.render();
-    const keyboard = ctx.action.keyboard && TelegramKeyboardBuilder.Build(ctx.action.keyboard);
+    const keyboard = ctx.action.keyboard && TelegramKeyboardBuilder.Build(ctx.action.keyboard, false);
+    //console.log(inspect(keyboard, false, 10, true));
     if (keyboard) options.reply_markup = keyboard;
 
     if (ctx.action.options?.reply && ctx.context.payload.type == BotPayloadType.MESSAGE)
@@ -161,8 +154,8 @@ export class TelegramService {
     });
 
     const messageId = await job.finished();
-    ctx.context.metadata = {
-      ...ctx.context.metadata,
+    ctx.context.botMetadata = {
+      ...ctx.context.botMetadata,
       lastMessageId: messageId,
     };
 
@@ -170,13 +163,13 @@ export class TelegramService {
   }
 
   public async onEdit(ctx: BotAction<BotEditAction, TelegramContextMetadata>): Promise<void> {
-    if (!ctx.context.metadata?.eventId) return;
+    if (!ctx.context.botMetadata?.eventId) return;
     if (ctx.context.payload.type != BotPayloadType.MESSAGE && ctx.context.payload.type != BotPayloadType.INLINE_KEY)
       return;
 
-    const keyboardBuilder = ctx.action.keyboard?.inline();
+    const keyboardBuilder = ctx.action.keyboard;
     let keyboard;
-    if (keyboardBuilder) keyboard = TelegramKeyboardBuilder.Build(keyboardBuilder);
+    if (keyboardBuilder) keyboard = TelegramKeyboardBuilder.Build(keyboardBuilder, true);
 
     let message;
     if (ctx.action.message) message = ctx.action.message.render();
@@ -189,7 +182,7 @@ export class TelegramService {
         keyboard: keyboard,
       }),
       this.telegramProducer.alert({
-        eventId: ctx.context.metadata.eventId,
+        eventId: ctx.context.botMetadata.eventId,
         text: '',
         show: false,
       }),
@@ -197,20 +190,20 @@ export class TelegramService {
   }
 
   public async onAlert(ctx: BotAction<BotAlertAction, TelegramContextMetadata>): Promise<void> {
-    if (!ctx.context.metadata?.eventId) return;
+    if (!ctx.context.botMetadata?.eventId) return;
 
     await this.telegramProducer.alert({
-      eventId: ctx.context.metadata.eventId,
+      eventId: ctx.context.botMetadata.eventId,
       text: ctx.action.message.render(),
       show: true,
     });
   }
 
   public async onFlush(ctx: BotAction<null, TelegramContextMetadata>): Promise<void> {
-    if (!ctx.context.metadata?.eventId) return;
+    if (!ctx.context.botMetadata?.eventId) return;
 
     await this.telegramProducer.alert({
-      eventId: ctx.context.metadata.eventId,
+      eventId: ctx.context.botMetadata.eventId,
       text: '',
       show: false,
     });
@@ -225,8 +218,9 @@ export class TelegramService {
       telegramCtx,
       this.middlewares,
     );
-    newCtx.metadata = {};
-    //console.log(inspect(telegramCtx, false, 10, true));
+    newCtx.coreMetadata = {
+      requestTime: Date.now(),
+    };
     this.botService.emit('event', newCtx);
   }
 
@@ -239,10 +233,12 @@ export class TelegramService {
       telegramCtx,
       this.middlewares,
     );
-    newCtx.metadata = {
+    newCtx.botMetadata = {
       eventId: ctx.id,
     };
-    //console.log(inspect(telegramCtx, false, 10, true));
+    newCtx.coreMetadata = {
+      requestTime: Date.now(),
+    };
     this.botService.emit('event', newCtx);
   }
 

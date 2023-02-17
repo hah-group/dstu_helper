@@ -9,7 +9,7 @@ export class TextButton extends KeyboardButton {
   public getPayload(): KeyboardPayload {
     return {
       text: this.label.render(),
-      id: this._id,
+      id: this.id,
     };
   }
 }

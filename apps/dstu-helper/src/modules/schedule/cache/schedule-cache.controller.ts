@@ -19,6 +19,5 @@ export class ScheduleCacheController {
   @Get('update/schedule')
   public async updateSchedule(): Promise<void> {
     await this.scheduleCacheService.updateSchedule();
-    console.log();
   }
 }

@@ -100,8 +100,11 @@ export class VkService {
 
   public onEvent(ctx: VkBotContext): void {
     const newCtx: BotExtendedContext<VkContextMetadata> = MiddlewareExecutor.Execute(ctx, this.middlewares);
-    newCtx.metadata = {
+    newCtx.botMetadata = {
       eventId: (<any>ctx.message).event_id,
+    };
+    newCtx.coreMetadata = {
+      requestTime: Date.now(),
     };
 
     this.botService.emit('event', newCtx);
@@ -181,7 +184,6 @@ export class VkService {
           text: text,
         }),
       });
-      console.log(response);
     } catch (e) {
       console.error(e);
     }
@@ -205,7 +207,7 @@ export class VkService {
 
   private async onSend(ctx: BotAction<BotMessageAction, VkContextMetadata>): Promise<number> {
     const message = ctx.action.message.render();
-    const keyboard = ctx.action.keyboard && VkKeyboardBuilder.Build(ctx.action.keyboard);
+    const keyboard = ctx.action.keyboard && VkKeyboardBuilder.Build(ctx.action.keyboard, false);
 
     let chatId = ctx.context.chat.id;
     if (ctx.action.options?.forcePrivate) chatId = ctx.context.from.id;
@@ -217,8 +219,8 @@ export class VkService {
     });
 
     const messageId = await job.finished();
-    ctx.context.metadata = {
-      ...ctx.context.metadata,
+    ctx.context.botMetadata = {
+      ...ctx.context.botMetadata,
       lastMessageId: messageId,
     };
 
@@ -226,36 +228,41 @@ export class VkService {
   }
 
   private async onEdit(ctx: BotAction<BotEditAction, VkContextMetadata>): Promise<void> {
-    if (!ctx.context.metadata?.eventId) return;
+    //if (!ctx.context.botMetadata?.eventId) return;
     if (ctx.context.payload.type != BotPayloadType.MESSAGE && ctx.context.payload.type != BotPayloadType.INLINE_KEY)
       return;
 
-    const keyboardBuilder = ctx.action.keyboard?.inline();
+    const keyboardBuilder = ctx.action.keyboard;
     let keyboard;
-    if (keyboardBuilder) keyboard = VkKeyboardBuilder.Build(keyboardBuilder);
+    if (keyboardBuilder) keyboard = VkKeyboardBuilder.Build(keyboardBuilder, true);
 
     let message;
     if (ctx.action.message) message = ctx.action.message.render();
 
     if (message) {
+      let eventParams: VKEditEventParams | undefined;
+      if (ctx.context.botMetadata?.eventId) {
+        eventParams = {
+          eventId: ctx.context.botMetadata.eventId,
+          fromId: ctx.context.from.id,
+        };
+      }
+
       await this.vkProducer.edit({
         chatId: ctx.context.chat.id,
         messageId: ctx.context.payload.messageId,
         text: message,
         keyboard: keyboard,
-        eventParams: {
-          eventId: ctx.context.metadata.eventId,
-          fromId: ctx.context.from.id,
-        },
+        eventParams: eventParams,
       });
     }
   }
 
   private async onAlert(ctx: BotAction<BotAlertAction, VkContextMetadata>): Promise<void> {
-    if (!ctx.context.metadata?.eventId) return;
+    if (!ctx.context.botMetadata?.eventId) return;
 
     await this.vkProducer.alert({
-      eventId: ctx.context.metadata.eventId,
+      eventId: ctx.context.botMetadata.eventId,
       chatId: ctx.context.chat.id,
       fromId: ctx.context.from.id,
       text: ctx.action.message.render(),

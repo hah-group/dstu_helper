@@ -1,0 +1,6 @@
+🔔 Расписание на день
+
+{{boolean isEnabled}} {{booleanText isEnabled 'Включено' 'Выключено'}}
+{{#if targetTime}}
+  📅 Уведомление приходит: {{time-interval targetTime}}
+{{/if}}

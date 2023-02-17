@@ -16,10 +16,9 @@ export class LessonRepository extends CoreRepository<LessonEntity> {
     });
   }
 
-  public async getFromDate(date: DateTime, group: GroupEntity): Promise<LessonEntity[]> {
+  public async getAll(group: GroupEntity): Promise<LessonEntity[]> {
     return this.repository.find({
       where: {
-        start: MoreThanOrEqual(date.startOf('d').toDate()),
         group: {
           id: group.id,
         },

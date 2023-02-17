@@ -26,13 +26,17 @@ export abstract class CoreRepository<E extends DomainEntity> {
   }
 
   public async delete(entity: E | E[]): Promise<void> {
-    this.log.debug(`Deleting entity${Array.isArray(entity) ? ' array' : ''}: ${this.repository.metadata.name}`);
+    this.log.debug(
+      `Deleting entity${Array.isArray(entity) ? ` array (${entity.length})` : ''}: ${this.repository.metadata.name}`,
+    );
     const entities = Array.isArray(entity) ? entity : [entity];
     await this.repository.remove(entities);
   }
 
   public async save(entity: E | E[]): Promise<void> {
-    this.log.debug(`Saving entity${Array.isArray(entity) ? ' array' : ''}: ${this.repository.metadata.name}`);
+    this.log.debug(
+      `Saving entity${Array.isArray(entity) ? ` array (${entity.length})` : ''}: ${this.repository.metadata.name}`,
+    );
     const entities = Array.isArray(entity) ? entity : [entity];
     await this.repository.save(entities);
   }
