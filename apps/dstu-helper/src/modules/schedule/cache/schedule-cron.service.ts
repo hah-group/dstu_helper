@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+
 import { ScheduleCacheService } from './schedule-cache.service';
 
 @Injectable()

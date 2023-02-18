@@ -1,8 +1,9 @@
-import { RequestJobData } from './request-job-data.type';
-import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
+import { Injectable, Logger } from '@nestjs/common';
 import { Job, Queue } from 'bull';
+
 import { REQUEST_QUEUE } from '../constants';
+import { RequestJobData } from './request-job-data.type';
 
 @Injectable()
 export class RequestProducer {

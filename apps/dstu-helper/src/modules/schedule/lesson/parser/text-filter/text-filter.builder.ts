@@ -1,6 +1,7 @@
-import { TextFilter } from './text-filter.base';
-import * as lodash from 'lodash';
+import { lodash } from '@dstu_helper/common';
+
 import { SubjectInfo } from '../lesson.parser';
+import { TextFilter } from './text-filter.base';
 
 export class TextFilterBuilder {
   private readonly fns: TextFilter<SubjectInfo>[];

@@ -1,8 +1,8 @@
-import { NomMoreLessonDefinition } from './definition/lesson-definition';
+import { ANY_DATE, OnMessageFunction } from '@dstu_helper/common';
+
 import { AtDefinition } from './definition/at-definition';
-import { ANY_DATE } from '../../../../framework/util/date-parser/date.parser';
-import { OnMessageFunction } from '../../../../framework/bot/decorator/on-message.decorator';
 import { IsBanWordExist } from './definition/ban-definition';
+import { NomMoreLessonDefinition } from './definition/lesson-definition';
 
 export const AT_ACTIVATION = new RegExp(`^${NomMoreLessonDefinition}( (${AtDefinition}))?( (${ANY_DATE}))+$`, 'gi');
 

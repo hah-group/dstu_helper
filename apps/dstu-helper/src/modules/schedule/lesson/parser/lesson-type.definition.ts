@@ -1,4 +1,4 @@
-import { LessonType } from '../../lesson/lesson-type.enum';
+import { LessonType } from '../lesson-type.enum';
 
 export const LessonTypeDefinition: Record<string, LessonType> = {
   пр: LessonType.PRACTICAL,

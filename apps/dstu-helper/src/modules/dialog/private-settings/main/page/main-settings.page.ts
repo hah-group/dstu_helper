@@ -1,8 +1,7 @@
-import { PageMenu } from '../../../../../../../../libs/common/src/menu/type/page.menu';
-import { Text } from '../../../../../framework/text/text';
+import { Content, PageMenu } from '@dstu_helper/common';
 
 export class MainSettingsPage extends PageMenu {
   constructor() {
-    super(Text.Build('settings-main-header'), 'settings-main');
+    super(Content.Build('settings-main-header'), 'settings-main');
   }
 }

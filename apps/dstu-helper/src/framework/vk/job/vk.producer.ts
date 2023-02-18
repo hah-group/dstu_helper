@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { MessageJobName } from '@dstu_helper/common';
 import { InjectQueue } from '@nestjs/bull';
+import { Injectable, Logger } from '@nestjs/common';
 import { Job, Queue } from 'bull';
-import { MessageJobName } from '../../bot/type/message-job-name.enum';
+
 import { VkJobAlert, VkJobData, VkJobEdit, VkJobGetUser, VkJobSend } from './vk-job-data.type';
 
 @Injectable()

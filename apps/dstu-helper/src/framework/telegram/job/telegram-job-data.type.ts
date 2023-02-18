@@ -1,4 +1,5 @@
-import { MessageJobName } from '../../bot/type/message-job-name.enum';
+import { MessageJobName } from '@dstu_helper/common';
+
 import { TelegramKeyboard, TelegramSendOptions } from '../telegram.service';
 
 export type TelegramJobData = TelegramJobSend | TelegramJobEdit | TelegramJobAlert;

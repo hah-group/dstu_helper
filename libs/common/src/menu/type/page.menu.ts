@@ -1,13 +1,13 @@
-import { Text } from '../../../../../apps/dstu-helper/src/framework/text/text';
+import { MessageMatchChecker } from '../../bot/checker/message-match.checker';
+import { Content } from '../../content';
 import { MenuItem } from './menu-item';
-import { MessageMatchChecker } from '../../../../../apps/dstu-helper/src/framework/bot/checker/message-match.checker';
 
 export class PageMenu<T = any> extends MenuItem<T> {
-  constructor(header: Text, content: string) {
+  constructor(header: Content, content: string) {
     super('page', header, content);
   }
 
   public isValid(input: string): boolean {
-    return MessageMatchChecker.Match([(<Text>this.header).render()], input);
+    return MessageMatchChecker.Match([(<Content>this.header).render()], input);
   }
 }

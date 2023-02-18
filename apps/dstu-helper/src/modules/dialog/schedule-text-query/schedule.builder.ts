@@ -1,22 +1,27 @@
+import {
+  Content,
+  DateParser,
+  DateTime,
+  LanguageOrderDefinition,
+  LanguageOrderKey,
+  nearestUp,
+  Time,
+} from '@dstu_helper/common';
 import { Injectable } from '@nestjs/common';
-import { Text } from '../../../framework/text/text';
-import { DateParser } from '../../../framework/util/date-parser/date.parser';
-import { LessonGroupProcessor } from '../../../framework/util/lesson-group/lesson-group.processor';
-import { WHERE_AUDIENCE } from './activation/where-audience.activation';
-import { nearestUp } from '../../../framework/util/nearest-up';
-import { LessonGroupResult } from '../../../framework/util/lesson-group/lesson-group.type';
-import { OrderDefinition } from './activation/definition/order-definition';
-import { DateTime, Time } from '@dstu_helper/common';
-import { LessonRepository } from '../../schedule/lesson/lesson.repository';
+
 import { GroupEntity } from '../../schedule/group/group.entity';
-import { TimeOrderProcessor } from '../../../framework/util/time-order/time-order.processor';
-import { LessonInterval } from '../../schedule/schedule-provider/lesson-interval';
-import { LanguageOrderDefinition, LanguageOrderKey } from '../../../framework/text/language-order.definition';
+import { LessonRepository } from '../../schedule/lesson/lesson.repository';
+import { LessonGroupProcessor } from '../../schedule/processor/lesson-group/lesson-group.processor';
+import { LessonGroupResult } from '../../schedule/processor/lesson-group/lesson-group.type';
+import { TimeOrderProcessor } from '../../schedule/processor/lesson-time-order/time-order.processor';
+import { OrderDefinition } from './activation/definition/order-definition';
+import { WHERE_AUDIENCE } from './activation/where-audience.activation';
 
 @Injectable()
 export class ScheduleBuilder {
   constructor(private readonly lessonRepository: LessonRepository) {}
-  public async buildAtDay(query: string | DateTime, group: GroupEntity, strict = false): Promise<Text> {
+
+  public async buildAtDay(query: string | DateTime, group: GroupEntity, strict = false): Promise<Content> {
     let atDate: DateTime;
     if (typeof query == 'string') atDate = DateParser.Parse(query);
     else atDate = query;
@@ -24,7 +29,7 @@ export class ScheduleBuilder {
     const lessons = await this.lessonRepository.getAtDate(atDate, group);
     const groups = new LessonGroupProcessor(lessons).getLessonGroups();
 
-    return Text.Build('schedule-at-day', {
+    return Content.Build('schedule-at-day', {
       schedule: groups,
       group: group,
       atDate: atDate,
@@ -32,9 +37,9 @@ export class ScheduleBuilder {
     });
   }
 
-  public async buildWhere(now: boolean, group: GroupEntity): Promise<Text>;
-  public async buildWhere(query: string, group: GroupEntity): Promise<Text>;
-  public async buildWhere(query: string | boolean, group: GroupEntity): Promise<Text> {
+  public async buildWhere(now: boolean, group: GroupEntity): Promise<Content>;
+  public async buildWhere(query: string, group: GroupEntity): Promise<Content>;
+  public async buildWhere(query: string | boolean, group: GroupEntity): Promise<Content> {
     const currentTime = Time.get();
     let isNow;
     if (typeof query == 'string') isNow = !!query.match(WHERE_AUDIENCE);
@@ -45,10 +50,10 @@ export class ScheduleBuilder {
 
     const orders = lessonGroups.getOrders();
 
-    const nowOrder = TimeOrderProcessor.now(LessonInterval, false, currentTime);
+    const nowOrder = TimeOrderProcessor.now(false, currentTime);
     let order: number | undefined;
     if (isNow) order = nowOrder;
-    else order = TimeOrderProcessor.next(LessonInterval, currentTime, orders[0]);
+    else order = TimeOrderProcessor.next(currentTime, orders[0]);
 
     const lastInOrder = orders[orders.length - 1];
     const isEndOfDay = !nowOrder || lastInOrder < nowOrder;
@@ -64,7 +69,7 @@ export class ScheduleBuilder {
 
     const target: LessonGroupResult | undefined = lessonGroups.getLessonGroup(order || -1);
 
-    return Text.Build('where-audience', {
+    return Content.Build('where-audience', {
       target: target,
       isLessonsExists: lessons.length > 0,
       isNow: isNow,
@@ -75,7 +80,7 @@ export class ScheduleBuilder {
     });
   }
 
-  public async buildOrder(query: string, group: GroupEntity): Promise<Text | undefined> {
+  public async buildOrder(query: string, group: GroupEntity): Promise<Content | undefined> {
     const orderMatch = query.match(/\d/);
     let order: number | undefined;
 
@@ -105,7 +110,7 @@ export class ScheduleBuilder {
     const target = lessonGroups.getLessonGroup(targetOrder);
     //this.log.log(`Request order audience ${order} in ${message.peerId} for group ${group.name}`);
 
-    return Text.Build('order-lesson', {
+    return Content.Build('order-lesson', {
       group: group,
       target: target,
       isClosest: order != targetOrder && !isNearestDown,

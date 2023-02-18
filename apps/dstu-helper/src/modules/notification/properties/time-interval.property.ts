@@ -1,5 +1,4 @@
-import { lodash, PropertyBase, TimeProperty } from '@dstu_helper/common';
-import { IntervalProperty } from '../../../../../../libs/common/src/database/properties/interval.property';
+import { IntervalProperty, lodash, PropertyBase, TimeProperty } from '@dstu_helper/common';
 
 export type TimeInterval = TimePropertyType | IntervalPropertyType;
 export type TimeIntervalPropertyType = TimeInterval | undefined;

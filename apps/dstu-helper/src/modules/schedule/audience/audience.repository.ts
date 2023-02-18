@@ -1,7 +1,8 @@
-import { InjectRepository } from '@nestjs/typeorm';
-import { AudienceEntity } from './audience.entity';
-import { Repository } from 'typeorm';
 import { CoreRepository } from '@dstu_helper/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
+import { AudienceEntity } from './audience.entity';
 
 export class AudienceRepository extends CoreRepository<AudienceEntity> {
   constructor(@InjectRepository(AudienceEntity) repository: Repository<AudienceEntity>) {

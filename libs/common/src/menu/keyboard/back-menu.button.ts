@@ -1,4 +1,3 @@
-import { TextButton } from '../../../../../apps/dstu-helper/src/framework/bot/keyboard/text.button';
-import { Text } from '../../../../../apps/dstu-helper/src/framework/text/text';
+import { Content, TextButton } from '@dstu_helper/common';
 
-export const BackMenuButton = new TextButton(Text.Build('back-menu-button'));
+export const BackMenuButton = new TextButton(Content.Build('back-menu-button'));

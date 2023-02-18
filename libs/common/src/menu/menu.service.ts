@@ -1,21 +1,24 @@
-import { MenuItemDeclaration } from './type/menu-item';
-import { lodash } from '@dstu_helper/common';
+import {
+  BotMessage,
+  Content,
+  KeyboardBuilder,
+  lodash,
+  MenuItemDeclaration,
+  MessageMatchChecker,
+  StringPath,
+  TextButton,
+  ValueMenu,
+} from '@dstu_helper/common';
 import { Inject, Injectable } from '@nestjs/common';
+
 import { MENU_OPTIONS } from './constains';
-import { MenuModuleOptions } from './menu-module.options';
-import { BotMessage } from '../../../../apps/dstu-helper/src/framework/bot/type/bot-message.type';
-import { KeyboardBuilder } from 'apps/dstu-helper/src/framework/bot/keyboard/keyboard.builder';
-import { MessageMatchChecker } from '../../../../apps/dstu-helper/src/framework/bot/checker/message-match.checker';
-import { BackMenuButton } from './keyboard/back-menu.button';
 import { MenuHandlerService } from './decorator/accessor/menu-handler.service';
-import { StringPath } from './util/string-path';
-import { Text } from '../../../../apps/dstu-helper/src/framework/text/text';
-import { ValueMenu } from './type/value.menu';
-import { TextButton } from '../../../../apps/dstu-helper/src/framework/bot/keyboard/text.button';
+import { BackMenuButton } from './keyboard/back-menu.button';
+import { MenuModuleOptions } from './menu-module.options';
 
 export interface MenuResult {
   path: string;
-  text: Text;
+  text: Content;
   keyboard?: KeyboardBuilder;
 }
 

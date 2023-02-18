@@ -1,19 +1,18 @@
+import { BotModule, DatabaseModule, SceneModule } from '@dstu_helper/common';
+import { BullModule } from '@nestjs/bull';
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ScheduleModule as CronModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { BotModule } from './framework/bot/bot.module';
+import { ScheduleModule as CronModule } from '@nestjs/schedule';
+
 import { TelegramModule } from './framework/telegram/telegram.module';
-import { DialogModule } from './modules/dialog/dialog.module';
-import { UserModule } from './modules/user/user.module';
-import { BullModule } from '@nestjs/bull';
-import { ConversationModule } from './modules/conversation/conversation.module';
-import { SceneModule } from './framework/scene/scene.module';
 import { VkModule } from './framework/vk/vk.module';
-import { ReleaseModule } from './modules/release/release.module';
-import { DatabaseModule } from '@dstu_helper/common';
-import { ScheduleModule } from './modules/schedule/schedule.module';
+import { ConversationModule } from './modules/conversation/conversation.module';
+import { DialogModule } from './modules/dialog/dialog.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { ReleaseModule } from './modules/release/release.module';
+import { ScheduleModule } from './modules/schedule/schedule.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [

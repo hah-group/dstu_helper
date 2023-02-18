@@ -1,7 +1,7 @@
-import { OnMessageFunction } from '../../../../framework/bot/decorator/on-message.decorator';
-import { ANY_DATE } from '../../../../framework/util/date-parser/date.parser';
-import { GenMoreLessonDefinition } from './definition/lesson-definition';
+import { ANY_DATE, OnMessageFunction } from '@dstu_helper/common';
+
 import { IsBanWordExist } from './definition/ban-definition';
+import { GenMoreLessonDefinition } from './definition/lesson-definition';
 
 export const SCHEDULE_ACTIVATION = new RegExp(
   `^расписание( ${GenMoreLessonDefinition})?(( (${ANY_DATE}))|( на (${ANY_DATE})))?$`,

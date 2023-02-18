@@ -1,7 +1,7 @@
+import { Content, lodash } from '@dstu_helper/common';
 import { Controller, Get } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import * as lodash from 'lodash';
-import { Text } from '../../framework/text/text';
+
 import { ConversationRepository } from '../conversation/conversation.repository';
 
 @Controller('release')
@@ -19,7 +19,7 @@ export class ReleaseController {
       targetIds: lodash.compact(
         conversations.map((conversation) => (conversation.provider == 'vk' ? conversation.externalId : null)),
       ),
-      message: Text.Build('release-schedule-private'),
+      message: Content.Build('release-schedule-private'),
     });
   }
 }

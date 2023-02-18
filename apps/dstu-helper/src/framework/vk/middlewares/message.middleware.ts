@@ -1,7 +1,5 @@
-import { BaseMiddleware } from '../../bot/base.middleware';
+import { BaseMiddleware, BotContext, BotPayloadType } from '@dstu_helper/common';
 import { DeepPartial } from 'ts-essentials';
-import { BotContext } from '../../bot/type/bot-context.type';
-import { BotPayloadType } from '../../bot/type/bot-payload-type.enum';
 
 export class MessageMiddleware extends BaseMiddleware<VkBotContext> {
   public middleware(ctx: any): DeepPartial<BotContext> | undefined {

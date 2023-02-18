@@ -1,7 +1,7 @@
-import { BaseMiddleware } from '../../bot/base.middleware';
-import { DeepPartial } from 'ts-essentials';
-import { BotContext, Chat } from '../../bot/type/bot-context.type';
+import { BaseMiddleware, BotContext, Chat } from '@dstu_helper/common';
 import { Chat as TelegramChat } from 'node-telegram-bot-api';
+import { DeepPartial } from 'ts-essentials';
+
 import { TelegramContext } from '../telegram.service';
 
 export class ChatMiddleware extends BaseMiddleware<TelegramContext> {

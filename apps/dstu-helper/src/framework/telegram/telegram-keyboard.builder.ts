@@ -1,10 +1,11 @@
+import { KeyboardBuilder } from '@dstu_helper/common';
+
 import {
   TelegramInlineKeyboard,
   TelegramKeyboard,
   TelegramRemoveKeyboard,
   TelegramReplyKeyboard,
 } from './telegram.service';
-import { KeyboardBuilder } from '../bot/keyboard/keyboard.builder';
 
 export class TelegramKeyboardBuilder {
   public static Build(keyboard: KeyboardBuilder, forceInline: boolean): TelegramKeyboard {

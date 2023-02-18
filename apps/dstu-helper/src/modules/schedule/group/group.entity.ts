@@ -1,10 +1,11 @@
+import { DomainEntity } from '@dstu_helper/common';
 import { Column, Entity, Index, JoinTable, ManyToOne, OneToMany } from 'typeorm';
+
+import { ConversationEntity } from '../../conversation/conversation.entity';
+import { UserEntity } from '../../user/user.entity';
+import { FacultyEntity } from '../faculty/faculty.entity';
 import { LessonEntity } from '../lesson/lesson.entity';
 import { GroupStatus } from './group-status.enum';
-import { DomainEntity } from '@dstu_helper/common';
-import { FacultyEntity } from '../faculty/faculty.entity';
-import { UserEntity } from '../../user/user.entity';
-import { ConversationEntity } from '../../conversation/conversation.entity';
 
 @Entity({ name: 'group' })
 export class GroupEntity extends DomainEntity {

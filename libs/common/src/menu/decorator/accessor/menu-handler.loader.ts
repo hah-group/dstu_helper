@@ -1,9 +1,10 @@
+import { MenuEnterHandler, ValueHandler } from '@dstu_helper/common';
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
-import { MenuMetadataAccessor } from './menu-metadata.accessor';
+
 import { MenuHandlerService } from './menu-handler.service';
-import { MenuEnterHandler, ValueHandler } from './type/menu-handler.type';
+import { MenuMetadataAccessor } from './menu-metadata.accessor';
 
 @Injectable()
 export class MenuHandlerLoader implements OnApplicationBootstrap {

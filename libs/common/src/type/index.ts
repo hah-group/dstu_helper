@@ -1,3 +1,3 @@
-export * from './time-interval';
-export * from './time';
 export * from './lodash';
+export * from './time';
+export * from './time-interval';

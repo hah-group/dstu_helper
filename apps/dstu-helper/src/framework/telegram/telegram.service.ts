@@ -1,3 +1,17 @@
+import {
+  BaseMiddleware,
+  BotAction,
+  BotAlertAction,
+  BotBroadcastAction,
+  BotEditAction,
+  BotExtendedContext,
+  BotMessageAction,
+  BotPayloadType,
+  BotService,
+  delay,
+  MiddlewareExecutor,
+  ProviderMiddleware,
+} from '@dstu_helper/common';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
 import {
@@ -10,31 +24,18 @@ import {
   ReplyKeyboardRemove,
   SendMessageOptions,
 } from 'node-telegram-bot-api';
+
 import { TG_OPTIONS } from './constants';
-import { TelegramModuleOptions } from './telegram-module.options';
-import { BaseMiddleware } from '../bot/base.middleware';
-import { UserMiddleware } from './middlewares/user.middleware';
-import { MessageMiddleware } from './middlewares/message.middleware';
-import { MiddlewareExecutor } from '../bot/middleware/middleware.executor';
-import { ProviderMiddleware } from '../bot/middleware/provider.middleware';
+import { TelegramProducer } from './job/telegram.producer';
+import { TelegramJobSend } from './job/telegram-job-data.type';
+import { BotIdMiddleware } from './middlewares/bot-id.middleware';
 import { ChatMiddleware } from './middlewares/chat.middleware';
 import { ChatEventMiddleware } from './middlewares/chat-event.middleware';
-import { BotExtendedContext } from '../bot/type/bot-context.type';
 import { InlineKeyMiddleware } from './middlewares/inline-key.middleware';
-import { BotService } from '../bot/bot.service';
-import { BotIdMiddleware } from './middlewares/bot-id.middleware';
-import {
-  BotAction,
-  BotAlertAction,
-  BotBroadcastAction,
-  BotEditAction,
-  BotMessageAction,
-} from '../bot/type/bot-action.type';
-import { TelegramProducer } from './job/telegram.producer';
+import { MessageMiddleware } from './middlewares/message.middleware';
+import { UserMiddleware } from './middlewares/user.middleware';
 import { TelegramKeyboardBuilder } from './telegram-keyboard.builder';
-import { BotPayloadType } from '../bot/type/bot-payload-type.enum';
-import { TelegramJobSend } from './job/telegram-job-data.type';
-import { delay } from '@dstu_helper/common';
+import { TelegramModuleOptions } from './telegram-module.options';
 
 export type TelegramMessage = TGMessage;
 export type TelegramCallbackQuery = CallbackQuery;
@@ -136,7 +137,7 @@ export class TelegramService {
   public async onSend(ctx: BotAction<BotMessageAction, TelegramContextMetadata>): Promise<number> {
     const options: TelegramJobSend['options'] = {};
 
-    const message = ctx.action.message.render();
+    const message = ctx.action.message.render(ctx.context.from.user);
     const keyboard = ctx.action.keyboard && TelegramKeyboardBuilder.Build(ctx.action.keyboard, false);
     //console.log(inspect(keyboard, false, 10, true));
     if (keyboard) options.reply_markup = keyboard;

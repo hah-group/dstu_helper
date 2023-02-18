@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
-import { BullModule } from '@nestjs/bull';
-import { ScheduleProviderService } from './schedule-provider.service';
-import { RequestProducer } from './job/request.producer';
-import { RequestConsumer } from './job/request.consumer';
-import { REQUEST_QUEUE } from './constants';
 import { HttpModule } from '@nestjs/axios';
+import { BullModule } from '@nestjs/bull';
+import { Module } from '@nestjs/common';
+
+import { REQUEST_QUEUE } from './constants';
+import { RequestConsumer } from './job/request.consumer';
+import { RequestProducer } from './job/request.producer';
+import { ScheduleProviderService } from './schedule-provider.service';
 
 @Module({
   imports: [

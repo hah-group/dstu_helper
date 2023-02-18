@@ -1,22 +1,19 @@
+import { BotMessage, Content, DateParser, OnMessage, Time } from '@dstu_helper/common';
 import { Injectable } from '@nestjs/common';
-import { OnMessage } from '../../../framework/bot/decorator/on-message.decorator';
-import { ScheduleActivation } from './activation/schedule.activation';
-import { WhatActivation } from './activation/what.activation';
-import { WhomActivation } from './activation/whom.activation';
-import { AtActivation } from './activation/at.activation';
-import { BotMessage } from '../../../framework/bot/type/bot-message.type';
-import { DateParser } from '../../../framework/util/date-parser/date.parser';
+
 import { ConversationRepository } from '../../conversation/conversation.repository';
-import { Text } from '../../../framework/text/text';
-import { LessonGroupProcessor } from '../../../framework/util/lesson-group/lesson-group.processor';
-import { NEXT_AUDIENCE, WHERE_AUDIENCE } from './activation/where-audience.activation';
-import { ORDER_LESSON_ACTIVATION } from './activation/order.activation';
-import { ORDER_LAST_LESSON_ACTIVATION } from './activation/order-last.activation';
-import { ORDER_FIRST_LESSON_ACTIVATION } from './activation/order-first.activation';
-import { ScheduleBuilder } from './schedule.builder';
-import { Time } from '@dstu_helper/common';
 import { GroupEntity } from '../../schedule/group/group.entity';
 import { LessonRepository } from '../../schedule/lesson/lesson.repository';
+import { LessonGroupProcessor } from '../../schedule/processor/lesson-group/lesson-group.processor';
+import { AtActivation } from './activation/at.activation';
+import { ORDER_LESSON_ACTIVATION } from './activation/order.activation';
+import { ORDER_FIRST_LESSON_ACTIVATION } from './activation/order-first.activation';
+import { ORDER_LAST_LESSON_ACTIVATION } from './activation/order-last.activation';
+import { ScheduleActivation } from './activation/schedule.activation';
+import { WhatActivation } from './activation/what.activation';
+import { NEXT_AUDIENCE, WHERE_AUDIENCE } from './activation/where-audience.activation';
+import { WhomActivation } from './activation/whom.activation';
+import { ScheduleBuilder } from './schedule.builder';
 
 @Injectable()
 export class ScheduleTextQueryHandler {
@@ -31,7 +28,7 @@ export class ScheduleTextQueryHandler {
     const group = await this.getGroup(message);
 
     if (!group) {
-      await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
+      await message.send(Content.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
     }
 
@@ -42,7 +39,7 @@ export class ScheduleTextQueryHandler {
   public async whereAudience(message: BotMessage): Promise<void> {
     const group = await this.getGroup(message);
     if (!group) {
-      await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
+      await message.send(Content.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
     }
 
@@ -53,7 +50,7 @@ export class ScheduleTextQueryHandler {
   public async orderLesson(message: BotMessage): Promise<void> {
     const group = await this.getGroup(message);
     if (!group) {
-      await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
+      await message.send(Content.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
     }
 
@@ -65,7 +62,7 @@ export class ScheduleTextQueryHandler {
   public async orderLastLesson(message: BotMessage): Promise<void> {
     const group = await this.getGroup(message);
     if (!group) {
-      await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
+      await message.send(Content.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
     }
 
@@ -79,7 +76,7 @@ export class ScheduleTextQueryHandler {
     //this.log.log(`Request order last audience in ${message.peerId} for group ${group.name}`);
 
     await message.send(
-      Text.Build('last-lesson', {
+      Content.Build('last-lesson', {
         target: target,
         group: group,
       }),
@@ -90,7 +87,7 @@ export class ScheduleTextQueryHandler {
   public async orderFirstLesson(message: BotMessage): Promise<void> {
     const group = await this.getGroup(message);
     if (!group) {
-      await message.send(Text.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
+      await message.send(Content.Build('group-not-found', { isConversation: message.chat.scope == 'conversation' }));
       return;
     }
 
@@ -103,7 +100,7 @@ export class ScheduleTextQueryHandler {
     const target = lessonGroups.getLessonGroup(orders[0]);
 
     await message.send(
-      Text.Build('first-lesson', {
+      Content.Build('first-lesson', {
         target: target,
         order: orders[0],
         group: group,

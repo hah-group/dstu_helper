@@ -1,6 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
-import { MenuHandlerMetadata } from './accessor/type/menu-handler.metadata';
+
 import { VALUE_INPUT } from './accessor/menu-metadata.accessor';
+import { MenuHandlerMetadata } from './accessor/type/menu-handler.metadata';
 
 export const OnValueInput = (path: string): MethodDecorator => {
   const metadata: MenuHandlerMetadata = {

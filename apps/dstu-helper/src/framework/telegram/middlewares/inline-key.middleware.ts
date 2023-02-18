@@ -1,8 +1,7 @@
-import { BaseMiddleware } from '../../bot/base.middleware';
+import { BaseMiddleware, BotContext, BotPayloadType } from '@dstu_helper/common';
 import { DeepPartial } from 'ts-essentials';
-import { BotContext } from '../../bot/type/bot-context.type';
+
 import { TelegramContext } from '../telegram.service';
-import { BotPayloadType } from '../../bot/type/bot-payload-type.enum';
 
 export class InlineKeyMiddleware extends BaseMiddleware<TelegramContext> {
   public middleware(event: TelegramContext): DeepPartial<BotContext> | undefined {

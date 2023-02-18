@@ -1,4 +1,5 @@
 import { DateTime, Moment } from '@dstu_helper/common';
+
 import { PropertyBase } from './base/property.base';
 
 export class TimeProperty extends PropertyBase<DateTime, string> {

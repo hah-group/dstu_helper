@@ -1,16 +1,16 @@
-import { Text } from '../text/text';
+import { Content } from '../../../../../libs/common/src/content/content';
 
 export interface BotExceptionParams {
   type: string;
   notifyScope: 'USER' | 'SYSTEM' | 'ALL';
   message: string;
-  text: Text;
+  text: Content;
   data?: any;
 }
 
 export class BotException extends Error {
   public readonly type: string;
-  public readonly text: Text;
+  public readonly text: Content;
   public readonly notifyScope: 'USER' | 'SYSTEM' | 'ALL';
   public readonly data?: any;
 

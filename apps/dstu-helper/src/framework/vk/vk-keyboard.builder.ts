@@ -1,4 +1,4 @@
-import { KeyboardBuilder } from '../bot/keyboard/keyboard.builder';
+import { KeyboardBuilder } from '@dstu_helper/common';
 
 export class VkKeyboardBuilder {
   public static Build(keyboard: KeyboardBuilder, forceInline: boolean): any {

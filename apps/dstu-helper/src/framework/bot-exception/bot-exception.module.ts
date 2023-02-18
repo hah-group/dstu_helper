@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { BotExceptionHandler } from './bot-exception.handler';
 
 @Module({

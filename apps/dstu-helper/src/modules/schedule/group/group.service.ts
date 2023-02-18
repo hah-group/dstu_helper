@@ -1,7 +1,9 @@
+//TODO Maybe move
+import { NormalizeGroup } from '@dstu_helper/common';
 import { Injectable } from '@nestjs/common';
+
 import { GroupEntity } from './group.entity';
 import { GroupRepository } from './group.repository';
-import { NormalizeGroup } from '../../../../../../libs/common/src/util';
 
 @Injectable()
 export class GroupService {

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AudienceEntity } from './audience.entity';
 import { AudienceRepository } from './audience.repository';
 

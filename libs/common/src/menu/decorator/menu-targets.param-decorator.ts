@@ -1,6 +1,7 @@
+import * as micromatch from 'micromatch';
+
 import { MENU_PARAMS } from './accessor/menu-metadata.accessor';
 import { MenuValueParamDecoratorMetadata } from './accessor/type/menu-param.type';
-import * as micromatch from 'micromatch';
 
 export const MenuTargets = (): ParameterDecorator => {
   return (target: any, propertyKey: string | symbol, parameterIndex: number) => {

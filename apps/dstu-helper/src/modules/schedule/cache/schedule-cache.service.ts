@@ -1,16 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { ScheduleProviderService } from '../schedule-provider/schedule-provider.service';
-import { GroupRepository } from '../group/group.repository';
 import { lodash } from '@dstu_helper/common';
-import { LessonRepository } from '../lesson/lesson.repository';
-import { GroupStatus } from '../group/group-status.enum';
-import { FacultyRepository } from '../faculty/faculty.repository';
-import { TeacherRepository } from '../teacher/teacher.repository';
-import { SubjectRepository } from '../subject/subject.repository';
-import { AudienceRepository } from '../audience/audience.repository';
-import { TeacherEntity } from '../teacher/teacher.entity';
-import { SubjectEntity } from '../subject/subject.entity';
+import { Injectable } from '@nestjs/common';
+
 import { AudienceEntity } from '../audience/audience.entity';
+import { AudienceRepository } from '../audience/audience.repository';
+import { FacultyRepository } from '../faculty/faculty.repository';
+import { GroupRepository } from '../group/group.repository';
+import { GroupStatus } from '../group/group-status.enum';
+import { LessonRepository } from '../lesson/lesson.repository';
+import { ScheduleProviderService } from '../schedule-provider/schedule-provider.service';
+import { SubjectEntity } from '../subject/subject.entity';
+import { SubjectRepository } from '../subject/subject.repository';
+import { TeacherEntity } from '../teacher/teacher.entity';
+import { TeacherRepository } from '../teacher/teacher.repository';
 
 export const GROUP_CHUNK_SIZE = 1;
 

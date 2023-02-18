@@ -1,15 +1,17 @@
-import { Logger } from '@nestjs/common';
-import { Process, Processor } from '@nestjs/bull';
-import { Job } from 'bull';
-import { RequestJobData } from './request-job-data.type';
 import { delay } from '@dstu_helper/common';
-import { REQUEST_QUEUE } from '../constants';
 import { HttpService } from '@nestjs/axios';
+import { Process, Processor } from '@nestjs/bull';
+import { Logger } from '@nestjs/common';
+import { Job } from 'bull';
+
+import { REQUEST_QUEUE } from '../constants';
+import { RequestJobData } from './request-job-data.type';
 
 @Processor(REQUEST_QUEUE)
 export class RequestConsumer {
-  constructor(private readonly httpService: HttpService) {}
   private readonly log = new Logger('RequestQueue');
+
+  constructor(private readonly httpService: HttpService) {}
 
   @Process()
   public async request(job: Job<RequestJobData>): Promise<any> {

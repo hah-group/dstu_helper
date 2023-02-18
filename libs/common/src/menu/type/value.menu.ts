@@ -1,4 +1,4 @@
-import { Text } from '../../../../../apps/dstu-helper/src/framework/text/text';
+import { Content } from '../../content';
 import { MenuItem, MenuItemType } from './menu-item';
 
 type Negative<T> = keyof { [K in keyof T as `!${string & K}`]: never };
@@ -9,7 +9,7 @@ export type ValueMenuOptions<T = any> = Partial<{
 export abstract class ValueMenu<T = any> extends MenuItem<T> {
   public readonly options?: ValueMenuOptions<T>;
 
-  protected constructor(type: MenuItemType, header: Text | string, content?: string, options?: ValueMenuOptions<T>) {
+  protected constructor(type: MenuItemType, header: Content | string, content?: string, options?: ValueMenuOptions<T>) {
     super(type, header, content);
     this.options = options;
   }

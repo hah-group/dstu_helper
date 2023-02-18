@@ -1,7 +1,7 @@
-import { TextFilter } from './text-filter.base';
-import { LessonTypeDefinition } from '../lesson-type.definition';
-import { SubjectInfo } from '../lesson.parser';
 import { LessonType } from '../../lesson-type.enum';
+import { SubjectInfo } from '../lesson.parser';
+import { LessonTypeDefinition } from '../lesson-type.definition';
+import { TextFilter } from './text-filter.base';
 
 const getLessonTypes = () => {
   return Object.keys(LessonTypeDefinition).join('|');

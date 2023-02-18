@@ -1,6 +1,7 @@
-import { BotMessage } from '../../../../../../../apps/dstu-helper/src/framework/bot/type/bot-message.type';
+import { BotMessage } from '@dstu_helper/common';
 
 export type MenuHandlerResponse<T = any> = MenuHandlerResponseData<T> | undefined;
+
 export interface MenuHandlerResponseData<T = any> {
   stage?: string;
   data?: T;

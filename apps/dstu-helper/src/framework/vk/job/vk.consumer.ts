@@ -1,10 +1,11 @@
+import { MessageJobName } from '@dstu_helper/common';
 import { Process, Processor } from '@nestjs/bull';
-import { MessageJobName } from '../../bot/type/message-job-name.enum';
-import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
-import { VkJobAlert, VkJobEdit, VkJobGetUser, VkJobSend } from './vk-job-data.type';
-import { VkService } from '../vk.service';
+import { Job } from 'bull';
+
 import { UserEntity } from '../../../modules/user/user.entity';
+import { VkService } from '../vk.service';
+import { VkJobAlert, VkJobEdit, VkJobGetUser, VkJobSend } from './vk-job-data.type';
 
 @Processor('vk')
 export class VkConsumer {

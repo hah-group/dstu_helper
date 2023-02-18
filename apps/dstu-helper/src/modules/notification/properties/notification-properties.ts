@@ -1,4 +1,5 @@
 import { PropertiesContainerBase } from '@dstu_helper/common';
+
 import { TimeIntervalProperty, TimeIntervalPropertyType } from './time-interval.property';
 
 export interface NotificationPropertiesData {

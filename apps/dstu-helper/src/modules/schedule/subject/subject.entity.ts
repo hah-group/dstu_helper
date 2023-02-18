@@ -1,5 +1,6 @@
-import { Column, Entity, JoinTable, OneToMany } from 'typeorm';
 import { DomainEntity } from '@dstu_helper/common';
+import { Column, Entity, JoinTable, OneToMany } from 'typeorm';
+
 import { LessonEntity } from '../lesson/lesson.entity';
 
 @Entity({ name: 'subject' })

@@ -1,4 +1,4 @@
-import { PropertyBase } from './base/property.base';
+import { PropertyBase } from '@dstu_helper/common';
 
 export class IntervalProperty extends PropertyBase<number, number> {
   private value: number;

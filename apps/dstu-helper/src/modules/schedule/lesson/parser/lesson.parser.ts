@@ -1,15 +1,16 @@
-import * as str from 'string';
-import { LessonTypeTextFilter } from './text-filter/lesson-type.text-filter';
-import { TextFilterBuilder } from './text-filter/text-filter.builder';
-import { SubgroupTextFilter } from './text-filter/subgroup.text-filter';
-import { FinalTextFilter, firstLetterUpper } from './text-filter/final.text-filter';
+import { Moment } from '@dstu_helper/common';
 import * as lodash from 'lodash';
+import { normalizeWhiteSpaces } from 'normalize-text';
+import * as str from 'string';
+
+import { TeacherDegreeDefinition, TeacherDegreeKeys } from '../../teacher/teacher-degree.definition';
+import { TeacherDegree } from '../../teacher/teacher-degree.enum';
 import { LessonType } from '../lesson-type.enum';
 import { pretties } from './lesson.prettier';
-import { Moment } from '@dstu_helper/common';
-import { normalizeWhiteSpaces } from 'normalize-text';
-import { TeacherDegree } from '../../teacher/teacher-degree.enum';
-import { TeacherDegreeDefinition, TeacherDegreeKeys } from '../../teacher/teacher-degree.definition';
+import { FinalTextFilter, firstLetterUpper } from './text-filter/final.text-filter';
+import { LessonTypeTextFilter } from './text-filter/lesson-type.text-filter';
+import { SubgroupTextFilter } from './text-filter/subgroup.text-filter';
+import { TextFilterBuilder } from './text-filter/text-filter.builder';
 
 export interface SubjectInfo {
   type: LessonType;

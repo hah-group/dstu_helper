@@ -1,9 +1,10 @@
+import { MessageJobName } from '@dstu_helper/common';
 import { Process, Processor } from '@nestjs/bull';
-import { MessageJobName } from '../../bot/type/message-job-name.enum';
-import { TelegramJobAlert, TelegramJobEdit, TelegramJobSend } from './telegram-job-data.type';
-import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
+import { Job } from 'bull';
+
 import { TelegramService } from '../telegram.service';
+import { TelegramJobAlert, TelegramJobEdit, TelegramJobSend } from './telegram-job-data.type';
 
 @Processor('telegram')
 export class TelegramConsumer {

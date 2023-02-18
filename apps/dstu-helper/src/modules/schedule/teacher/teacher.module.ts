@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { TeacherRepository } from './teacher.repository';
-import { TeacherEntity } from './teacher.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { TeacherEntity } from './teacher.entity';
+import { TeacherRepository } from './teacher.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TeacherEntity])],

@@ -1,9 +1,10 @@
-import { ButtonValueMenu } from '@dstu_helper/common';
-import { Text } from '../../../../../../framework/text/text';
+import { ButtonValueMenu, Content } from '@dstu_helper/common';
+
+//TODO Fix it
 import { AppearanceParams } from '../../../../../user/user-properties/appearance.property';
 
 export class AppearanceButtonValueMenu extends ButtonValueMenu {
   constructor(type: AppearanceParams) {
-    super(Text.Build('appearance-settings-value-buttons', { type }), type);
+    super(Content.Build('appearance-settings-value-buttons', { type }), type);
   }
 }

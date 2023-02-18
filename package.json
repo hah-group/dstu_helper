@@ -12,24 +12,16 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "yarn run migration:up && node dist/src/main",
+    "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./apps/dstu-helper/test/jest-e2e.json",
-    "migration:up": "yarn mikro-orm migration:up",
-    "migration:down": "yarn mikro-orm migration:down"
+    "test:e2e": "jest --config ./apps/dstu-helper/test/jest-e2e.json"
   },
   "dependencies": {
     "@liaoliaots/nestjs-redis": "^9.0.2",
-    "@mikro-orm/cli": "^5.4.2",
-    "@mikro-orm/core": "^5.4.0",
-    "@mikro-orm/migrations": "^5.4.2",
-    "@mikro-orm/nestjs": "^5.1.1",
-    "@mikro-orm/postgresql": "^5.4.0",
-    "@mikro-orm/reflection": "^5.4.0",
     "@nestjs/axios": "^1.0.0",
     "@nestjs/bull": "^0.6.2",
     "@nestjs/common": "^9.2.1",
@@ -43,20 +35,15 @@
     "@types/glob": "^8.0.0",
     "@types/handlebars-helpers": "^0.5.3",
     "@types/jest": "^29.2.4",
-    "amqp-connection-manager": "^4.1.9",
-    "amqplib": "^0.10.3",
     "bull": "^4.10.2",
-    "ember-truth-helpers": "^3.1.1",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
     "glob": "^8.0.3",
     "handlebars": "^4.7.7",
     "handlebars-helpers": "^0.10.0",
-    "i18n": "^0.15.1",
     "ioredis": "^5.2.3",
-    "js-levenshtein": "^1.1.6",
     "lodash": "^4.17.21",
     "micromatch": "^4.0.5",
     "moment": "^2.29.4",
-    "natural": "^6.1.2",
     "node-telegram-bot-api": "^0.61.0",
     "node-vk-bot-api": "^3.5.0",
     "normalize-text": "^2.4.1",
@@ -65,8 +52,7 @@
     "rxjs": "^7.6.0",
     "string": "^3.3.3",
     "typeorm": "^0.3.11",
-    "vk-io": "^4.7.0",
-    "wikijs": "^6.3.2"
+    "vk-io": "^4.7.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.1.5",
@@ -98,11 +84,5 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.1",
     "typescript": "^4.3.5"
-  },
-  "mikro-orm": {
-    "useTsNode": true,
-    "configPaths": [
-      "./dist/orm.config.js"
-    ]
   }
 }

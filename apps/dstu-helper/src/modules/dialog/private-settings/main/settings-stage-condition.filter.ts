@@ -1,4 +1,4 @@
-import { FilterConditionValue } from '../../../../framework/bot/decorator/user-property.filter-decorator';
+import { FilterConditionValue } from '@dstu_helper/common';
 
 export const SettingsStageConditionFilter: FilterConditionValue = (value) => {
   if (typeof value == 'string') {

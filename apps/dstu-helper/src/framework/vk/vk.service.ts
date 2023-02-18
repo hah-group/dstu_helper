@@ -1,31 +1,33 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { VK_OPTIONS } from './constants';
-import { VK } from 'vk-io';
-import { VkModuleOptions } from './vk-module.options';
-import VkBot from 'node-vk-bot-api';
-import { ChatMiddleware } from './middlewares/chat.middleware';
-import { MessageMiddleware } from './middlewares/message.middleware';
-import { MiddlewareExecutor } from '../bot/middleware/middleware.executor';
-import { BaseMiddleware } from '../bot/base.middleware';
-import { ProviderMiddleware } from '../bot/middleware/provider.middleware';
-import { UserMiddleware } from './middlewares/user.middleware';
-import { ChatEventMiddleware } from './middlewares/chat-event.middleware';
-import { BotContext, BotExtendedContext } from '../bot/type/bot-context.type';
-import { InlineKeyMiddleware } from './middlewares/inline-key.middleware';
-import { BotService } from '../bot/bot.service';
-import { BotIdMiddleware } from './middlewares/bot-id.middleware';
-import { UserEntity } from '../../modules/user/user.entity';
-import { VkProducer } from './job/vk.producer';
 import {
+  BaseMiddleware,
   BotAction,
   BotAlertAction,
   BotBroadcastAction,
+  BotContext,
   BotEditAction,
+  BotExtendedContext,
   BotMessageAction,
-} from '../bot/type/bot-action.type';
-import { BotPayloadType } from '../bot/type/bot-payload-type.enum';
+  BotPayloadType,
+  BotService,
+  delay,
+  MiddlewareExecutor,
+  ProviderMiddleware,
+} from '@dstu_helper/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import VkBot from 'node-vk-bot-api';
+import { VK } from 'vk-io';
+
+import { UserEntity } from '../../modules/user/user.entity';
+import { VK_OPTIONS } from './constants';
+import { VkProducer } from './job/vk.producer';
+import { BotIdMiddleware } from './middlewares/bot-id.middleware';
+import { ChatMiddleware } from './middlewares/chat.middleware';
+import { ChatEventMiddleware } from './middlewares/chat-event.middleware';
+import { InlineKeyMiddleware } from './middlewares/inline-key.middleware';
+import { MessageMiddleware } from './middlewares/message.middleware';
+import { UserMiddleware } from './middlewares/user.middleware';
 import { VkKeyboardBuilder } from './vk-keyboard.builder';
-import { delay } from '@dstu_helper/common';
+import { VkModuleOptions } from './vk-module.options';
 
 export interface VkContextMetadata {
   lastMessageId?: number;

@@ -1,9 +1,10 @@
-import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { DomainEntity } from '@dstu_helper/common';
 import { Logger } from '@nestjs/common';
+import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 
 export abstract class CoreRepository<E extends DomainEntity> {
   private readonly log = new Logger('Repository');
+
   protected constructor(protected readonly repository: Repository<E>) {}
 
   public async get(id: number): Promise<E | null> {

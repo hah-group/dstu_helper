@@ -1,10 +1,10 @@
-import { ConversationEntity } from '../conversation/conversation.entity';
-import { UserProperties } from './user-properties/user-properties';
+import { DomainEntity, PropertiesTransformer } from '@dstu_helper/common';
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
-import { DomainEntity } from '@dstu_helper/common';
-import { GroupEntity } from '../schedule/group/group.entity';
+
+import { ConversationEntity } from '../conversation/conversation.entity';
 import { NotificationEntity } from '../notification/notification.entity';
-import { PropertiesTransformer } from '../../../../../libs/common/src/database/properties/base/properties.transformer';
+import { GroupEntity } from '../schedule/group/group.entity';
+import { UserProperties } from './user-properties/user-properties';
 
 export interface UserCreateParams {
   provider: string;

@@ -1,8 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { MessageJobName } from '@dstu_helper/common';
 import { InjectQueue } from '@nestjs/bull';
+import { Injectable, Logger } from '@nestjs/common';
 import { Job, Queue } from 'bull';
+
 import { TelegramJobAlert, TelegramJobData, TelegramJobEdit, TelegramJobSend } from './telegram-job-data.type';
-import { MessageJobName } from '../../bot/type/message-job-name.enum';
 
 @Injectable()
 export class TelegramProducer {

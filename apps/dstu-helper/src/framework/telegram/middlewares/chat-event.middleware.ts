@@ -1,9 +1,8 @@
-import { BaseMiddleware } from '../../bot/base.middleware';
+import { BaseMiddleware, BotContext, BotPayloadType, ChatUser } from '@dstu_helper/common';
 import { DeepPartial } from 'ts-essentials';
-import { BotContext, ChatUser } from '../../bot/type/bot-context.type';
-import { UserMiddleware } from './user.middleware';
+
 import { TelegramContext, TelegramMessage } from '../telegram.service';
-import { BotPayloadType } from '../../bot/type/bot-payload-type.enum';
+import { UserMiddleware } from './user.middleware';
 
 export class ChatEventMiddleware extends BaseMiddleware<TelegramContext> {
   public middleware(event: TelegramContext): DeepPartial<BotContext> | undefined {

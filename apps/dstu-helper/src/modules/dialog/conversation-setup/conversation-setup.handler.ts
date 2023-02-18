@@ -1,15 +1,21 @@
+import {
+  BotEditableMessage,
+  BotInlineMessage,
+  BotMessage,
+  Content,
+  KeyboardBuilder,
+  OnInlineButton,
+  OnInvite,
+  OnMessage,
+  SceneParams,
+  SceneService,
+} from '@dstu_helper/common';
 import { Injectable, Logger } from '@nestjs/common';
-import { OnInvite } from '../../../framework/bot/decorator/on-invite.decorator';
-import { BotEditableMessage, BotInlineMessage, BotMessage } from '../../../framework/bot/type/bot-message.type';
-import { Text } from '../../../framework/text/text';
-import { OnMessage } from '../../../framework/bot/decorator/on-message.decorator';
-import { ConversationRepository } from '../../conversation/conversation.repository';
+
 import { ConversationEntity } from '../../conversation/conversation.entity';
-import { KeyboardBuilder } from '../../../framework/bot/keyboard/keyboard.builder';
-import { OnInlineButton } from '../../../framework/bot/decorator/on-inline-button.decorator';
-import { SceneParams, SceneService } from '../../../framework/scene/scene.service';
-import { ChangeGroupConfirmButton, ChangeGroupConfirmKeyboard } from './keyboard/change-group-confirm.keyboard';
+import { ConversationRepository } from '../../conversation/conversation.repository';
 import { GroupService } from '../../schedule/group/group.service';
+import { ChangeGroupConfirmButton, ChangeGroupConfirmKeyboard } from './keyboard/change-group-confirm.keyboard';
 
 //TODO Add abstraction for different university
 const GROUP_CHANGE_REGEX = /^\/группа ([a-zа-я\d\- ]*)/i;
@@ -33,10 +39,10 @@ export class ConversationSetupHandler {
       newConversation.externalId = message.chat.id;
       newConversation.provider = message.provider;
       await this.conversationRepository.save(newConversation);
-      await message.send(Text.Build('conversation-hello', { provider: message.provider }));
+      await message.send(Content.Build('conversation-hello', { provider: message.provider }));
     } else {
       await message.send(
-        Text.Build('conversation-comeback-hello', {
+        Content.Build('conversation-comeback-hello', {
           provider: message.provider,
           defaultGroup: await conversation.defaultGroup,
         }),
@@ -46,14 +52,14 @@ export class ConversationSetupHandler {
 
   @OnMessage(/^\/группа[\n ]*$/im, 'conversation')
   public async onIncorrectChangeGroup(message: BotMessage): Promise<void> {
-    await message.send(Text.Build('change-group-incorrect'));
+    await message.send(Content.Build('change-group-incorrect'));
   }
 
   @OnMessage(GROUP_CHANGE_REGEX, 'conversation')
   public async onChangeGroup(message: BotMessage): Promise<void> {
     const match = message.payload.text.match(GROUP_CHANGE_REGEX);
     if (!match || !match[1]) {
-      await message.send(Text.Build('change-group-searching', { state: 'failed' }));
+      await message.send(Content.Build('change-group-searching', { state: 'failed' }));
       return;
     }
 
@@ -67,7 +73,7 @@ export class ConversationSetupHandler {
     if (!conversation) throw new Error('Conversation not found');
 
     if (!muteWarning && conversation.defaultGroup) {
-      await message.send(Text.Build('change-group-warning'), ChangeGroupConfirmKeyboard);
+      await message.send(Content.Build('change-group-warning'), ChangeGroupConfirmKeyboard);
       await this.sceneService.set(
         {
           provider: message.provider,
@@ -92,13 +98,13 @@ export class ConversationSetupHandler {
     };
     const sceneValue = await this.sceneService.get(sceneParams);
     if (!sceneValue) {
-      await message.alert(Text.Build('change-group-timeout'));
+      await message.alert(Content.Build('change-group-timeout'));
       return;
     } else if (sceneValue.userId != message.from.id) {
-      await message.alert(Text.Build('change-group-invalid-user'));
+      await message.alert(Content.Build('change-group-invalid-user'));
     }
     await this.sceneService.remove(sceneParams);
-    await message.edit(Text.Build('change-group-warning'), new KeyboardBuilder());
+    await message.edit(Content.Build('change-group-warning'), new KeyboardBuilder());
 
     return this.changeGroup(message, sceneValue.groupName, sceneParams);
   }
@@ -126,7 +132,7 @@ export class ConversationSetupHandler {
     const action = sceneParams ? message.edit : message.send;
 
     if (!group) {
-      await action(Text.Build('change-group-searching', { state: 'failed' }));
+      await action(Content.Build('change-group-searching', { state: 'failed' }));
     } else {
       const conversation = await this.conversationRepository.getById(message.chat.id, message.provider);
       if (!conversation) throw new Error('Conversation not found');
@@ -135,7 +141,7 @@ export class ConversationSetupHandler {
       await this.conversationRepository.save(conversation);
       if (sceneParams) await this.sceneService.remove(sceneParams);
 
-      await action(Text.Build('change-group-searching', { state: 'success' }));
+      await action(Content.Build('change-group-searching', { state: 'success' }));
     }
   }
 }

@@ -1,6 +1,7 @@
-import { TextFilter } from './text-filter.base';
 import { normalizeWhiteSpaces } from 'normalize-text';
+
 import { SubjectInfo } from '../lesson.parser';
+import { TextFilter } from './text-filter.base';
 
 export const firstLetterUpper = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);

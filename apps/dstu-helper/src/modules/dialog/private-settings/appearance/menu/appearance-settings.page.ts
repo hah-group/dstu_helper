@@ -1,8 +1,7 @@
-import { Text } from '../../../../../framework/text/text';
-import { PageMenu } from '@dstu_helper/common';
+import { Content, PageMenu } from '@dstu_helper/common';
 
 export class AppearanceSettingsPage extends PageMenu {
   constructor() {
-    super(Text.Build('appearance-settings-header'), 'appearance-settings');
+    super(Content.Build('appearance-settings-header'), 'appearance-settings');
   }
 }

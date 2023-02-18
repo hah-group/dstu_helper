@@ -1,12 +1,13 @@
-import { DynamicModule, Global, Module } from '@nestjs/common';
-import { VK_OPTIONS } from './constants';
-import { VkModuleOptions } from './vk-module.options';
+import { BotModule } from '@dstu_helper/common';
 import { BullModule } from '@nestjs/bull';
-import { VkProducer } from './job/vk.producer';
-import { VkConsumer } from './job/vk.consumer';
+import { DynamicModule, Global, Module } from '@nestjs/common';
+
 import { BotExceptionModule } from '../bot-exception/bot-exception.module';
+import { VK_OPTIONS } from './constants';
+import { VkConsumer } from './job/vk.consumer';
+import { VkProducer } from './job/vk.producer';
 import { VkService } from './vk.service';
-import { BotModule } from '../bot/bot.module';
+import { VkModuleOptions } from './vk-module.options';
 
 @Global()
 @Module({})

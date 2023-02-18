@@ -1,6 +1,7 @@
-import { Column, Entity, JoinTable, OneToMany } from 'typeorm';
-import { LessonEntity } from '../lesson/lesson.entity';
 import { DomainEntity, lodash } from '@dstu_helper/common';
+import { Column, Entity, JoinTable, OneToMany } from 'typeorm';
+
+import { LessonEntity } from '../lesson/lesson.entity';
 import { TeacherInfo } from '../lesson/parser/lesson.parser';
 import { TeacherDegree } from './teacher-degree.enum';
 
@@ -62,6 +63,7 @@ export class TeacherEntity extends DomainEntity {
         break;
     }
 
+    //TODO Refactor this
     return `👨‍🏫 ${lodash.compact(entities).join(' ')}${degree ? ` (${degree})` : ''}`;
   }
 }

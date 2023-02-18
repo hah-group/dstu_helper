@@ -1,15 +1,12 @@
+import { BotMessage, MenuService, OnButton, OnMessage, User, UserPropertyFilter } from '@dstu_helper/common';
 import { Injectable } from '@nestjs/common';
-import { BotMessage } from '../../../../framework/bot/type/bot-message.type';
-import { OnButton } from '../../../../framework/bot/decorator/on-button.decorator';
-import { SettingsButton } from '../../private/keyboard/main-menu.keyboard';
+
+//TODO Maybe fix it
 import { UserEntity } from '../../../user/user.entity';
 import { UserRepository } from '../../../user/user.repository';
-import { UserPropertyFilter } from '../../../../framework/bot/decorator/user-property.filter-decorator';
+import { SettingsButton } from '../../private/keyboard/main-menu.keyboard';
 import { PrivateSetupHandler } from '../../private/private-setup.handler';
-import { OnMessage } from '../../../../framework/bot/decorator/on-message.decorator';
 import { SettingsStageConditionFilter } from './settings-stage-condition.filter';
-import { User } from '../../../../framework/bot/decorator/user.param-decorator';
-import { MenuService } from '@dstu_helper/common';
 
 @Injectable()
 export class PrivateSettingsMainHandler {

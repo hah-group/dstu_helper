@@ -1,16 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { OnMenuEnter, OnValueInput } from '@dstu_helper/common';
-import { BotMessage } from '../../../../framework/bot/type/bot-message.type';
 import {
+  BotMessage,
   MenuHandlerResponse,
-} from '../../../../../../../libs/common/src/menu/decorator/accessor/type/menu-handler.type';
-import { MenuTargets } from '../../../../../../../libs/common/src/menu/decorator/menu-targets.param-decorator';
-import { MenuValue } from '../../../../../../../libs/common/src/menu/decorator/menu-value.param-decorator';
+  MenuTargets,
+  MenuValue,
+  OnMenuEnter,
+  OnValueInput,
+} from '@dstu_helper/common';
+import { Injectable } from '@nestjs/common';
+
+//TODO Maybe fix it
 import { UserRepository } from '../../../user/user.repository';
 
 @Injectable()
 export class AppearanceSettingsHandler {
   constructor(private readonly userRepository: UserRepository) {}
+
   @OnMenuEnter('settings.appearance')
   public async onEnter(message: BotMessage): Promise<MenuHandlerResponse> {
     return {

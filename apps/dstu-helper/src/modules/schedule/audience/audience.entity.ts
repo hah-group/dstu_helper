@@ -1,7 +1,8 @@
-import { LessonEntity } from '../lesson/lesson.entity';
-import { AudienceInfo } from '../lesson/parser/lesson.parser';
 import { DomainEntity } from '@dstu_helper/common';
 import { Column, Entity, Index, JoinTable, OneToMany } from 'typeorm';
+
+import { LessonEntity } from '../lesson/lesson.entity';
+import { AudienceInfo } from '../lesson/parser/lesson.parser';
 
 @Entity({ name: 'audience' })
 @Index(['corpus', 'classRoom', 'distance'], { unique: true })
@@ -19,6 +20,10 @@ export class AudienceEntity extends DomainEntity {
   @JoinTable()
   public lessons!: Promise<LessonEntity[]>;
 
+  public get uniqueId(): string {
+    return [this.corpus, this.classRoom, this.distance].join('_');
+  }
+
   public static Create(data: AudienceInfo): AudienceEntity {
     const entity = new this();
     entity.update(data);
@@ -29,10 +34,6 @@ export class AudienceEntity extends DomainEntity {
     this.corpus = data.corpus;
     this.classRoom = data.classRoom;
     this.distance = data.distance;
-  }
-
-  public get uniqueId(): string {
-    return [this.corpus, this.classRoom, this.distance].join('_');
   }
 
   public render(): string | undefined {

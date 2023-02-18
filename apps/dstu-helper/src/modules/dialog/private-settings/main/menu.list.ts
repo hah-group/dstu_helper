@@ -1,13 +1,17 @@
-import { MainSettingsPage } from './page/main-settings.page';
-import { NotificationsSettingsPage } from '../notifications/page/notifications-settings.page';
+import {
+  BooleanValueMenu,
+  Content,
+  MenuItemDeclaration,
+  TimeIntervalValueMenu,
+  TimeValueMenu,
+} from '@dstu_helper/common';
+
 import { AppearanceSettingsPage } from '../appearance/menu/appearance-settings.page';
-import { BooleanValueMenu, MenuItemDeclaration } from '@dstu_helper/common';
-import { TimeIntervalValueMenu } from '../../../../../../../libs/common/src/menu/value/time-interval-value.menu';
-import { Text } from '../../../../framework/text/text';
-import { NotificationsSettingsInnerPage } from '../notifications/page/notifications-settings-inner.page';
-import { TimeValueMenu } from '../../../../../../../libs/common/src/menu/value/time-value.menu';
 import { AppearanceSettingsInnerPage } from '../appearance/menu/appearance-settings-inner.page';
 import { AppearanceButtonValueMenu } from '../appearance/menu/value/appearance-button-value.menu';
+import { NotificationsSettingsPage } from '../notifications/page/notifications-settings.page';
+import { NotificationsSettingsInnerPage } from '../notifications/page/notifications-settings-inner.page';
+import { MainSettingsPage } from './page/main-settings.page';
 
 export const SettingsMenu: MenuItemDeclaration = {
   stage: 'settings',
@@ -50,10 +54,10 @@ export const SettingsMenu: MenuItemDeclaration = {
                       'notifications-settings-scheduleDay-time-header',
                       'notifications-settings-scheduleDay-time-content',
                       [
-                        Text.Build('notifications-settings-scheduleDay-time-suggestions', { example: 1 }),
-                        Text.Build('notifications-settings-scheduleDay-time-suggestions', { example: 2 }),
-                        Text.Build('notifications-settings-scheduleDay-time-suggestions', { example: 3 }),
-                        Text.Build('notifications-settings-scheduleDay-time-suggestions', { example: 4 }),
+                        Content.Build('notifications-settings-scheduleDay-time-suggestions', { example: 1 }),
+                        Content.Build('notifications-settings-scheduleDay-time-suggestions', { example: 2 }),
+                        Content.Build('notifications-settings-scheduleDay-time-suggestions', { example: 3 }),
+                        Content.Build('notifications-settings-scheduleDay-time-suggestions', { example: 4 }),
                       ],
                       { isHidden: '!isEnabled' },
                     ),
@@ -80,10 +84,10 @@ export const SettingsMenu: MenuItemDeclaration = {
                       'notifications-settings-scheduleWeek-time-header',
                       'notifications-settings-scheduleWeek-time-content',
                       [
-                        Text.Build('notifications-settings-scheduleWeek-time-suggestions', { example: 1 }),
-                        Text.Build('notifications-settings-scheduleWeek-time-suggestions', { example: 2 }),
-                        Text.Build('notifications-settings-scheduleWeek-time-suggestions', { example: 3 }),
-                        Text.Build('notifications-settings-scheduleWeek-time-suggestions', { example: 4 }),
+                        Content.Build('notifications-settings-scheduleWeek-time-suggestions', { example: 1 }),
+                        Content.Build('notifications-settings-scheduleWeek-time-suggestions', { example: 2 }),
+                        Content.Build('notifications-settings-scheduleWeek-time-suggestions', { example: 3 }),
+                        Content.Build('notifications-settings-scheduleWeek-time-suggestions', { example: 4 }),
                       ],
                       { isHidden: '!isEnabled' },
                     ),

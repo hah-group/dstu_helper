@@ -1,6 +1,6 @@
-import { WhereDefinition, WhichDefinition } from './definition/question-definition';
-import { NomLessonDefinition } from './definition/lesson-definition';
 import { NomAudienceDefinition } from './definition/audience-definition';
+import { NomLessonDefinition } from './definition/lesson-definition';
+import { WhereDefinition, WhichDefinition } from './definition/question-definition';
 
 export const WHERE_AUDIENCE = new RegExp(
   `^(${[WhereDefinition, WhichDefinition].join('|')}) (идти|${NomLessonDefinition}|${NomAudienceDefinition})$`,

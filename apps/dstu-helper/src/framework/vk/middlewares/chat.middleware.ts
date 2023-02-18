@@ -1,6 +1,5 @@
-import { BaseMiddleware } from '../../bot/base.middleware';
+import { BaseMiddleware, BotContext } from '@dstu_helper/common';
 import { DeepPartial } from 'ts-essentials';
-import { BotContext } from '../../bot/type/bot-context.type';
 
 const CONVERSATION_START_ID = 2000000000;
 

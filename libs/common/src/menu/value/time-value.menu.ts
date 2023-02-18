@@ -1,10 +1,9 @@
-import { Text } from '../../../../../apps/dstu-helper/src/framework/text/text';
+import { Content, TimeParser, TimeType, ValueMenuOptions } from '@dstu_helper/common';
+
 import { InputValueMenu } from './input-value.menu';
-import { TimeType, ValueMenuOptions } from '@dstu_helper/common';
-import { TimeParser } from '../../../../../apps/dstu-helper/src/framework/util/time-parser/time-parser';
 
 export class TimeValueMenu extends InputValueMenu {
-  constructor(header: string, content: string, suggestions: Text[], options?: ValueMenuOptions) {
+  constructor(header: string, content: string, suggestions: Content[], options?: ValueMenuOptions) {
     super(header, content, suggestions, options);
   }
 

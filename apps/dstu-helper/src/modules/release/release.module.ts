@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ReleaseController } from './release.controller';
+
 import { ConversationModule } from '../conversation/conversation.module';
+import { ReleaseController } from './release.controller';
 
 @Module({
   controllers: [ReleaseController],

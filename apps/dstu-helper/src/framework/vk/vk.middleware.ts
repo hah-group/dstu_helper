@@ -1,4 +1,5 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
+
 import { VkService } from './vk.service';
 
 @Injectable()

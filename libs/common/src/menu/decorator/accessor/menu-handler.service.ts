@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { BotMessage } from '../../../../../../apps/dstu-helper/src/framework/bot/type/bot-message.type';
 import {
+  BotMessage,
   MenuContext,
   MenuEnterHandler,
   MenuHandlerResponse,
   MenuValueContext,
   ValueHandler,
-} from './type/menu-handler.type';
+} from '@dstu_helper/common';
+import { Injectable } from '@nestjs/common';
 import * as micromatch from 'micromatch';
 
 interface HandlerItem<T> {

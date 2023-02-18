@@ -1,6 +1,7 @@
-import { ValueTransformer } from 'typeorm/decorator/options/ValueTransformer';
-import { PropertiesContainerBase } from './properties-container.base';
 import { Type } from '@nestjs/common';
+import { ValueTransformer } from 'typeorm/decorator/options/ValueTransformer';
+
+import { PropertiesContainerBase } from './properties-container.base';
 
 export class PropertiesTransformer<T extends PropertiesContainerBase<any>> implements ValueTransformer {
   constructor(private readonly container: Type<T>) {}

@@ -1,29 +1,17 @@
-import { Column, Entity, Index, JoinTable, ManyToOne } from 'typeorm';
-import { LessonType } from './lesson-type.enum';
-import { TeacherEntity } from '../teacher/teacher.entity';
-import { GroupEntity } from '../group/group.entity';
 import { DomainEntity } from '@dstu_helper/common';
-import { SubjectEntity } from '../subject/subject.entity';
+import { Column, Entity, Index, JoinTable, ManyToOne } from 'typeorm';
+
 import { AudienceEntity } from '../audience/audience.entity';
-import DSTULessonParser from './parser/lesson.parser';
-import { GetLessonId } from './lesson-id';
+import { GroupEntity } from '../group/group.entity';
 import { ApiDSTUScheduleItem } from '../schedule-provider/type/api-response-schedule.dstu.type';
+import { SubjectEntity } from '../subject/subject.entity';
+import { TeacherEntity } from '../teacher/teacher.entity';
+import { GetLessonId } from './lesson-id';
+import { LessonType } from './lesson-type.enum';
+import DSTULessonParser from './parser/lesson.parser';
 
 @Entity({ name: 'lesson' })
 @Index(['group', 'start', 'subgroup', 'teacher'], { unique: true })
-/*@Filter({
-  name: 'atDateFilter',
-  cond: (args: { date: DateTime }) => {
-    return {
-      start: {
-        $gte: moment(args.date).startOf('day').toDate(),
-      },
-      end: {
-        $lte: moment(args.date).endOf('day').toDate(),
-      },
-    };
-  },
-})*/
 export class LessonEntity extends DomainEntity {
   @ManyToOne(() => GroupEntity, (entity) => entity.lessons, {
     eager: true,
@@ -70,13 +58,6 @@ export class LessonEntity extends DomainEntity {
     if (this.classRoom) return this.classRoom;
   }*/
 
-  public static Create(data: ApiDSTUScheduleItem, group: GroupEntity): LessonEntity {
-    const entity = new this();
-    entity.update(data);
-    entity.group = group;
-    return entity;
-  }
-
   public get uniqueId(): string {
     return GetLessonId({
       groupId: this.group.externalId,
@@ -84,6 +65,13 @@ export class LessonEntity extends DomainEntity {
       subgroup: this.subgroup,
       teacherId: this.teacher?.externalId,
     });
+  }
+
+  public static Create(data: ApiDSTUScheduleItem, group: GroupEntity): LessonEntity {
+    const entity = new this();
+    entity.update(data);
+    entity.group = group;
+    return entity;
   }
 
   public isEquals(entity: LessonEntity): boolean {

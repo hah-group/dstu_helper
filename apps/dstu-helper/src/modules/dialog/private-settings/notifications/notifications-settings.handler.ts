@@ -1,14 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { BotMessage } from '../../../../framework/bot/type/bot-message.type';
-import { lodash, OnMenuEnter, OnValueInput, TimeInterval } from '@dstu_helper/common';
 import {
+  BotMessage,
+  lodash,
   MenuHandlerResponse,
-} from '../../../../../../../libs/common/src/menu/decorator/accessor/type/menu-handler.type';
-import { MenuValue } from '../../../../../../../libs/common/src/menu/decorator/menu-value.param-decorator';
-import { NotificationRepository } from '../../../notification/notification.repository';
-import { MenuTargets } from '../../../../../../../libs/common/src/menu/decorator/menu-targets.param-decorator';
-import { MenuPath } from '../../../../../../../libs/common/src/menu/decorator/menu-path.param-decorator';
+  MenuPath,
+  MenuTargets,
+  MenuValue,
+  OnMenuEnter,
+  OnValueInput,
+  TimeInterval,
+} from '@dstu_helper/common';
+import { Injectable } from '@nestjs/common';
+
 import { NotificationEntity } from '../../../notification/notification.entity';
+import { NotificationRepository } from '../../../notification/notification.repository';
 
 @Injectable()
 export class NotificationsSettingsHandler {

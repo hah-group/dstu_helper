@@ -1,7 +1,8 @@
-import { UserEntity } from '../user/user.entity';
 import { DomainEntity } from '@dstu_helper/common';
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+
 import { GroupEntity } from '../schedule/group/group.entity';
+import { UserEntity } from '../user/user.entity';
 
 @Entity({ name: 'conversation' })
 @Index(['provider', 'externalId'], { unique: true })

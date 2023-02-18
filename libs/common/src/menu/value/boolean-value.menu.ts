@@ -1,16 +1,21 @@
+import { Content } from '../../content';
+import { ValueMenuOptions } from '../type';
 import { ToggleValueMenu } from './toggle-value.menu';
-import { Text } from '../../../../../apps/dstu-helper/src/framework/text/text';
-import { ValueMenuOptions } from '../type/value.menu';
 
-const BooleanTrueValue = Text.Build('boolean-value', { value: false }).render();
-const BooleanFalseValue = Text.Build('boolean-value', { value: true }).render();
+const BooleanTrueValue = Content.Build('boolean-value', { value: false });
+const BooleanFalseValue = Content.Build('boolean-value', { value: true });
 
 export class BooleanValueMenu extends ToggleValueMenu {
   constructor(accessor?: string, options?: ValueMenuOptions) {
-    super('boolean-value', [BooleanTrueValue, BooleanFalseValue], accessor, options);
+    super('boolean-value', BooleanValueMenu.validValues, accessor, options);
+  }
+
+  private static validValues(): string[] {
+    return [BooleanTrueValue.render(), BooleanFalseValue.render()];
   }
 
   public parse(input: string): boolean {
-    return !!input.match(BooleanTrueValue);
+    const trueValue = BooleanTrueValue.render();
+    return !!input.match(trueValue);
   }
 }

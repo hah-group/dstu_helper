@@ -1,8 +1,9 @@
+import { SceneModule } from '@dstu_helper/common';
 import { Module } from '@nestjs/common';
-import { ConversationSetupHandler } from './conversation-setup.handler';
+
 import { ConversationModule } from '../../conversation/conversation.module';
-import { SceneModule } from '../../../framework/scene/scene.module';
 import { GroupModule } from '../../schedule/group/group.module';
+import { ConversationSetupHandler } from './conversation-setup.handler';
 
 @Module({
   imports: [GroupModule, ConversationModule, SceneModule],

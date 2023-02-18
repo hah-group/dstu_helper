@@ -1,4 +1,5 @@
-import { OnMessageFunction } from '../../../../framework/bot/decorator/on-message.decorator';
+import { OnMessageFunction } from '@dstu_helper/common';
+
 import { IsBanWordExist } from './definition/ban-definition';
 
 export const WHOM_ACTIVATION = /(.*какие (завтра|послезавтра)? (пары).*|пары.*?какие)/gi;

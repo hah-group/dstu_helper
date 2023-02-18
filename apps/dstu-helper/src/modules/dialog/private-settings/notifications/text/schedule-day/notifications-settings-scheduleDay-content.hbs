@@ -1,6 +1,6 @@
 🔔 Расписание на день
 
-{{boolean isEnabled}} {{booleanText isEnabled 'Включено' 'Выключено'}}
+{{boolean-emoji isEnabled}} {{switch isEnabled 'Включено' 'Выключено'}}
 {{#if targetTime}}
   📅 Уведомление приходит: {{time-interval targetTime}}
 {{/if}}

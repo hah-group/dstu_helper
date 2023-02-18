@@ -1,4 +1,5 @@
-import { MessageJobName } from '../../bot/type/message-job-name.enum';
+import { MessageJobName } from '@dstu_helper/common';
+
 import { VKEditEventParams } from '../vk.service';
 
 export type VkJobData = VkJobSend | VkJobEdit | VkJobAlert | VkJobGetUser;

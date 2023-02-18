@@ -1,6 +1,6 @@
-import { TimeOrderInterval } from '../../../framework/util/time-order/time-order-interval.type';
+import { LessonTimeOrderItem } from '../processor/lesson-time-order/time-order-interval.type';
 
-export const LessonInterval: TimeOrderInterval[] = [
+export const LessonInterval: LessonTimeOrderItem[] = [
   {
     order: 1,
     start: '8:30:00',

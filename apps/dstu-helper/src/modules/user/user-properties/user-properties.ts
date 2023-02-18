@@ -1,4 +1,5 @@
 import { DateProperty, PropertiesContainerBase, StringPathProperty, Time } from '@dstu_helper/common';
+
 import { Appearance, AppearanceProperty } from './appearance.property';
 
 export interface UserPropertiesEntityParams {

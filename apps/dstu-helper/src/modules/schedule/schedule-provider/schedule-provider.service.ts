@@ -1,17 +1,18 @@
 import { DateTime, lodash, Moment, Time } from '@dstu_helper/common';
 import { Injectable } from '@nestjs/common';
-import { RequestProducer } from './job/request.producer';
-import { GroupEntity } from '../group/group.entity';
+import { Dictionary } from 'lodash';
+
+import { AudienceEntity } from '../audience/audience.entity';
 import { FacultyEntity } from '../faculty/faculty.entity';
+import { GroupEntity } from '../group/group.entity';
 import { LessonEntity } from '../lesson/lesson.entity';
 import { GetLessonId } from '../lesson/lesson-id';
 import DSTULessonParser from '../lesson/parser/lesson.parser';
-import { ApiResponseScheduleDSTU } from './type/api-response-schedule.dstu.type';
-import { ApiResponseGroupDSTU } from './type/api-response-group.dstu.type';
-import { Dictionary } from 'lodash';
-import { TeacherEntity } from '../teacher/teacher.entity';
 import { SubjectEntity } from '../subject/subject.entity';
-import { AudienceEntity } from '../audience/audience.entity';
+import { TeacherEntity } from '../teacher/teacher.entity';
+import { RequestProducer } from './job/request.producer';
+import { ApiResponseGroupDSTU } from './type/api-response-group.dstu.type';
+import { ApiResponseScheduleDSTU } from './type/api-response-schedule.dstu.type';
 
 export interface MergeScheduleOriginParams {
   existLessons: LessonEntity[];

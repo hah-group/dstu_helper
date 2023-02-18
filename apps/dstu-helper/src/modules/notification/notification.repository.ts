@@ -1,6 +1,7 @@
 import { CoreRepository } from '@dstu_helper/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { NotificationEntity } from './notification.entity';
 
 export class NotificationRepository extends CoreRepository<NotificationEntity> {
