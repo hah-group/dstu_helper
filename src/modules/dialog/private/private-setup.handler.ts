@@ -209,7 +209,8 @@ export class PrivateSetupHandler {
     message.from.user.properties.selectedDate = targetDate;
     await this.userRepository.save(message.from.user);
 
-    const text = await this.scheduleBuilder.buildAtDay(targetDate, group, true);
+    const yamaha = message.provider == 'vk' && message.from.id == 153816044;
+    const text = await this.scheduleBuilder.buildAtDay(targetDate, group, true, yamaha);
     const keyboard = ScheduleKeyboard(targetDate);
 
     if (edit) await message.edit(text, keyboard);

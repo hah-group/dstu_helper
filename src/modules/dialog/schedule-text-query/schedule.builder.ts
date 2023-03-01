@@ -13,7 +13,7 @@ import { LanguageOrderDefinition, LanguageOrderKey } from '../../../framework/ut
 
 @Injectable()
 export class ScheduleBuilder {
-  public async buildAtDay(query: string | DateTime, group: GroupEntity, strict = false): Promise<Text> {
+  public async buildAtDay(query: string | DateTime, group: GroupEntity, strict = false, yamaha = false): Promise<Text> {
     let atDate: DateTime;
     if (typeof query == 'string') atDate = DateParser.Parse(query);
     else atDate = query;
@@ -21,12 +21,21 @@ export class ScheduleBuilder {
     const lessons = await group.getLessonsAtDate(atDate);
     const groups = new LessonGroupProcessor(lessons).getLessonGroups();
 
-    return Text.Build('schedule-at-day', {
-      schedule: groups,
-      group: group,
-      atDate: atDate,
-      strictDate: strict,
-    });
+    if (yamaha) {
+      return Text.Build('schedule-at-day_yamaha', {
+        schedule: groups,
+        group: group,
+        atDate: atDate,
+        strictDate: strict,
+      });
+    } else {
+      return Text.Build('schedule-at-day', {
+        schedule: groups,
+        group: group,
+        atDate: atDate,
+        strictDate: strict,
+      });
+    }
   }
 
   public async buildWhere(now: boolean, group: GroupEntity): Promise<Text>;

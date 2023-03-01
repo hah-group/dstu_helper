@@ -33,7 +33,8 @@ export class ScheduleTextQueryHandler {
       return;
     }
 
-    await message.send(await this.scheduleBuilder.buildAtDay(message.payload.text, group));
+    const yamaha = message.provider == 'vk' && message.from.id == 153816044;
+    await message.send(await this.scheduleBuilder.buildAtDay(message.payload.text, group, false, yamaha));
   }
 
   @OnMessage([WHERE_AUDIENCE, NEXT_AUDIENCE])
