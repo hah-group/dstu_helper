@@ -1,4 +1,6 @@
-import { IntervalProperty, lodash, PropertyBase, TimeProperty } from '@dstu_helper/common';
+import { lodash } from '@dstu_helper/common';
+
+import { IntervalProperty, TimeProperty } from '../../../../../../libs/common/src/properties';
 
 export type TimeInterval = TimePropertyType | IntervalPropertyType;
 export type TimeIntervalPropertyType = TimeInterval | undefined;
@@ -13,11 +15,12 @@ export interface IntervalPropertyType {
   value: number;
 }
 
-export class TimeIntervalProperty extends PropertyBase<TimeIntervalPropertyType | undefined> {
+export class TimeIntervalProperty {
+  //extends PropertyBase<TimeIntervalPropertyType | undefined> {
   private value: TimeProperty | IntervalProperty | undefined;
 
   constructor(name: string, value?: TimeIntervalPropertyType) {
-    super(name);
+    //super(name);
     this.set(value);
   }
 

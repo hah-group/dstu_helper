@@ -1,4 +1,3 @@
-export * from './bot';
 export * from './content';
 export * from './database';
 export * from './definition';

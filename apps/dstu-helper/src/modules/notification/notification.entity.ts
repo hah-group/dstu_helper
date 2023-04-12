@@ -1,6 +1,7 @@
-import { DomainEntity, PropertiesTransformer } from '@dstu_helper/common';
+import { DomainEntity } from '@dstu_helper/common';
 import { Column, Entity, Index, JoinTable, ManyToOne } from 'typeorm';
 
+import { PropertiesTransformer } from '../../../../../libs/common/src/properties';
 import { UserEntity } from '../user/user.entity';
 import { NotificationProperties, NotificationPropertiesData } from './properties/notification-properties';
 

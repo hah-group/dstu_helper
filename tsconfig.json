@@ -17,6 +17,9 @@
     "paths": {
       "@dstu_helper/common": [
         "libs/common/src"
+      ],
+      "@dstu_helper/bot": [
+        "libs/bot/src"
       ]
     }
   }

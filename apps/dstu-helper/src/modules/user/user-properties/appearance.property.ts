@@ -1,4 +1,6 @@
-import { lodash, PropertyBase } from '@dstu_helper/common';
+import { lodash } from '@dstu_helper/common';
+
+import { PropertyBase } from '../../../../../../libs/common/src/properties';
 
 export type VisibleAppearanceParam = 'show' | 'hidden';
 export type ShortedAppearanceParam = 'short' | VisibleAppearanceParam;
