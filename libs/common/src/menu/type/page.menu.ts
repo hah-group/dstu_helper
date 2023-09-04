@@ -1,4 +1,4 @@
-import { MessageMatchChecker } from '../../../../bot/src/checker/message-match.checker';
+import { MessageMatchChecker } from '../../bot/checker/message-match.checker';
 import { Content } from '../../content';
 import { MenuItem } from './menu-item';
 

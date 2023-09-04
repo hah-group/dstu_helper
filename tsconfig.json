@@ -15,12 +15,7 @@
     "strict": true,
     "noImplicitReturns": false,
     "paths": {
-      "@dstu_helper/common": [
-        "libs/common/src"
-      ],
-      "@dstu_helper/bot": [
-        "libs/bot/src"
-      ]
+      "@dstu_helper/common": ["libs/common/src"]
     }
   }
 }

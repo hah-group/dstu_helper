@@ -1,5 +1,6 @@
-import { Filter } from '@dstu_helper/bot/filter/filter.type';
-import { BotContext, UserPropertyFilterMetadata } from '@dstu_helper/common';
+import { BotContext, Filter } from '@dstu_helper/common';
+
+import { UserPropertyFilterMetadata } from './user-property.filter-decorator';
 
 export class UserPropertiesFilter extends Filter<UserPropertyFilterMetadata> {
   constructor(metadata: UserPropertyFilterMetadata) {

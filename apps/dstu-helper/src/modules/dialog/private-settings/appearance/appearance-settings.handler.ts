@@ -1,14 +1,7 @@
-import {
-  BotMessage,
-  MenuHandlerResponse,
-  MenuTargets,
-  MenuValue,
-  OnMenuEnter,
-  OnValueInput,
-} from '@dstu_helper/common';
+import { BotMessage } from '@dstu_helper/common';
+import { MenuHandlerResponse, MenuTargets, MenuValue, OnMenuEnter, OnValueInput } from '@dstu_helper/common';
 import { Injectable } from '@nestjs/common';
 
-//TODO Maybe fix it
 import { UserRepository } from '../../../user/user.repository';
 
 @Injectable()

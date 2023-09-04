@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
-import { SocialSource } from '../../../../../libs/bot/src/type/social.enum';
+import { SocialSource } from '../../../../../libs/common/src/bot/type/social.enum';
 import { BotException } from './bot.exception';
 
 export interface BotExceptionHandlerParams {

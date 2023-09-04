@@ -8,10 +8,10 @@ import {
   BotMessageAction,
   BotPayloadType,
   BotService,
-  delay,
   MiddlewareExecutor,
   ProviderMiddleware,
 } from '@dstu_helper/common';
+import { delay } from '@dstu_helper/common';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
 import {

@@ -1,4 +1,5 @@
-import { BotModule, DatabaseModule, SceneModule } from '@dstu_helper/common';
+import { BotModule } from '@dstu_helper/common';
+import { DatabaseModule, SceneModule } from '@dstu_helper/common';
 import { BullModule } from '@nestjs/bull';
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';

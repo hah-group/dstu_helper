@@ -1,7 +1,8 @@
-import { FilterDecoratorMetadata } from '@dstu_helper/bot';
+import { BOT_FILTER, FilterDecoratorMetadata } from '@dstu_helper/common';
 import { SetMetadata } from '@nestjs/common';
 
 import { UserProperties } from '../user-properties/user-properties';
+import { UserPropertiesFilter } from './user-properties.filter';
 
 type UserPropertyKeys = keyof Omit<UserProperties, 'render'>;
 type UserPropertyValues<T extends UserPropertyKeys = UserPropertyKeys> = UserProperties[T]['_type'];

@@ -1,7 +1,8 @@
-import { BotMessage, MenuService, OnButton, OnMessage, User, UserPropertyFilter } from '@dstu_helper/common';
+import { BotMessage, OnButton, OnMessage, User } from '@dstu_helper/common';
+import { MenuService } from '@dstu_helper/common';
 import { Injectable } from '@nestjs/common';
 
-//TODO Maybe fix it
+import { UserPropertyFilter } from '../../../user/filter/user-property.filter-decorator';
 import { UserEntity } from '../../../user/user.entity';
 import { UserRepository } from '../../../user/user.repository';
 import { SettingsButton } from '../../private/keyboard/main-menu.keyboard';

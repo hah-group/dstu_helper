@@ -2,14 +2,12 @@ import {
   BotEditableMessage,
   BotInlineMessage,
   BotMessage,
-  Content,
   KeyboardBuilder,
   OnInlineButton,
   OnInvite,
   OnMessage,
-  SceneParams,
-  SceneService,
 } from '@dstu_helper/common';
+import { Content, SceneParams, SceneService } from '@dstu_helper/common';
 import { Injectable, Logger } from '@nestjs/common';
 
 import { ConversationEntity } from '../../conversation/conversation.entity';

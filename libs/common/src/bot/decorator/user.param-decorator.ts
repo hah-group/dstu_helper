@@ -1,5 +1,5 @@
 //TODO FIX IT!!!!!
-import { UserEntity } from '../../../../apps/dstu-helper/src/modules/user/user.entity';
+import { UserEntity } from '../../../../../apps/dstu-helper/src/modules/user/user.entity';
 import { BOT_PARAMS } from './accessor/contains';
 import { ParamDecoratorMetadata, ParamDecoratorMetadataItem } from './type/bot-param.type';
 

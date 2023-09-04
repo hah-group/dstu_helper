@@ -1,5 +1,4 @@
-import { MessageMatchChecker } from '@dstu_helper/bot';
-
+import { MessageMatchChecker } from '../../bot';
 import { Content } from '../../content';
 import { ValueMenu } from '../type';
 

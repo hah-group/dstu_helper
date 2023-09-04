@@ -1,4 +1,5 @@
-import { Content, KeyboardBuilder, TextButton } from '@dstu_helper/common';
+import { KeyboardBuilder, TextButton } from '@dstu_helper/common';
+import { Content } from '@dstu_helper/common';
 
 export const SettingsNotificationsButton = new TextButton(
   Content.Build('settings-main-buttons', { type: 'notifications' }),

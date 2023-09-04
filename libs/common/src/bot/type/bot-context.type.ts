@@ -1,5 +1,5 @@
 //TODO FIX IT!!
-import { UserEntity } from '../../../../apps/dstu-helper/src/modules/user/user.entity';
+import { UserEntity } from '../../../../../apps/dstu-helper/src/modules/user/user.entity';
 import { BotPayloadType } from './bot-payload-type.enum';
 
 export interface ChatUser {

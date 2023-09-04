@@ -1,4 +1,5 @@
-import { ANY_DATE, OnMessageFunction } from '@dstu_helper/common';
+import { OnMessageFunction } from '@dstu_helper/common';
+import { ANY_DATE } from '@dstu_helper/common';
 
 import { IsBanWordExist } from './definition/ban-definition';
 import { WhatDefinition } from './definition/question-definition';

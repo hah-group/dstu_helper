@@ -1,7 +1,6 @@
-import { DomainEntity } from '@dstu_helper/common';
+import { DomainEntity, PropertiesTransformer } from '@dstu_helper/common';
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
-import { PropertiesTransformer } from '../../../../../libs/common/src/properties';
 import { ConversationEntity } from '../conversation/conversation.entity';
 import { NotificationEntity } from '../notification/notification.entity';
 import { GroupEntity } from '../schedule/group/group.entity';

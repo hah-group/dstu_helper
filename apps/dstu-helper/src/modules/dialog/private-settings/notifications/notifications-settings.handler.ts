@@ -1,5 +1,5 @@
+import { BotMessage } from '@dstu_helper/common';
 import {
-  BotMessage,
   lodash,
   MenuHandlerResponse,
   MenuPath,

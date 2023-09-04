@@ -4,9 +4,9 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EventEmitter } from 'events';
 
 //TODO Oh fuck FIX IT!!!
-import { ConversationRepository } from '../../../apps/dstu-helper/src/modules/conversation/conversation.repository';
-import { UserEntity } from '../../../apps/dstu-helper/src/modules/user/user.entity';
-import { UserRepository } from '../../../apps/dstu-helper/src/modules/user/user.repository';
+import { ConversationRepository } from '../../../../apps/dstu-helper/src/modules/conversation/conversation.repository';
+import { UserEntity } from '../../../../apps/dstu-helper/src/modules/user/user.entity';
+import { UserRepository } from '../../../../apps/dstu-helper/src/modules/user/user.repository';
 import { BotHandler } from './decorator/type/bot-handler.type';
 import { BotAction, BotAlertAction, BotBroadcastAction, BotEditAction, BotMessageAction } from './type/bot-action.type';
 import { BotContext, BotExtendedContext } from './type/bot-context.type';
